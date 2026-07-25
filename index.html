@@ -67,6 +67,29 @@ function Stars({ value }) {
   );
 }
 
+function CraftCard({ c, cat, onClick }) {
+  return (
+    <div onClick={onClick} className="bg-white p-4 rounded-2xl shadow-sm border border-[#EBE6DA] flex items-center gap-3 cursor-pointer">
+      <div className="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0" style={{ background: cat.color + "1A" }}>
+        {cat.icon}
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between gap-1 mb-1">
+          <h3 className="font-bold text-[#123B3B] text-sm truncate">{c.name}</h3>
+          <span className="text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0" style={{ background: cat.color + "22", color: cat.color }}>
+            {craftName(c)}
+          </span>
+        </div>
+        <p className="text-xs text-stone-500 truncate mb-1">{c.bio || "لا يوجد وصف"}</p>
+        <div className="flex items-center gap-3 text-[11px] text-stone-400">
+          <span>📍 {c.hood}</span>
+          <span>⭐ {c.rating || 0}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [list, setList] = useState(null);
   const [query, setQuery] = useState("");
@@ -79,6 +102,10 @@ function App() {
   const [adminUnlocked, setAdminUnlocked] = useState(false);
   const [pinInput, setPinInput] = useState("");
   const [pinError, setPinError] = useState(false);
+
+  const [formData, setFormData] = useState({
+    name: "", cat: "plumb", otherCat: "", hood: NEIGHBORHOODS[0], exp: "1", phone: "", bio: ""
+  });
 
   const fetchList = async () => {
     try {
@@ -93,13 +120,14 @@ function App() {
 
   useEffect(() => { fetchList(); }, []);
 
-  const registerCraftsman = async (data) => {
+  const registerCraftsman = async (e) => {
+    e.preventDefault();
     setSaving(true);
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen`, {
         method: "POST",
         headers: { ...SB_HEADERS, Prefer: "return=representation" },
-        body: JSON.stringify(toDb({ ...data, status: "pending", rating: 0, reviews: 0 })),
+        body: JSON.stringify(toDb({ ...formData, status: "pending", rating: 0, reviews: 0 })),
       });
       if (!res.ok) throw new Error("insert failed");
       await fetchList();
@@ -135,7 +163,7 @@ function App() {
     return approved.filter((c) => {
       const matchCat = activeCat ? c.cat === activeCat : true;
       const matchHood = activeHood === "الكل" ? true : c.hood === activeHood;
-      const matchQuery = query ? c.name.includes(query) || craftName(c).includes(query) || c.bio.includes(query) : true;
+      const matchQuery = query ? c.name.includes(query) || craftName(c).includes(query) || (c.bio && c.bio.includes(query)) : true;
       return matchCat && matchHood && matchQuery;
     }).sort((a, b) => (b.rating || 0) - (a.rating || 0));
   }, [approved, query, activeCat, activeHood]);
@@ -144,11 +172,11 @@ function App() {
     <div style={{ minHeight: "100vh" }}>
       <header className="sticky top-0 z-20 px-4 pt-5 pb-4" style={{ background: "#123B3B" }}>
         <div className="flex items-center justify-between mb-4">
-          <div>
+          <div onClick={() => { setView("home"); setActiveCat(null); }} className="cursor-pointer">
             <h1 className="text-white font-black text-xl leading-tight">حِرَفِي</h1>
             <p className="text-[11px]" style={{ color: "#8FBFBF" }}>دليل الحرفيين والمهنيين لمدينة الدحموني</p>
           </div>
-          <div className="w-11 h-11 rounded-full flex items-center justify-center font-black text-white text-sm" style={{ background: "#D9A441" }}>حي</div>
+          <button onClick={() => setView("admin")} className="w-11 h-11 rounded-full flex items-center justify-center font-black text-white text-sm" style={{ background: "#D9A441" }}>حي</button>
         </div>
         {(view === "home" || view === "list") && (
           <div className="flex items-center gap-2 rounded-2xl px-3 py-2.5" style={{ background: "#1B4B4B" }}>
@@ -162,6 +190,12 @@ function App() {
           </div>
         )}
       </header>
+
+      {toast && (
+        <div className="fixed bottom-20 left-4 right-4 bg-[#123B3B] text-white p-3 rounded-xl text-center text-xs font-bold z-50 shadow-lg">
+          {toast}
+        </div>
+      )}
 
       {list === null ? (
         <div className="flex flex-col items-center justify-center py-24 text-stone-400 gap-2">
@@ -219,3 +253,147 @@ function App() {
 
           {view === "list" && (
             <main className="px-4 pb-24 pt-4">
+              <div className="flex items-center justify-between mb-4">
+                <button onClick={() => { setView("home"); setActiveCat(null); }} className="text-xs font-bold text-[#123B3B]">← العودة للرئيسية</button>
+                {activeCat && <span className="text-xs font-bold text-stone-500">التصنيف: {catInfo(activeCat).name}</span>}
+              </div>
+              <div className="space-y-3">
+                {filtered.length === 0 ? (
+                  <p className="text-center text-xs text-stone-400 py-12">لا توجد نتائج مطابقة لبحثك</p>
+                ) : (
+                  filtered.map((c) => (
+                    <CraftCard key={c.id} c={c} cat={catInfo(c.cat)} onClick={() => setSelected(c)} />
+                  ))
+                )}
+              </div>
+            </main>
+          )}
+
+          {view === "register" && (
+            <main className="px-4 pb-24 pt-4">
+              <button onClick={() => setView("home")} className="text-xs font-bold text-[#123B3B] mb-4">← العودة للرئيسية</button>
+              <div className="bg-white p-5 rounded-2xl shadow-sm border border-[#EBE6DA]">
+                <h2 className="font-black text-[#123B3B] text-lg mb-4">تسجيل حرفي جديد</h2>
+                <form onSubmit={registerCraftsman} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-stone-600 mb-1">الاسم الكامل</label>
+                    <input required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full border p-2.5 rounded-xl text-sm outline-none" placeholder="مثال: أحمد محمد" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-stone-600 mb-1">الحرفة</label>
+                    <select value={formData.cat} onChange={(e) => setFormData({...formData, cat: e.target.value})} className="w-full border p-2.5 rounded-xl text-sm outline-none bg-white">
+                      {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    </select>
+                  </div>
+                  {formData.cat === "other" && (
+                    <div>
+                      <label className="block text-xs font-bold text-stone-600 mb-1">حدد الحرفة</label>
+                      <input required value={formData.otherCat} onChange={(e) => setFormData({...formData, otherCat: e.target.value})} className="w-full border p-2.5 rounded-xl text-sm outline-none" placeholder="اكتب مجال عملك" />
+                    </div>
+                  )}
+                  <div>
+                    <label className="block text-xs font-bold text-stone-600 mb-1">الحي</label>
+                    <select value={formData.hood} onChange={(e) => setFormData({...formData, hood: e.target.value})} className="w-full border p-2.5 rounded-xl text-sm outline-none bg-white">
+                      {NEIGHBORHOODS.map(h => <option key={h} value={h}>{h}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-stone-600 mb-1">سنوات الخبرة</label>
+                    <input type="number" min="0" required value={formData.exp} onChange={(e) => setFormData({...formData, exp: e.target.value})} className="w-full border p-2.5 rounded-xl text-sm outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-stone-600 mb-1">رقم الهاتف</label>
+                    <input type="tel" required value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full border p-2.5 rounded-xl text-sm outline-none" placeholder="06XXXXXXXX" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-stone-600 mb-1">نبذة عن الخدمات</label>
+                    <textarea value={formData.bio} onChange={(e) => setFormData({...formData, bio: e.target.value})} className="w-full border p-2.5 rounded-xl text-sm outline-none h-20" placeholder="اشرح باختصار الخدمات التي تقدمها..."></textarea>
+                  </div>
+                  <button type="submit" disabled={saving} className="w-full py-3 rounded-xl font-bold text-white bg-[#123B3B] text-sm">
+                    {saving ? "جاري الإرسال..." : "إرسال طلب التسجيل"}
+                  </button>
+                </form>
+              </div>
+            </main>
+          )}
+
+          {view === "admin" && (
+            <main className="px-4 pb-24 pt-4">
+              <button onClick={() => setView("home")} className="text-xs font-bold text-[#123B3B] mb-4">← العودة للرئيسية</button>
+              {!adminUnlocked ? (
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-[#EBE6DA] text-center max-w-xs mx-auto">
+                  <h3 className="font-bold text-[#123B3B] mb-3">دخول لوحة التحكم</h3>
+                  <input
+                    type="password"
+                    placeholder="رمز PIN"
+                    value={pinInput}
+                    onChange={(e) => setPinInput(e.target.value)}
+                    className="w-full border p-2.5 rounded-xl text-center mb-3 text-sm outline-none"
+                  />
+                  {pinError && <p className="text-red-500 text-xs mb-2">رمز PIN غير صحيح</p>}
+                  <button
+                    onClick={() => {
+                      if (pinInput === ADMIN_PIN) { setAdminUnlocked(true); setPinError(false); }
+                      else { setPinError(true); }
+                    }}
+                    className="w-full py-2.5 rounded-xl bg-[#123B3B] text-white text-xs font-bold"
+                  >
+                    تأكيد
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <h2 className="font-black text-[#123B3B] text-base">الطلبات المعلقة ({pending.length})</h2>
+                  {pending.length === 0 ? (
+                    <p className="text-xs text-stone-400">لا توجد طلبات معلقة</p>
+                  ) : (
+                    pending.map((c) => (
+                      <div key={c.id} className="bg-white p-4 rounded-xl border border-[#EBE6DA] space-y-2">
+                        <div className="flex justify-between items-center">
+                          <h4 className="font-bold text-sm text-[#123B3B]">{c.name}</h4>
+                          <span className="text-xs font-bold text-stone-500">{craftName(c)}</span>
+                        </div>
+                        <p className="text-xs text-stone-600">📞 {c.phone} | 📍 {c.hood}</p>
+                        <p className="text-xs text-stone-500">{c.bio}</p>
+                        <div className="flex gap-2 pt-2">
+                          <button onClick={() => approveCraftsman(c.id)} className="flex-1 py-1.5 bg-green-600 text-white rounded-lg text-xs font-bold">قبول</button>
+                          <button onClick={() => rejectCraftsman(c.id)} className="flex-1 py-1.5 bg-red-600 text-white rounded-lg text-xs font-bold">رفض</button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </main>
+          )}
+
+          {selected && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center" onClick={() => setSelected(null)}>
+              <div className="bg-white w-full max-w-md rounded-t-3xl p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-black text-[#123B3B] text-lg">{selected.name}</h3>
+                    <p className="text-xs font-bold text-stone-500">{craftName(selected)} — خبرة {selected.exp} سنوات</p>
+                  </div>
+                  <button onClick={() => setSelected(null)} className="text-stone-400 font-bold text-lg">✕</button>
+                </div>
+                <div className="text-xs text-stone-600 space-y-1">
+                  <p>📍 المنطقة: {selected.hood}</p>
+                  <p>📝 الوصف: {selected.bio || "لا يوجد وصف متوفر"}</p>
+                </div>
+                <a href={`tel:${selected.phone}`} className="block w-full py-3 rounded-xl bg-green-600 text-white text-center font-bold text-sm">
+                  📞 اتصال بالرقم ({selected.phone})
+                </a>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
