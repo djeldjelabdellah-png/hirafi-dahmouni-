@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>حِرَفِي - دليل الحرفيين والمهنيين لمدينة الدحموني</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
+  body { font-family: 'Tajawal', sans-serif; background:#F5F2EA; margin:0; }
+  .spinner { border: 3px solid #DCD5C4; border-top-color: #123B3B; border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useMemo } = React;
+
+const SUPABASE_URL = "https://epslzxcwurnueboeujbt.supabase.co";
+const SUPABASE_KEY = "sb_publishable_1KmMcVM-XtVlajEStTAL7g_0HropMG5";
+const SB_HEADERS = {
+  apikey: SUPABASE_KEY,
+  Authorization: `Bearer ${SUPABASE_KEY}`,
+  "Content-Type": "application/json",
+};
+const ADMIN_PIN = "1234";
+
+const CATEGORIES = [
+  { id: "plumb", name: "سباكة", icon: "🔧", color: "#2C6E6E" },
+  { id: "elec", name: "كهرباء", icon: "⚡", color: "#D9A441" },
+  { id: "carp", name: "نجارة", icon: "🔨", color: "#8B5E3C" },
+  { id: "paint", name: "دهان", icon: "🎨", color: "#5C7A8A" },
+  { id: "build", name: "بناء", icon: "🏗️", color: "#7A5C4B" },
+  { id: "tailor", name: "خياطة", icon: "✂️", color: "#B5566B" },
+  { id: "mech", name: "ميكانيك", icon: "🚗", color: "#3D5A6C" },
+  { id: "clean", name: "تنظيف", icon: "✨", color: "#4A8B6F" },
+  { id: "other", name: "أخرى", icon: "➕", color: "#7D7568" },
+];
+
+const NEIGHBORHOODS = ["حي مزيان", "حي المحطة", "حي 100 مسكن", "حي المقبرة", "حي البناء الذاتي", "حي العقيد لطفي", "حي 300 سكن"];
+
+const catInfo = (id) => CATEGORIES.find((c) => c.id === id) || CATEGORIES[0];
+const craftName = (c) => (c.cat === "other" && c.otherCat ? c.otherCat : catInfo(c.cat).name);
+
+const toDb = (c) => ({
+  name: c.name, cat: c.cat, other_cat: c.otherCat || null, hood: c.hood,
+  exp: c.exp, phone: c.phone, bio: c.bio, status: c.status || "pending",
+  rating: c.rating || 0, reviews: c.reviews || 0,
+});
+const fromDb = (r) => ({
+  id: r.id, name: r.name, cat: r.cat, otherCat: r.other_cat, hood: r.hood,
+  exp: r.exp, phone: r.phone, bio: r.bio, status: r.status, rating: r.rating, reviews: r.reviews,
+});
+
+function Stars({ value }) {
+  return (
+    <span style={{ letterSpacing: "1px" }}>
+      {[1, 2, 3, 4, 5].map((i) => (
+        <span key={i} style={{ color: i <= Math.round(value || 0) ? "#D9A441" : "#D6D0C2", fontSize: 13 }}>★</span>
+      ))}
+    </span>
+  );
+}
+
+function App() {
+  const [list, setList] = useState(null);
+  const [query, setQuery] = useState("");
+  const [activeCat, setActiveCat] = useState(null);
+  const [activeHood, setActiveHood] = useState("الكل");
+  const [selected, setSelected] = useState(null);
+  const [view, setView] = useState("home");
+  const [toast, setToast] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [adminUnlocked, setAdminUnlocked] = useState(false);
+  const [pinInput, setPinInput] = useState("");
+  const [pinError, setPinError] = useState(false);
+
+  const fetchList = async () => {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?select=*&order=created_at.desc`, { headers: SB_HEADERS });
+      const data = await res.json();
+      setList(Array.isArray(data) ? data.map(fromDb) : []);
+    } catch (e) {
+      setList([]);
+      setToast("تعذّر الاتصال بالخادم");
+    }
+  };
+
+  useEffect(() => { fetchList(); }, []);
+
+  const registerCraftsman = async (data) => {
+    setSaving(true);
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen`, {
+        method: "POST",
+        headers: { ...SB_HEADERS, Prefer: "return=representation" },
+        body: JSON.stringify(toDb({ ...data, status: "pending", rating: 0, reviews: 0 })),
+      });
+      if (!res.ok) throw new Error("insert failed");
+      await fetchList();
+      setView("home");
+      setToast("تم إرسال طلبك، سيُنشر بعد المراجعة");
+      setTimeout(() => setToast(null), 3500);
+    } catch (e) {
+      setToast("تعذّر إرسال الطلب، حاول مجدداً");
+    }
+    setSaving(false);
+  };
+
+  const approveCraftsman = async (id) => {
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${id}`, {
+        method: "PATCH", headers: SB_HEADERS, body: JSON.stringify({ status: "approved" }),
+      });
+      await fetchList();
+    } catch (e) { setToast("تعذّر التحديث"); }
+  };
+
+  const rejectCraftsman = async (id) => {
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${id}`, { method: "DELETE", headers: SB_HEADERS });
+      await fetchList();
+    } catch (e) { setToast("تعذّر الحذف"); }
+  };
+
+  const approved = useMemo(() => (list || []).filter((c) => c.status === "approved"), [list]);
+  const pending = useMemo(() => (list || []).filter((c) => c.status === "pending"), [list]);
+
+  const filtered = useMemo(() => {
+    return approved.filter((c) => {
+      const matchCat = activeCat ? c.cat === activeCat : true;
+      const matchHood = activeHood === "الكل" ? true : c.hood === activeHood;
+      const matchQuery = query ? c.name.includes(query) || craftName(c).includes(query) || c.bio.includes(query) : true;
+      return matchCat && matchHood && matchQuery;
+    }).sort((a, b) => (b.rating || 0) - (a.rating || 0));
+  }, [approved, query, activeCat, activeHood]);
+
+  return (
+    <div style={{ minHeight: "100vh" }}>
+      <header className="sticky top-0 z-20 px-4 pt-5 pb-4" style={{ background: "#123B3B" }}>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-white font-black text-xl leading-tight">حِرَفِي</h1>
+            <p className="text-[11px]" style={{ color: "#8FBFBF" }}>دليل الحرفيين والمهنيين لمدينة الدحموني</p>
+          </div>
+          <div className="w-11 h-11 rounded-full flex items-center justify-center font-black text-white text-sm" style={{ background: "#D9A441" }}>حي</div>
+        </div>
+        {(view === "home" || view === "list") && (
+          <div className="flex items-center gap-2 rounded-2xl px-3 py-2.5" style={{ background: "#1B4B4B" }}>
+            <span style={{ opacity: 0.6 }}>🔍</span>
+            <input
+              value={query}
+              onChange={(e) => { setQuery(e.target.value); setView("list"); }}
+              placeholder="ابحث عن حرفة، اسم، أو خدمة..."
+              className="bg-transparent outline-none text-sm text-white placeholder-[#8FBFBF] flex-1"
+            />
+          </div>
+        )}
+      </header>
+
+      {list === null ? (
+        <div className="flex flex-col items-center justify-center py-24 text-stone-400 gap-2">
+          <div className="spinner"></div>
+          <span className="text-xs font-bold">جاري التحميل...</span>
+        </div>
+      ) : (
+        <>
+          {view === "home" && (
+            <main className="px-4 pb-24">
+              <div className="flex gap-2 overflow-x-auto py-4" style={{ scrollbarWidth: "none" }}>
+                {["الكل", ...NEIGHBORHOODS].map((h) => (
+                  <button key={h} onClick={() => setActiveHood(h)} className="whitespace-nowrap text-xs font-bold px-3.5 py-2 rounded-full border transition"
+                    style={activeHood === h ? { background: "#123B3B", color: "white", borderColor: "#123B3B" } : { background: "white", color: "#123B3B", borderColor: "#DCD5C4" }}>
+                    {h}
+                  </button>
+                ))}
+              </div>
+
+              <h2 className="font-black text-[#123B3B] text-sm mb-3 mt-2">اختر التصنيف</h2>
+              <div className="grid grid-cols-4 gap-3 mb-6">
+                {CATEGORIES.map((c) => {
+                  const count = approved.filter((x) => x.cat === c.id).length;
+                  return (
+                    <button key={c.id} onClick={() => { setActiveCat(c.id); setView("list"); }} className="flex flex-col items-center gap-1.5">
+                      <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm relative" style={{ background: c.color + "1A", border: `1.5px solid ${c.color}33` }}>
+                        <span style={{ fontSize: 22 }}>{c.icon}</span>
+                        {count > 0 && <span className="absolute -top-1.5 -left-1.5 text-[9px] font-black text-white rounded-full w-4 h-4 flex items-center justify-center" style={{ background: c.color }}>{count}</span>}
+                      </div>
+                      <span className="text-[11px] font-bold text-[#3A3A3A]">{c.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button onClick={() => setView("register")} className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-white text-sm mb-6" style={{ background: "#D9A441" }}>
+                <span>+</span> سجّل كحرفي في المنصة
+              </button>
+
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="font-black text-[#123B3B] text-sm">الأعلى تقييماً</h2>
+                <button onClick={() => setView("list")} className="text-[11px] font-bold" style={{ color: "#D9A441" }}>عرض الكل ←</button>
+              </div>
+              <div className="space-y-3">
+                {approved.length === 0 ? (
+                  <p className="text-center text-xs text-stone-400 py-6">لا يوجد حرفيون بعد — كن أول من يسجّل</p>
+                ) : (
+                  [...approved].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 3).map((c) => (
+                    <CraftCard key={c.id} c={c} cat={catInfo(c.cat)} onClick={() => setSelected(c)} />
+                  ))
+                )}
+              </div>
+            </main>
+          )}
+
+          {view === "list" && (
+            <main className="px-4 pb-24 pt-4">
