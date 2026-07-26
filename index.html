@@ -30,6 +30,10 @@ const SB_HEADERS = {
 };
 const ADMIN_PIN = "1234";
 
+// مفاتيح التلغرام الخاصة بك
+const TELEGRAM_TOKEN = "8610113650:AAHoX6Za..."; // ضع التوكن الكامل هنا
+const TELEGRAM_CHAT_ID = "1109544250";
+
 const CATEGORIES = [
   { id: "plumb", name: { ar: "سباكة", en: "Plumbing" }, icon: "🔧", color: "#2C6E6E" },
   { id: "elec", name: { ar: "كهرباء", en: "Electrical" }, icon: "⚡", color: "#D9A441" },
@@ -183,6 +187,32 @@ function App() {
         body: JSON.stringify(toDb({ ...data, status: "pending", rating: 0, reviews: 0 })),
       });
       if (!res.ok) throw new Error("insert failed");
+
+      // إرسال الإشعار الفوري إلى تلغرام
+      try {
+        const selectedCat = CATEGORIES.find(c => c.id === data.cat);
+        const craftTitle = data.cat === "other" ? data.otherCat : (selectedCat ? selectedCat.name.ar : data.cat);
+        const telegramMessage = `🛠 **تسجيل حرفي جديد على المنصة!**\n\n` +
+                                `👤 **الاسم الكامل:** ${data.name}\n` +
+                                `📞 **رقم الهاتف:** ${data.phone}\n` +
+                                `🧰 **الحرفة:** ${craftTitle}\n` +
+                                `📍 **المنطقة/الحي:** ${data.hood}\n` +
+                                `⭐ **خبرة:** ${data.exp} سنوات\n` +
+                                `📝 **الوصف:** ${data.bio}`;
+
+        fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: TELEGRAM_CHAT_ID,
+            text: telegramMessage,
+            parse_mode: "Markdown"
+          })
+        });
+      } catch (tgError) {
+        console.error("Telegram notification failed:", tgError);
+      }
+
       await fetchList();
       setView("home");
       setToast(t.toastSubmitted);
@@ -543,37 +573,4 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<App />);
 </script>
 </body>
-  <script>
-// كود إرسال الإشعارات إلى تلغرام (معتمد لـ React والصفحات التفاعلية)
-document.addEventListener('submit', function(e) {
-    try {
-        const form = e.target;
-        const inputs = form.querySelectorAll('input, select, textarea');
-        let dataText = '';
-
-        inputs.forEach(input => {
-            if (input.value && input.type !== 'submit' && input.type !== 'button') {
-                const fieldName = input.placeholder || input.name || input.id || 'بيانات';
-                dataText += `• **${fieldName}:** ${input.value}\n`;
-            }
-        });
-
-        if (dataText.trim().length > 0) {
-            const TELEGRAM_TOKEN = '8610113650:AAHoX6Za...'; // اترك التوكن الخاص بك هنا
-            const TELEGRAM_CHAT_ID = '1109544250'; // اترك الـ ID الخاص بك هنا
-
-            fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: TELEGRAM_CHAT_ID,
-                    text: `🛠 **تسجيل جديد على المنصة!**\n\n${dataText}`,
-                    parse_mode: 'Markdown'
-                })
-            });
-        }
-    } catch (err) {
-        console.error('Telegram Notification Error:', err);
-    }
-}, true); // الخيار true يجعل الكود يكتشف الضغط قبل أن يلغيه React
-</script>
+</html>
