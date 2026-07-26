@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html dir="rtl" lang="ar">
+<html lang="ar">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -31,21 +31,78 @@ const SB_HEADERS = {
 const ADMIN_PIN = "1234";
 
 const CATEGORIES = [
-  { id: "plumb", name: "سباكة", icon: "🔧", color: "#2C6E6E" },
-  { id: "elec", name: "كهرباء", icon: "⚡", color: "#D9A441" },
-  { id: "carp", name: "نجارة", icon: "🔨", color: "#8B5E3C" },
-  { id: "paint", name: "دهان", icon: "🎨", color: "#5C7A8A" },
-  { id: "build", name: "بناء", icon: "🏗️", color: "#7A5C4B" },
-  { id: "tailor", name: "خياطة", icon: "✂️", color: "#B5566B" },
-  { id: "mech", name: "ميكانيك", icon: "🚗", color: "#3D5A6C" },
-  { id: "clean", name: "تنظيف", icon: "✨", color: "#4A8B6F" },
-  { id: "other", name: "أخرى", icon: "➕", color: "#7D7568" },
+  { id: "plumb", name: { ar: "سباكة", en: "Plumbing" }, icon: "🔧", color: "#2C6E6E" },
+  { id: "elec", name: { ar: "كهرباء", en: "Electrical" }, icon: "⚡", color: "#D9A441" },
+  { id: "carp", name: { ar: "نجارة", en: "Carpentry" }, icon: "🔨", color: "#8B5E3C" },
+  { id: "paint", name: { ar: "دهان", en: "Painting" }, icon: "🎨", color: "#5C7A8A" },
+  { id: "build", name: { ar: "بناء", en: "Construction" }, icon: "🏗️", color: "#7A5C4B" },
+  { id: "tailor", name: { ar: "خياطة", en: "Tailoring" }, icon: "✂️", color: "#B5566B" },
+  { id: "mech", name: { ar: "ميكانيك", en: "Mechanic" }, icon: "🚗", color: "#3D5A6C" },
+  { id: "clean", name: { ar: "تنظيف", en: "Cleaning" }, icon: "✨", color: "#4A8B6F" },
+  { id: "other", name: { ar: "أخرى", en: "Other" }, icon: "➕", color: "#7D7568" },
 ];
 
-const NEIGHBORHOODS = ["حي مزيان", "حي المحطة", "حي 100 مسكن", "حي المقبرة", "حي البناء الذاتي", "حي العقيد لطفي", "حي 300 سكن"];
+const NEIGHBORHOODS = [
+  { ar: "حي مزيان", en: "Mezyan" },
+  { ar: "حي المحطة", en: "Al Mahata" },
+  { ar: "حي 100 مسكن", en: "100 Logements" },
+  { ar: "حي المقبرة", en: "Al Maqbra" },
+  { ar: "حي البناء الذاتي", en: "Auto-Construction" },
+  { ar: "حي العقيد لطفي", en: "Colonel Lotfi" },
+  { ar: "حي 300 سكن", en: "300 Logements" },
+];
+
+const STRINGS = {
+  ar: {
+    title: "حِرَفِي", subtitle: "دليل الحرفيين والمهنيين لمدينة الدحموني",
+    searchPlaceholder: "ابحث عن حرفة، اسم، أو خدمة...", chooseCategory: "اختر التصنيف",
+    registerCta: "سجّل كحرفي في المنصة", topRated: "الأعلى تقييماً", viewAll: "عرض الكل ←",
+    noCraftsmenYet: "لا يوجد حرفيون بعد — كن أول من يسجّل", allCrafts: "كل الحرف",
+    noResults: "لا توجد نتائج مطابقة", tryOther: "جرّب تصنيفاً أو حياً آخر", loading: "جاري التحميل...",
+    navHome: "الرئيسية", navSearch: "البحث", navRegister: "أنا حرفي", yearsExp: "سنوات خبرة",
+    newLabel: "جديد", reviewsLabel: "تقييم", call: "اتصال", whatsapp: "واتساب",
+    registerTitle: "تسجيل حرفي جديد", fullName: "الاسم الكامل", craft: "الحرفة / التخصص",
+    otherCraft: "اكتب اسم الحرفة", neighborhood: "الحي / المنطقة", experience: "سنوات الخبرة",
+    phone: "رقم الهاتف", bio: "نبذة عن الخدمات المقدمة", submitBtn: "إرسال للمراجعة",
+    submitting: "جاري الإرسال...", reviewNote: "سيُراجع طلبك من طرف الإدارة قبل ظهوره في المنصة، عادة خلال 24 ساعة",
+    requiredError: "الرجاء تعبئة الاسم ورقم الهاتف والوصف", otherCraftError: "الرجاء كتابة اسم الحرفة",
+    phoneError: "رقم الهاتف غير صحيح (مثال: 0550123456)", toastSubmitted: "تم إرسال طلبك، سيُنشر بعد المراجعة",
+    toastFailSubmit: "تعذّر إرسال الطلب، حاول مجدداً", toastFailConnect: "تعذّر الاتصال بالخادم",
+    adminTitle: "لوحة المراجعة", adminPinPrompt: "أدخل رمز الإدارة للمتابعة", adminPinPlaceholder: "الرمز السري",
+    adminPinWrong: "رمز خاطئ", adminLogin: "دخول", adminNoPending: "لا توجد طلبات بانتظار المراجعة",
+    pendingLabel: "قيد المراجعة", approveBtn: "قبول ونشر", rejectBtn: "رفض", all: "الكل",
+    rateThis: "قيّم هذا الحرفي", thanksRating: "شكراً لتقييمك!", shareBtn: "مشاركة",
+    shareCopied: "تم نسخ الرابط",
+  },
+  en: {
+    title: "Hirafi", subtitle: "Craftsmen & Tradespeople Directory — Dahmouni",
+    searchPlaceholder: "Search a trade, name, or service...", chooseCategory: "Choose a category",
+    registerCta: "Register as a craftsman", topRated: "Top Rated", viewAll: "View all →",
+    noCraftsmenYet: "No craftsmen yet — be the first to register", allCrafts: "All trades",
+    noResults: "No matching results", tryOther: "Try another category or neighborhood", loading: "Loading...",
+    navHome: "Home", navSearch: "Search", navRegister: "I'm a craftsman", yearsExp: "years experience",
+    newLabel: "New", reviewsLabel: "reviews", call: "Call", whatsapp: "WhatsApp",
+    registerTitle: "New Craftsman Registration", fullName: "Full name", craft: "Trade / Specialty",
+    otherCraft: "Type your trade", neighborhood: "Neighborhood", experience: "Years of experience",
+    phone: "Phone number", bio: "Brief description of services", submitBtn: "Submit for review",
+    submitting: "Submitting...", reviewNote: "Your request will be reviewed by an admin before publishing, usually within 24 hours",
+    requiredError: "Please fill in name, phone and description", otherCraftError: "Please type your trade name",
+    phoneError: "Invalid phone number (e.g. 0550123456)", toastSubmitted: "Your request was submitted for review",
+    toastFailSubmit: "Failed to submit, try again", toastFailConnect: "Could not connect to server",
+    adminTitle: "Review Panel", adminPinPrompt: "Enter admin code to continue", adminPinPlaceholder: "Secret code",
+    adminPinWrong: "Wrong code", adminLogin: "Enter", adminNoPending: "No pending requests",
+    pendingLabel: "Pending review", approveBtn: "Approve & publish", rejectBtn: "Reject", all: "All",
+    rateThis: "Rate this craftsman", thanksRating: "Thanks for rating!", shareBtn: "Share",
+    shareCopied: "Link copied",
+  },
+};
 
 const catInfo = (id) => CATEGORIES.find((c) => c.id === id) || CATEGORIES[0];
-const craftName = (c) => (c.cat === "other" && c.otherCat ? c.otherCat : catInfo(c.cat).name);
+const craftName = (c, lang) => (c.cat === "other" && c.otherCat ? c.otherCat : catInfo(c.cat).name[lang]);
+const hoodName = (hoodAr, lang) => {
+  const h = NEIGHBORHOODS.find((n) => n.ar === hoodAr);
+  return h ? h[lang] : hoodAr;
+};
 
 const toDb = (c) => ({
   name: c.name, cat: c.cat, other_cat: c.otherCat || null, hood: c.hood,
@@ -67,34 +124,32 @@ function Stars({ value }) {
   );
 }
 
-function CraftCard({ c, cat, onClick }) {
+function RatingInput({ onRate }) {
+  const [hover, setHover] = useState(0);
+  const [done, setDone] = useState(false);
+  if (done) return null;
   return (
-    <div onClick={onClick} className="bg-white p-4 rounded-2xl shadow-sm border border-[#EBE6DA] flex items-center gap-3 cursor-pointer">
-      <div className="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0" style={{ background: cat.color + "1A" }}>
-        {cat.icon}
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between gap-1 mb-1">
-          <h3 className="font-bold text-[#123B3B] text-sm truncate">{c.name}</h3>
-          <span className="text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0" style={{ background: cat.color + "22", color: cat.color }}>
-            {craftName(c)}
-          </span>
-        </div>
-        <p className="text-xs text-stone-500 truncate mb-1">{c.bio || "لا يوجد وصف"}</p>
-        <div className="flex items-center gap-3 text-[11px] text-stone-400">
-          <span>📍 {c.hood}</span>
-          <span>⭐ {c.rating || 0}</span>
-        </div>
-      </div>
-    </div>
+    <span style={{ letterSpacing: "2px", fontSize: 22, cursor: "pointer" }}>
+      {[1, 2, 3, 4, 5].map((i) => (
+        <span key={i}
+          onMouseEnter={() => setHover(i)}
+          onMouseLeave={() => setHover(0)}
+          onClick={() => { onRate(i); setDone(true); }}
+          style={{ color: i <= hover ? "#D9A441" : "#D6D0C2" }}>★</span>
+      ))}
+    </span>
   );
 }
 
 function App() {
+  const [lang, setLang] = useState("ar");
+  const t = STRINGS[lang];
+  const dir = lang === "ar" ? "rtl" : "ltr";
+
   const [list, setList] = useState(null);
   const [query, setQuery] = useState("");
   const [activeCat, setActiveCat] = useState(null);
-  const [activeHood, setActiveHood] = useState("الكل");
+  const [activeHood, setActiveHood] = useState(t.all);
   const [selected, setSelected] = useState(null);
   const [view, setView] = useState("home");
   const [toast, setToast] = useState(null);
@@ -103,9 +158,8 @@ function App() {
   const [pinInput, setPinInput] = useState("");
   const [pinError, setPinError] = useState(false);
 
-  const [formData, setFormData] = useState({
-    name: "", cat: "plumb", otherCat: "", hood: NEIGHBORHOODS[0], exp: "1", phone: "", bio: ""
-  });
+  useEffect(() => { setActiveHood(t.all); }, [lang]);
+  useEffect(() => { document.documentElement.setAttribute("dir", dir); document.documentElement.setAttribute("lang", lang); }, [dir, lang]);
 
   const fetchList = async () => {
     try {
@@ -114,28 +168,27 @@ function App() {
       setList(Array.isArray(data) ? data.map(fromDb) : []);
     } catch (e) {
       setList([]);
-      setToast("تعذّر الاتصال بالخادم");
+      setToast(t.toastFailConnect);
     }
   };
 
   useEffect(() => { fetchList(); }, []);
 
-  const registerCraftsman = async (e) => {
-    e.preventDefault();
+  const registerCraftsman = async (data) => {
     setSaving(true);
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen`, {
         method: "POST",
         headers: { ...SB_HEADERS, Prefer: "return=representation" },
-        body: JSON.stringify(toDb({ ...formData, status: "pending", rating: 0, reviews: 0 })),
+        body: JSON.stringify(toDb({ ...data, status: "pending", rating: 0, reviews: 0 })),
       });
       if (!res.ok) throw new Error("insert failed");
       await fetchList();
       setView("home");
-      setToast("تم إرسال طلبك، سيُنشر بعد المراجعة");
+      setToast(t.toastSubmitted);
       setTimeout(() => setToast(null), 3500);
     } catch (e) {
-      setToast("تعذّر إرسال الطلب، حاول مجدداً");
+      setToast(t.toastFailSubmit);
     }
     setSaving(false);
   };
@@ -146,14 +199,39 @@ function App() {
         method: "PATCH", headers: SB_HEADERS, body: JSON.stringify({ status: "approved" }),
       });
       await fetchList();
-    } catch (e) { setToast("تعذّر التحديث"); }
+    } catch (e) { setToast(t.toastFailConnect); }
   };
 
   const rejectCraftsman = async (id) => {
     try {
       await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${id}`, { method: "DELETE", headers: SB_HEADERS });
       await fetchList();
-    } catch (e) { setToast("تعذّر الحذف"); }
+    } catch (e) { setToast(t.toastFailConnect); }
+  };
+
+  const rateCraftsman = async (craftsman, value) => {
+    const newReviews = (craftsman.reviews || 0) + 1;
+    const newRating = (((craftsman.rating || 0) * (craftsman.reviews || 0)) + value) / newReviews;
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${craftsman.id}`, {
+        method: "PATCH", headers: SB_HEADERS,
+        body: JSON.stringify({ rating: newRating, reviews: newReviews }),
+      });
+      await fetchList();
+      setToast(t.thanksRating);
+      setTimeout(() => setToast(null), 2500);
+    } catch (e) { setToast(t.toastFailConnect); }
+  };
+
+  const shareCraftsman = (c) => {
+    const url = `${window.location.href.split("?")[0]}?craftsman=${c.id}`;
+    if (navigator.share) {
+      navigator.share({ title: c.name, text: craftName(c, lang), url });
+    } else {
+      navigator.clipboard.writeText(url);
+      setToast(t.shareCopied);
+      setTimeout(() => setToast(null), 2000);
+    }
   };
 
   const approved = useMemo(() => (list || []).filter((c) => c.status === "approved"), [list]);
@@ -162,21 +240,27 @@ function App() {
   const filtered = useMemo(() => {
     return approved.filter((c) => {
       const matchCat = activeCat ? c.cat === activeCat : true;
-      const matchHood = activeHood === "الكل" ? true : c.hood === activeHood;
-      const matchQuery = query ? c.name.includes(query) || craftName(c).includes(query) || (c.bio && c.bio.includes(query)) : true;
+      const matchHood = activeHood === t.all ? true : c.hood === activeHood;
+      const matchQuery = query ? c.name.includes(query) || craftName(c, lang).includes(query) || c.bio.includes(query) : true;
       return matchCat && matchHood && matchQuery;
     }).sort((a, b) => (b.rating || 0) - (a.rating || 0));
-  }, [approved, query, activeCat, activeHood]);
+  }, [approved, query, activeCat, activeHood, lang]);
 
   return (
-    <div style={{ minHeight: "100vh" }}>
+    <div style={{ minHeight: "100vh" }} dir={dir}>
       <header className="sticky top-0 z-20 px-4 pt-5 pb-4" style={{ background: "#123B3B" }}>
         <div className="flex items-center justify-between mb-4">
-          <div onClick={() => { setView("home"); setActiveCat(null); }} className="cursor-pointer">
-            <h1 className="text-white font-black text-xl leading-tight">حِرَفِي</h1>
-            <p className="text-[11px]" style={{ color: "#8FBFBF" }}>دليل الحرفيين والمهنيين لمدينة الدحموني</p>
+          <div>
+            <h1 className="text-white font-black text-xl leading-tight">{t.title}</h1>
+            <p className="text-[11px]" style={{ color: "#8FBFBF" }}>{t.subtitle}</p>
           </div>
-          <button onClick={() => setView("admin")} className="w-11 h-11 rounded-full flex items-center justify-center font-black text-white text-sm" style={{ background: "#D9A441" }}>حي</button>
+          <div className="flex items-center gap-2">
+            <button onClick={() => setLang(lang === "ar" ? "en" : "ar")}
+              className="px-2.5 h-9 rounded-full flex items-center justify-center gap-1 text-white text-xs font-bold" style={{ background: "#1B4B4B" }}>
+              🌐 {lang === "ar" ? "EN" : "AR"}
+            </button>
+            <div onClick={() => setView("admin")} className="w-11 h-11 rounded-full flex items-center justify-center text-white text-lg" style={{ background: "#D9A441", cursor: "pointer" }}>⚙️</div>
+          </div>
         </div>
         {(view === "home" || view === "list") && (
           <div className="flex items-center gap-2 rounded-2xl px-3 py-2.5" style={{ background: "#1B4B4B" }}>
@@ -184,38 +268,35 @@ function App() {
             <input
               value={query}
               onChange={(e) => { setQuery(e.target.value); setView("list"); }}
-              placeholder="ابحث عن حرفة، اسم، أو خدمة..."
+              placeholder={t.searchPlaceholder}
               className="bg-transparent outline-none text-sm text-white placeholder-[#8FBFBF] flex-1"
             />
           </div>
         )}
       </header>
 
-      {toast && (
-        <div className="fixed bottom-20 left-4 right-4 bg-[#123B3B] text-white p-3 rounded-xl text-center text-xs font-bold z-50 shadow-lg">
-          {toast}
-        </div>
-      )}
-
       {list === null ? (
         <div className="flex flex-col items-center justify-center py-24 text-stone-400 gap-2">
           <div className="spinner"></div>
-          <span className="text-xs font-bold">جاري التحميل...</span>
+          <span className="text-xs font-bold">{t.loading}</span>
         </div>
       ) : (
         <>
           {view === "home" && (
             <main className="px-4 pb-24">
               <div className="flex gap-2 overflow-x-auto py-4" style={{ scrollbarWidth: "none" }}>
-                {["الكل", ...NEIGHBORHOODS].map((h) => (
-                  <button key={h} onClick={() => setActiveHood(h)} className="whitespace-nowrap text-xs font-bold px-3.5 py-2 rounded-full border transition"
-                    style={activeHood === h ? { background: "#123B3B", color: "white", borderColor: "#123B3B" } : { background: "white", color: "#123B3B", borderColor: "#DCD5C4" }}>
-                    {h}
-                  </button>
-                ))}
+                {[t.all, ...NEIGHBORHOODS.map((h) => h[lang])].map((h, idx) => {
+                  const hoodValue = idx === 0 ? t.all : NEIGHBORHOODS[idx - 1].ar;
+                  return (
+                    <button key={h} onClick={() => setActiveHood(hoodValue)} className="whitespace-nowrap text-xs font-bold px-3.5 py-2 rounded-full border transition"
+                      style={activeHood === hoodValue ? { background: "#123B3B", color: "white", borderColor: "#123B3B" } : { background: "white", color: "#123B3B", borderColor: "#DCD5C4" }}>
+                      {h}
+                    </button>
+                  );
+                })}
               </div>
 
-              <h2 className="font-black text-[#123B3B] text-sm mb-3 mt-2">اختر التصنيف</h2>
+              <h2 className="font-black text-[#123B3B] text-sm mb-3 mt-2">{t.chooseCategory}</h2>
               <div className="grid grid-cols-4 gap-3 mb-6">
                 {CATEGORIES.map((c) => {
                   const count = approved.filter((x) => x.cat === c.id).length;
@@ -225,26 +306,26 @@ function App() {
                         <span style={{ fontSize: 22 }}>{c.icon}</span>
                         {count > 0 && <span className="absolute -top-1.5 -left-1.5 text-[9px] font-black text-white rounded-full w-4 h-4 flex items-center justify-center" style={{ background: c.color }}>{count}</span>}
                       </div>
-                      <span className="text-[11px] font-bold text-[#3A3A3A]">{c.name}</span>
+                      <span className="text-[11px] font-bold text-[#3A3A3A]">{c.name[lang]}</span>
                     </button>
                   );
                 })}
               </div>
 
               <button onClick={() => setView("register")} className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-white text-sm mb-6" style={{ background: "#D9A441" }}>
-                <span>+</span> سجّل كحرفي في المنصة
+                <span>+</span> {t.registerCta}
               </button>
 
               <div className="flex items-center justify-between mb-3">
-                <h2 className="font-black text-[#123B3B] text-sm">الأعلى تقييماً</h2>
-                <button onClick={() => setView("list")} className="text-[11px] font-bold" style={{ color: "#D9A441" }}>عرض الكل ←</button>
+                <h2 className="font-black text-[#123B3B] text-sm">{t.topRated}</h2>
+                <button onClick={() => setView("list")} className="text-[11px] font-bold" style={{ color: "#D9A441" }}>{t.viewAll}</button>
               </div>
               <div className="space-y-3">
                 {approved.length === 0 ? (
-                  <p className="text-center text-xs text-stone-400 py-6">لا يوجد حرفيون بعد — كن أول من يسجّل</p>
+                  <p className="text-center text-xs text-stone-400 py-6">{t.noCraftsmenYet}</p>
                 ) : (
                   [...approved].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 3).map((c) => (
-                    <CraftCard key={c.id} c={c} cat={catInfo(c.cat)} onClick={() => setSelected(c)} />
+                    <CraftCard key={c.id} c={c} cat={catInfo(c.cat)} lang={lang} t={t} onClick={() => setSelected(c)} />
                   ))
                 )}
               </div>
@@ -253,147 +334,213 @@ function App() {
 
           {view === "list" && (
             <main className="px-4 pb-24 pt-4">
-              <div className="flex items-center justify-between mb-4">
-                <button onClick={() => { setView("home"); setActiveCat(null); }} className="text-xs font-bold text-[#123B3B]">← العودة للرئيسية</button>
-                {activeCat && <span className="text-xs font-bold text-stone-500">التصنيف: {catInfo(activeCat).name}</span>}
+              <div className="flex items-center gap-2 mb-4">
+                <button onClick={() => { setView("home"); setActiveCat(null); setQuery(""); }} className="text-[#123B3B]">{dir === "rtl" ? "←" : "→"}</button>
+                <h2 className="font-black text-[#123B3B] text-base flex-1">
+                  {activeCat ? catInfo(activeCat).name[lang] : t.navSearch}
+                  <span className="text-xs font-normal text-stone-500"> ({filtered.length})</span>
+                </h2>
               </div>
-              <div className="space-y-3">
-                {filtered.length === 0 ? (
-                  <p className="text-center text-xs text-stone-400 py-12">لا توجد نتائج مطابقة لبحثك</p>
-                ) : (
-                  filtered.map((c) => (
-                    <CraftCard key={c.id} c={c} cat={catInfo(c.cat)} onClick={() => setSelected(c)} />
-                  ))
-                )}
-              </div>
-            </main>
-          )}
 
-          {view === "register" && (
-            <main className="px-4 pb-24 pt-4">
-              <button onClick={() => setView("home")} className="text-xs font-bold text-[#123B3B] mb-4">← العودة للرئيسية</button>
-              <div className="bg-white p-5 rounded-2xl shadow-sm border border-[#EBE6DA]">
-                <h2 className="font-black text-[#123B3B] text-lg mb-4">تسجيل حرفي جديد</h2>
-                <form onSubmit={registerCraftsman} className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-bold text-stone-600 mb-1">الاسم الكامل</label>
-                    <input required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full border p-2.5 rounded-xl text-sm outline-none" placeholder="مثال: أحمد محمد" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-stone-600 mb-1">الحرفة</label>
-                    <select value={formData.cat} onChange={(e) => setFormData({...formData, cat: e.target.value})} className="w-full border p-2.5 rounded-xl text-sm outline-none bg-white">
-                      {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                    </select>
-                  </div>
-                  {formData.cat === "other" && (
-                    <div>
-                      <label className="block text-xs font-bold text-stone-600 mb-1">حدد الحرفة</label>
-                      <input required value={formData.otherCat} onChange={(e) => setFormData({...formData, otherCat: e.target.value})} className="w-full border p-2.5 rounded-xl text-sm outline-none" placeholder="اكتب مجال عملك" />
-                    </div>
-                  )}
-                  <div>
-                    <label className="block text-xs font-bold text-stone-600 mb-1">الحي</label>
-                    <select value={formData.hood} onChange={(e) => setFormData({...formData, hood: e.target.value})} className="w-full border p-2.5 rounded-xl text-sm outline-none bg-white">
-                      {NEIGHBORHOODS.map(h => <option key={h} value={h}>{h}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-stone-600 mb-1">سنوات الخبرة</label>
-                    <input type="number" min="0" required value={formData.exp} onChange={(e) => setFormData({...formData, exp: e.target.value})} className="w-full border p-2.5 rounded-xl text-sm outline-none" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-stone-600 mb-1">رقم الهاتف</label>
-                    <input type="tel" required value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full border p-2.5 rounded-xl text-sm outline-none" placeholder="06XXXXXXXX" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-stone-600 mb-1">نبذة عن الخدمات</label>
-                    <textarea value={formData.bio} onChange={(e) => setFormData({...formData, bio: e.target.value})} className="w-full border p-2.5 rounded-xl text-sm outline-none h-20" placeholder="اشرح باختصار الخدمات التي تقدمها..."></textarea>
-                  </div>
-                  <button type="submit" disabled={saving} className="w-full py-3 rounded-xl font-bold text-white bg-[#123B3B] text-sm">
-                    {saving ? "جاري الإرسال..." : "إرسال طلب التسجيل"}
+              <div className="flex gap-2 overflow-x-auto pb-3" style={{ scrollbarWidth: "none" }}>
+                <button onClick={() => setActiveCat(null)} className="whitespace-nowrap text-[11px] font-bold px-3 py-1.5 rounded-full border"
+                  style={!activeCat ? { background: "#123B3B", color: "white", borderColor: "#123B3B" } : { background: "white", color: "#123B3B", borderColor: "#DCD5C4" }}>
+                  {t.allCrafts}
+                </button>
+                {CATEGORIES.map((c) => (
+                  <button key={c.id} onClick={() => setActiveCat(c.id)} className="whitespace-nowrap text-[11px] font-bold px-3 py-1.5 rounded-full border"
+                    style={activeCat === c.id ? { background: c.color, color: "white", borderColor: c.color } : { background: "white", color: "#123B3B", borderColor: "#DCD5C4" }}>
+                    {c.name[lang]}
                   </button>
-                </form>
+                ))}
               </div>
-            </main>
-          )}
 
-          {view === "admin" && (
-            <main className="px-4 pb-24 pt-4">
-              <button onClick={() => setView("home")} className="text-xs font-bold text-[#123B3B] mb-4">← العودة للرئيسية</button>
-              {!adminUnlocked ? (
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-[#EBE6DA] text-center max-w-xs mx-auto">
-                  <h3 className="font-bold text-[#123B3B] mb-3">دخول لوحة التحكم</h3>
-                  <input
-                    type="password"
-                    placeholder="رمز PIN"
-                    value={pinInput}
-                    onChange={(e) => setPinInput(e.target.value)}
-                    className="w-full border p-2.5 rounded-xl text-center mb-3 text-sm outline-none"
-                  />
-                  {pinError && <p className="text-red-500 text-xs mb-2">رمز PIN غير صحيح</p>}
-                  <button
-                    onClick={() => {
-                      if (pinInput === ADMIN_PIN) { setAdminUnlocked(true); setPinError(false); }
-                      else { setPinError(true); }
-                    }}
-                    className="w-full py-2.5 rounded-xl bg-[#123B3B] text-white text-xs font-bold"
-                  >
-                    تأكيد
-                  </button>
+              {filtered.length === 0 ? (
+                <div className="text-center py-16 text-stone-400">
+                  <div style={{ fontSize: 32 }} className="mb-3">🗂️</div>
+                  <p className="text-sm font-bold">{t.noResults}</p>
+                  <p className="text-xs mt-1">{t.tryOther}</p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  <h2 className="font-black text-[#123B3B] text-base">الطلبات المعلقة ({pending.length})</h2>
-                  {pending.length === 0 ? (
-                    <p className="text-xs text-stone-400">لا توجد طلبات معلقة</p>
-                  ) : (
-                    pending.map((c) => (
-                      <div key={c.id} className="bg-white p-4 rounded-xl border border-[#EBE6DA] space-y-2">
-                        <div className="flex justify-between items-center">
-                          <h4 className="font-bold text-sm text-[#123B3B]">{c.name}</h4>
-                          <span className="text-xs font-bold text-stone-500">{craftName(c)}</span>
-                        </div>
-                        <p className="text-xs text-stone-600">📞 {c.phone} | 📍 {c.hood}</p>
-                        <p className="text-xs text-stone-500">{c.bio}</p>
-                        <div className="flex gap-2 pt-2">
-                          <button onClick={() => approveCraftsman(c.id)} className="flex-1 py-1.5 bg-green-600 text-white rounded-lg text-xs font-bold">قبول</button>
-                          <button onClick={() => rejectCraftsman(c.id)} className="flex-1 py-1.5 bg-red-600 text-white rounded-lg text-xs font-bold">رفض</button>
-                        </div>
-                      </div>
-                    ))
-                  )}
+                <div className="space-y-3">
+                  {filtered.map((c) => <CraftCard key={c.id} c={c} cat={catInfo(c.cat)} lang={lang} t={t} onClick={() => setSelected(c)} />)}
                 </div>
               )}
             </main>
           )}
 
-          {selected && (
-            <div className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center" onClick={() => setSelected(null)}>
-              <div className="bg-white w-full max-w-md rounded-t-3xl p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-black text-[#123B3B] text-lg">{selected.name}</h3>
-                    <p className="text-xs font-bold text-stone-500">{craftName(selected)} — خبرة {selected.exp} سنوات</p>
-                  </div>
-                  <button onClick={() => setSelected(null)} className="text-stone-400 font-bold text-lg">✕</button>
+          {view === "register" && (
+            <RegisterForm onBack={() => setView("home")} onSubmit={registerCraftsman} saving={saving} t={t} lang={lang} />
+          )}
+
+          {view === "admin" && (
+            <main className="px-4 pb-24 pt-4">
+              <h2 className="font-black text-[#123B3B] text-base mb-4">{t.adminTitle}</h2>
+              {!adminUnlocked ? (
+                <div className="bg-white rounded-2xl p-5 border" style={{ borderColor: "#E6E0D2" }}>
+                  <p className="text-xs text-stone-500 font-bold mb-3">{t.adminPinPrompt}</p>
+                  <input value={pinInput} onChange={(e) => { setPinInput(e.target.value); setPinError(false); }} type="password"
+                    className="w-full border rounded-xl px-3 py-2.5 text-sm mb-2 outline-none"
+                    style={{ borderColor: pinError ? "#C0392B" : "#DCD5C4" }} placeholder={t.adminPinPlaceholder} />
+                  {pinError && <p className="text-[11px] text-red-600 font-bold mb-2">{t.adminPinWrong}</p>}
+                  <button onClick={() => pinInput === ADMIN_PIN ? setAdminUnlocked(true) : setPinError(true)}
+                    className="w-full py-2.5 rounded-xl font-bold text-white text-sm" style={{ background: "#123B3B" }}>{t.adminLogin}</button>
                 </div>
-                <div className="text-xs text-stone-600 space-y-1">
-                  <p>📍 المنطقة: {selected.hood}</p>
-                  <p>📝 الوصف: {selected.bio || "لا يوجد وصف متوفر"}</p>
+              ) : pending.length === 0 ? (
+                <p className="text-center text-xs text-stone-400 py-10">{t.adminNoPending}</p>
+              ) : (
+                <div className="space-y-3">
+                  {pending.map((c) => (
+                    <div key={c.id} className="bg-white rounded-2xl p-4 border" style={{ borderColor: "#E6E0D2" }}>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-black text-[#123B3B] text-sm">{c.name}</span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "#D9A44122", color: "#B8842E" }}>🕐 {t.pendingLabel}</span>
+                      </div>
+                      <p className="text-[11px] text-stone-500 mb-1">{craftName(c, lang)} · {hoodName(c.hood, lang)} · {c.exp} {t.yearsExp}</p>
+                      <p className="text-xs text-stone-600 mb-1">{c.bio}</p>
+                      <p className="text-[11px] font-mono text-stone-500 mb-3" dir="ltr">{c.phone}</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button onClick={() => approveCraftsman(c.id)} className="py-2 rounded-xl font-bold text-white text-xs" style={{ background: "#3DAA5C" }}>✅ {t.approveBtn}</button>
+                        <button onClick={() => rejectCraftsman(c.id)} className="py-2 rounded-xl font-bold text-xs border" style={{ borderColor: "#DCD5C4", color: "#8A8375" }}>{t.rejectBtn}</button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <a href={`tel:${selected.phone}`} className="block w-full py-3 rounded-xl bg-green-600 text-white text-center font-bold text-sm">
-                  📞 اتصال بالرقم ({selected.phone})
-                </a>
-              </div>
-            </div>
+              )}
+            </main>
           )}
         </>
+      )}
+
+      <nav className="fixed bottom-0 inset-x-0 bg-white border-t flex justify-around py-2.5" style={{ borderColor: "#E6E0D2" }}>
+        <button onClick={() => setView("home")} className="flex flex-col items-center gap-0.5">
+          <span style={{ fontSize: 18, opacity: view === "home" ? 1 : 0.4 }}>🏠</span>
+          <span className="text-[10px] font-bold" style={{ color: view === "home" ? "#123B3B" : "#B0A996" }}>{t.navHome}</span>
+        </button>
+        <button onClick={() => setView("list")} className="flex flex-col items-center gap-0.5">
+          <span style={{ fontSize: 18, opacity: view === "list" ? 1 : 0.4 }}>🔍</span>
+          <span className="text-[10px] font-bold" style={{ color: view === "list" ? "#123B3B" : "#B0A996" }}>{t.navSearch}</span>
+        </button>
+        <button onClick={() => setView("register")} className="flex flex-col items-center gap-0.5">
+          <span style={{ fontSize: 18, opacity: view === "register" ? 1 : 0.4 }}>➕</span>
+          <span className="text-[10px] font-bold" style={{ color: view === "register" ? "#123B3B" : "#B0A996" }}>{t.navRegister}</span>
+        </button>
+      </nav>
+
+      {toast && (
+        <div className="fixed bottom-20 inset-x-4 z-40 bg-[#123B3B] text-white text-xs font-bold rounded-xl px-4 py-3 text-center shadow-lg">{toast}</div>
+      )}
+
+      {selected && (
+        <div className="fixed inset-0 z-30 flex items-end justify-center" style={{ background: "rgba(18,30,30,0.5)" }} onClick={() => setSelected(null)}>
+          <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-t-3xl w-full max-w-md p-5 relative">
+            <button onClick={() => setSelected(null)} className="absolute left-4 top-4 text-stone-400 text-lg">✕</button>
+            <div className="flex items-start gap-3 mb-4">
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0" style={{ background: catInfo(selected.cat).color + "1A" }}>
+                <span style={{ fontSize: 28 }}>{catInfo(selected.cat).icon}</span>
+              </div>
+              <div className="flex-1">
+                <h3 className="font-black text-[#123B3B] text-base">{selected.name}</h3>
+                <p className="text-xs text-stone-500 font-bold">{craftName(selected, lang)} · {selected.exp} {t.yearsExp}</p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <Stars value={selected.rating} />
+                  <span className="text-xs font-bold text-stone-600">{selected.rating ? selected.rating.toFixed(1) : t.newLabel} {selected.reviews ? `(${selected.reviews} ${t.reviewsLabel})` : ""}</span>
+                </div>
+              </div>
+              <button onClick={() => shareCraftsman(selected)} className="text-lg" title={t.shareBtn}>🔗</button>
+            </div>
+            <div className="flex items-center gap-1.5 text-xs text-stone-500 mb-3"><span>📍</span><span>{hoodName(selected.hood, lang)}</span></div>
+            <p className="text-sm text-stone-700 leading-relaxed mb-4" style={{ background: "#F5F2EA", padding: "10px 12px", borderRadius: 12 }}>{selected.bio}</p>
+
+            <div className="flex items-center justify-between mb-4 px-1">
+              <span className="text-xs font-bold text-stone-500">{t.rateThis}</span>
+              <RatingInput onRate={(v) => rateCraftsman(selected, v)} />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <a href={`tel:${selected.phone}`} className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-white text-sm" style={{ background: "#123B3B" }}>📞 {t.call}</a>
+              <a href={`https://wa.me/213${selected.phone.slice(1)}`} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-white text-sm" style={{ background: "#3DAA5C" }}>💬 {t.whatsapp}</a>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+function RegisterForm({ onBack, onSubmit, saving, t, lang }) {
+  const [form, setForm] = useState({ name: "", cat: "plumb", otherCat: "", hood: NEIGHBORHOODS[0].ar, exp: "", phone: "", bio: "" });
+  const [error, setError] = useState("");
+  const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+
+  const submit = () => {
+    if (!form.name.trim() || !form.phone.trim() || !form.bio.trim()) { setError(t.requiredError); return; }
+    if (form.cat === "other" && !form.otherCat.trim()) { setError(t.otherCraftError); return; }
+    if (!/^0[5-7][0-9]{8}$/.test(form.phone.trim())) { setError(t.phoneError); return; }
+    setError("");
+    onSubmit({ ...form, otherCat: form.otherCat.trim(), phone: form.phone.trim(), exp: Number(form.exp) || 0 });
+  };
+
+  return (
+    <main className="px-4 pb-24 pt-4">
+      <div className="flex items-center gap-2 mb-5">
+        <button onClick={onBack} className="text-[#123B3B]">{lang === "ar" ? "←" : "→"}</button>
+        <h2 className="font-black text-[#123B3B] text-base">{t.registerTitle}</h2>
+      </div>
+      <div className="space-y-4">
+        <Field label={t.fullName}><input value={form.name} onChange={(e) => update("name", e.target.value)} className="ipt" /></Field>
+        <Field label={t.craft}>
+          <select value={form.cat} onChange={(e) => update("cat", e.target.value)} className="ipt">
+            {CATEGORIES.map((c) => <option key={c.id} value={c.id}>{c.name[lang]}</option>)}
+          </select>
+        </Field>
+        {form.cat === "other" && (
+          <Field label={t.otherCraft}><input value={form.otherCat} onChange={(e) => update("otherCat", e.target.value)} className="ipt" /></Field>
+        )}
+        <Field label={t.neighborhood}>
+          <select value={form.hood} onChange={(e) => update("hood", e.target.value)} className="ipt">
+            {NEIGHBORHOODS.map((h) => <option key={h.ar} value={h.ar}>{h[lang]}</option>)}
+          </select>
+        </Field>
+        <Field label={t.experience}><input value={form.exp} onChange={(e) => update("exp", e.target.value.replace(/\D/g, ""))} className="ipt" inputMode="numeric" /></Field>
+        <Field label={t.phone}><input value={form.phone} onChange={(e) => update("phone", e.target.value.replace(/\D/g, ""))} className="ipt" placeholder="0550123456" dir="ltr" inputMode="numeric" /></Field>
+        <Field label={t.bio}><textarea value={form.bio} onChange={(e) => update("bio", e.target.value)} className="ipt" rows="3"></textarea></Field>
+        {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
+        <button onClick={submit} disabled={saving} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2" style={{ background: "#D9A441", opacity: saving ? 0.7 : 1 }}>
+          {saving ? t.submitting : t.submitBtn}
+        </button>
+        <p className="text-[11px] text-stone-400 text-center leading-relaxed">{t.reviewNote}</p>
+      </div>
+      <style>{`.ipt { width: 100%; border: 1.5px solid #DCD5C4; border-radius: 14px; padding: 11px 14px; font-size: 14px; outline: none; background: white; font-family: inherit; } .ipt:focus { border-color: #123B3B; }`}</style>
+    </main>
+  );
+}
+
+function Field({ label, children }) {
+  return (<div><label className="text-xs font-bold text-[#123B3B] mb-1.5 block">{label}</label>{children}</div>);
+}
+
+function CraftCard({ c, cat, lang, t, onClick }) {
+  return (
+    <button onClick={onClick} className="w-full bg-white rounded-2xl p-3.5 flex items-center gap-3 text-start shadow-sm border" style={{ borderColor: "#E6E0D2" }}>
+      <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: cat.color + "1A" }}>
+        <span style={{ fontSize: 20 }}>{cat.icon}</span>
+      </div>
+      <div className="flex-1 min-w-0">
+        <span className="font-black text-[#123B3B] text-sm truncate block">{c.name}</span>
+        <p className="text-[11px] text-stone-500 truncate">{craftName(c, lang)} · {hoodName(c.hood, lang)}</p>
+        <div className="flex items-center gap-1 mt-0.5">
+          <Stars value={c.rating} />
+          <span className="text-[10px] text-stone-400">{c.reviews ? `(${c.reviews})` : t.newLabel}</span>
+        </div>
+      </div>
+      <span className="text-stone-300">‹</span>
+    </button>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
 </script>
 </body>
 </html>
