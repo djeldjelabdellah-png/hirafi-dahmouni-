@@ -1,0 +1,21 @@
+name: Telegram Registration Notification
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Telegram Notification
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            👤 **مسجل/طلب جديد على المنصة!**
+
+            📌 **العنوان:** ${{ github.event.issue.title }}
+            👤 **بواسطة:** ${{ github.event.issue.user.login }}
+            🔗 **الرابط:** ${{ github.event.issue.html_url }}
