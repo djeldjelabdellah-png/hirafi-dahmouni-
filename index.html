@@ -14,6 +14,9 @@
   body { font-family: 'Tajawal', sans-serif; background:#F5F2EA; margin:0; }
   .spinner { border: 3px solid #DCD5C4; border-top-color: #123B3B; border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
+  /* إخفاء شريط التمرير لمعرض الصور مع الإبقاء على إمكانية السحب */
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
+  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
 </head>
 <body>
@@ -30,8 +33,7 @@ const SB_HEADERS = {
 };
 const ADMIN_PIN = "1234";
 
-// مفاتيح التلغرام الخاصة بك
-const TELEGRAM_TOKEN = "8610113650:AAHoX6Za..."; // ضع التوكن الكامل هنا
+const TELEGRAM_TOKEN = "8610113650:AAHoX6Zan8q7q7Y7J0WTXBDP9klNCTppa2U";
 const TELEGRAM_CHAT_ID = "1109544250";
 
 const CATEGORIES = [
@@ -68,15 +70,16 @@ const STRINGS = {
     registerTitle: "تسجيل حرفي جديد", fullName: "الاسم الكامل", craft: "الحرفة / التخصص",
     otherCraft: "اكتب اسم الحرفة", neighborhood: "الحي / المنطقة", experience: "سنوات الخبرة",
     phone: "رقم الهاتف", bio: "نبذة عن الخدمات المقدمة", submitBtn: "إرسال للمراجعة",
-    submitting: "جاري الإرسال...", reviewNote: "سيُراجع طلبك من طرف الإدارة قبل ظهوره في المنصة، عادة خلال 24 ساعة",
+    submitting: "جاري الإرسال...", uploadingImages: "جاري رفع الصور...", chooseImages: "صور الأعمال (اختياري)",
+    galleryNote: "يمكنك تحديد أكثر من صورة معاً", galleryTitle: "معرض الأعمال",
+    reviewNote: "سيُراجع طلبك من طرف الإدارة قبل ظهوره في المنصة، عادة خلال 24 ساعة",
     requiredError: "الرجاء تعبئة الاسم ورقم الهاتف والوصف", otherCraftError: "الرجاء كتابة اسم الحرفة",
     phoneError: "رقم الهاتف غير صحيح (مثال: 0550123456)", toastSubmitted: "تم إرسال طلبك، سيُنشر بعد المراجعة",
     toastFailSubmit: "تعذّر إرسال الطلب، حاول مجدداً", toastFailConnect: "تعذّر الاتصال بالخادم",
     adminTitle: "لوحة المراجعة", adminPinPrompt: "أدخل رمز الإدارة للمتابعة", adminPinPlaceholder: "الرمز السري",
     adminPinWrong: "رمز خاطئ", adminLogin: "دخول", adminNoPending: "لا توجد طلبات بانتظار المراجعة",
     pendingLabel: "قيد المراجعة", approveBtn: "قبول ونشر", rejectBtn: "رفض", all: "الكل",
-    rateThis: "قيّم هذا الحرفي", thanksRating: "شكراً لتقييمك!", shareBtn: "مشاركة",
-    shareCopied: "تم نسخ الرابط",
+    rateThis: "قيّم هذا الحرفي", thanksRating: "شكراً لتقييمك!", shareBtn: "مشاركة", shareCopied: "تم نسخ الرابط",
   },
   en: {
     title: "Hirafi", subtitle: "Craftsmen & Tradespeople Directory — Dahmouni",
@@ -89,15 +92,16 @@ const STRINGS = {
     registerTitle: "New Craftsman Registration", fullName: "Full name", craft: "Trade / Specialty",
     otherCraft: "Type your trade", neighborhood: "Neighborhood", experience: "Years of experience",
     phone: "Phone number", bio: "Brief description of services", submitBtn: "Submit for review",
-    submitting: "Submitting...", reviewNote: "Your request will be reviewed by an admin before publishing, usually within 24 hours",
+    submitting: "Submitting...", uploadingImages: "Uploading images...", chooseImages: "Portfolio images (Optional)",
+    galleryNote: "You can select multiple images", galleryTitle: "Portfolio",
+    reviewNote: "Your request will be reviewed by an admin before publishing, usually within 24 hours",
     requiredError: "Please fill in name, phone and description", otherCraftError: "Please type your trade name",
     phoneError: "Invalid phone number (e.g. 0550123456)", toastSubmitted: "Your request was submitted for review",
     toastFailSubmit: "Failed to submit, try again", toastFailConnect: "Could not connect to server",
     adminTitle: "Review Panel", adminPinPrompt: "Enter admin code to continue", adminPinPlaceholder: "Secret code",
     adminPinWrong: "Wrong code", adminLogin: "Enter", adminNoPending: "No pending requests",
     pendingLabel: "Pending review", approveBtn: "Approve & publish", rejectBtn: "Reject", all: "All",
-    rateThis: "Rate this craftsman", thanksRating: "Thanks for rating!", shareBtn: "Share",
-    shareCopied: "Link copied",
+    rateThis: "Rate this craftsman", thanksRating: "Thanks for rating!", shareBtn: "Share", shareCopied: "Link copied",
   },
 };
 
@@ -108,14 +112,16 @@ const hoodName = (hoodAr, lang) => {
   return h ? h[lang] : hoodAr;
 };
 
+// تحديث دوال قاعدة البيانات لتشمل روابط الصور
 const toDb = (c) => ({
   name: c.name, cat: c.cat, other_cat: c.otherCat || null, hood: c.hood,
   exp: c.exp, phone: c.phone, bio: c.bio, status: c.status || "pending",
-  rating: c.rating || 0, reviews: c.reviews || 0,
+  rating: c.rating || 0, reviews: c.reviews || 0, gallery_urls: c.galleryUrls || []
 });
 const fromDb = (r) => ({
   id: r.id, name: r.name, cat: r.cat, otherCat: r.other_cat, hood: r.hood,
-  exp: r.exp, phone: r.phone, bio: r.bio, status: r.status, rating: r.rating, reviews: r.reviews,
+  exp: r.exp, phone: r.phone, bio: r.bio, status: r.status, rating: r.rating, 
+  reviews: r.reviews, galleryUrls: r.gallery_urls || []
 });
 
 function Stars({ value }) {
@@ -158,6 +164,7 @@ function App() {
   const [view, setView] = useState("home");
   const [toast, setToast] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [uploadingText, setUploadingText] = useState("");
   const [adminUnlocked, setAdminUnlocked] = useState(false);
   const [pinInput, setPinInput] = useState("");
   const [pinError, setPinError] = useState(false);
@@ -180,38 +187,61 @@ function App() {
 
   const registerCraftsman = async (data) => {
     setSaving(true);
+    let uploadedUrls = [];
+    
     try {
+      // 1. رفع الصور إذا وجدت
+      if (data.files && data.files.length > 0) {
+        setUploadingText(t.uploadingImages);
+        for (const file of data.files) {
+          // توليد اسم عشوائي آمن لتجنب مشكلة الرموز العربية في أسماء الملفات
+          const ext = file.name.split('.').pop();
+          const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
+          
+          const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/craftsmen-gallery/${fileName}`, {
+            method: 'POST',
+            headers: {
+              apikey: SUPABASE_KEY,
+              Authorization: `Bearer ${SUPABASE_KEY}`,
+              'Content-Type': file.type
+            },
+            body: file
+          });
+          
+          if (uploadRes.ok) {
+            uploadedUrls.push(`${SUPABASE_URL}/storage/v1/object/public/craftsmen-gallery/${fileName}`);
+          }
+        }
+        setUploadingText("");
+      }
+
+      // 2. إدخال البيانات في قاعدة البيانات
       const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen`, {
         method: "POST",
         headers: { ...SB_HEADERS, Prefer: "return=representation" },
-        body: JSON.stringify(toDb({ ...data, status: "pending", rating: 0, reviews: 0 })),
+        body: JSON.stringify(toDb({ ...data, galleryUrls: uploadedUrls, status: "pending", rating: 0, reviews: 0 })),
       });
       if (!res.ok) throw new Error("insert failed");
 
-      // إرسال الإشعار الفوري إلى تلغرام
+      // 3. إرسال الإشعار الفوري إلى تلغرام
       try {
         const selectedCat = CATEGORIES.find(c => c.id === data.cat);
         const craftTitle = data.cat === "other" ? data.otherCat : (selectedCat ? selectedCat.name.ar : data.cat);
+        const imagesNote = uploadedUrls.length > 0 ? `\n📸 **مرفق:** ${uploadedUrls.length} صور للأعمال` : "";
         const telegramMessage = `🛠 **تسجيل حرفي جديد على المنصة!**\n\n` +
                                 `👤 **الاسم الكامل:** ${data.name}\n` +
                                 `📞 **رقم الهاتف:** ${data.phone}\n` +
                                 `🧰 **الحرفة:** ${craftTitle}\n` +
                                 `📍 **المنطقة/الحي:** ${data.hood}\n` +
                                 `⭐ **خبرة:** ${data.exp} سنوات\n` +
-                                `📝 **الوصف:** ${data.bio}`;
+                                `📝 **الوصف:** ${data.bio}` + imagesNote;
 
         fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            chat_id: TELEGRAM_CHAT_ID,
-            text: telegramMessage,
-            parse_mode: "Markdown"
-          })
+          body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: telegramMessage, parse_mode: "Markdown" })
         });
-      } catch (tgError) {
-        console.error("Telegram notification failed:", tgError);
-      }
+      } catch (tgError) { console.error("Telegram notification failed:", tgError); }
 
       await fetchList();
       setView("home");
@@ -219,6 +249,7 @@ function App() {
       setTimeout(() => setToast(null), 3500);
     } catch (e) {
       setToast(t.toastFailSubmit);
+      setUploadingText("");
     }
     setSaving(false);
   };
@@ -314,7 +345,7 @@ function App() {
         <>
           {view === "home" && (
             <main className="px-4 pb-24">
-              <div className="flex gap-2 overflow-x-auto py-4" style={{ scrollbarWidth: "none" }}>
+              <div className="flex gap-2 overflow-x-auto py-4 hide-scrollbar">
                 {[t.all, ...NEIGHBORHOODS.map((h) => h[lang])].map((h, idx) => {
                   const hoodValue = idx === 0 ? t.all : NEIGHBORHOODS[idx - 1].ar;
                   return (
@@ -372,7 +403,7 @@ function App() {
                 </h2>
               </div>
 
-              <div className="flex gap-2 overflow-x-auto pb-3" style={{ scrollbarWidth: "none" }}>
+              <div className="flex gap-2 overflow-x-auto pb-3 hide-scrollbar">
                 <button onClick={() => setActiveCat(null)} className="whitespace-nowrap text-[11px] font-bold px-3 py-1.5 rounded-full border"
                   style={!activeCat ? { background: "#123B3B", color: "white", borderColor: "#123B3B" } : { background: "white", color: "#123B3B", borderColor: "#DCD5C4" }}>
                   {t.allCrafts}
@@ -400,7 +431,7 @@ function App() {
           )}
 
           {view === "register" && (
-            <RegisterForm onBack={() => setView("home")} onSubmit={registerCraftsman} saving={saving} t={t} lang={lang} />
+            <RegisterForm onBack={() => setView("home")} onSubmit={registerCraftsman} saving={saving} uploadingText={uploadingText} t={t} lang={lang} />
           )}
 
           {view === "admin" && (
@@ -429,6 +460,18 @@ function App() {
                       <p className="text-[11px] text-stone-500 mb-1">{craftName(c, lang)} · {hoodName(c.hood, lang)} · {c.exp} {t.yearsExp}</p>
                       <p className="text-xs text-stone-600 mb-1">{c.bio}</p>
                       <p className="text-[11px] font-mono text-stone-500 mb-3" dir="ltr">{c.phone}</p>
+                      
+                      {/* معاينة صور الأعمال في لوحة الإدارة */}
+                      {c.galleryUrls && c.galleryUrls.length > 0 && (
+                        <div className="flex gap-2 overflow-x-auto pb-2 mb-3 hide-scrollbar">
+                          {c.galleryUrls.map((url, i) => (
+                            <a key={i} href={url} target="_blank" rel="noreferrer">
+                              <img src={url} className="w-12 h-12 rounded object-cover border border-stone-200 shrink-0" alt="عمل" />
+                            </a>
+                          ))}
+                        </div>
+                      )}
+
                       <div className="grid grid-cols-2 gap-2">
                         <button onClick={() => approveCraftsman(c.id)} className="py-2 rounded-xl font-bold text-white text-xs" style={{ background: "#3DAA5C" }}>✅ {t.approveBtn}</button>
                         <button onClick={() => rejectCraftsman(c.id)} className="py-2 rounded-xl font-bold text-xs border" style={{ borderColor: "#DCD5C4", color: "#8A8375" }}>{t.rejectBtn}</button>
@@ -463,7 +506,7 @@ function App() {
 
       {selected && (
         <div className="fixed inset-0 z-30 flex items-end justify-center" style={{ background: "rgba(18,30,30,0.5)" }} onClick={() => setSelected(null)}>
-          <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-t-3xl w-full max-w-md p-5 relative">
+          <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-t-3xl w-full max-w-md p-5 relative max-h-[90vh] overflow-y-auto hide-scrollbar">
             <button onClick={() => setSelected(null)} className="absolute left-4 top-4 text-stone-400 text-lg">✕</button>
             <div className="flex items-start gap-3 mb-4">
               <div className="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0" style={{ background: catInfo(selected.cat).color + "1A" }}>
@@ -482,6 +525,20 @@ function App() {
             <div className="flex items-center gap-1.5 text-xs text-stone-500 mb-3"><span>📍</span><span>{hoodName(selected.hood, lang)}</span></div>
             <p className="text-sm text-stone-700 leading-relaxed mb-4" style={{ background: "#F5F2EA", padding: "10px 12px", borderRadius: 12 }}>{selected.bio}</p>
 
+            {/* عرض معرض الصور في الملف الشخصي */}
+            {selected.galleryUrls && selected.galleryUrls.length > 0 && (
+              <div className="mb-5">
+                <h4 className="text-xs font-bold text-stone-500 mb-2">{t.galleryTitle}</h4>
+                <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
+                  {selected.galleryUrls.map((url, i) => (
+                    <a key={i} href={url} target="_blank" rel="noreferrer" className="shrink-0">
+                      <img src={url} alt={`عمل ${i + 1}`} className="w-24 h-24 object-cover rounded-xl border border-stone-200" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="flex items-center justify-between mb-4 px-1">
               <span className="text-xs font-bold text-stone-500">{t.rateThis}</span>
               <RatingInput onRate={(v) => rateCraftsman(selected, v)} />
@@ -498,8 +555,9 @@ function App() {
   );
 }
 
-function RegisterForm({ onBack, onSubmit, saving, t, lang }) {
+function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
   const [form, setForm] = useState({ name: "", cat: "plumb", otherCat: "", hood: NEIGHBORHOODS[0].ar, exp: "", phone: "", bio: "" });
+  const [files, setFiles] = useState([]);
   const [error, setError] = useState("");
   const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -508,7 +566,7 @@ function RegisterForm({ onBack, onSubmit, saving, t, lang }) {
     if (form.cat === "other" && !form.otherCat.trim()) { setError(t.otherCraftError); return; }
     if (!/^0[5-7][0-9]{8}$/.test(form.phone.trim())) { setError(t.phoneError); return; }
     setError("");
-    onSubmit({ ...form, otherCat: form.otherCat.trim(), phone: form.phone.trim(), exp: Number(form.exp) || 0 });
+    onSubmit({ ...form, otherCat: form.otherCat.trim(), phone: form.phone.trim(), exp: Number(form.exp) || 0, files });
   };
 
   return (
@@ -534,10 +592,25 @@ function RegisterForm({ onBack, onSubmit, saving, t, lang }) {
         </Field>
         <Field label={t.experience}><input value={form.exp} onChange={(e) => update("exp", e.target.value.replace(/\D/g, ""))} className="ipt" inputMode="numeric" /></Field>
         <Field label={t.phone}><input value={form.phone} onChange={(e) => update("phone", e.target.value.replace(/\D/g, ""))} className="ipt" placeholder="0550123456" dir="ltr" inputMode="numeric" /></Field>
+        
+        {/* حقل رفع صور معرض الأعمال الجديد */}
+        <Field label={t.chooseImages}>
+          <input 
+            type="file" 
+            accept="image/*" 
+            multiple 
+            onChange={(e) => setFiles(Array.from(e.target.files))} 
+            className="ipt bg-white" 
+            style={{ padding: "8px 12px" }} 
+          />
+          <small className="text-[10px] text-stone-500 mt-1 block font-bold">{t.galleryNote}</small>
+        </Field>
+
         <Field label={t.bio}><textarea value={form.bio} onChange={(e) => update("bio", e.target.value)} className="ipt" rows="3"></textarea></Field>
         {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
-        <button onClick={submit} disabled={saving} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2" style={{ background: "#D9A441", opacity: saving ? 0.7 : 1 }}>
-          {saving ? t.submitting : t.submitBtn}
+        
+        <button onClick={submit} disabled={saving} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 transition" style={{ background: "#D9A441", opacity: saving ? 0.7 : 1 }}>
+          {saving ? (uploadingText || t.submitting) : t.submitBtn}
         </button>
         <p className="text-[11px] text-stone-400 text-center leading-relaxed">{t.reviewNote}</p>
       </div>
@@ -562,6 +635,9 @@ function CraftCard({ c, cat, lang, t, onClick }) {
         <div className="flex items-center gap-1 mt-0.5">
           <Stars value={c.rating} />
           <span className="text-[10px] text-stone-400">{c.reviews ? `(${c.reviews})` : t.newLabel}</span>
+          {c.galleryUrls && c.galleryUrls.length > 0 && (
+            <span className="text-[10px] text-stone-400 border-r border-stone-300 pr-1 mr-1">📸 {c.galleryUrls.length}</span>
+          )}
         </div>
       </div>
       <span className="text-stone-300">‹</span>
