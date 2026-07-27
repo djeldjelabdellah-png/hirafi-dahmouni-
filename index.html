@@ -8,6 +8,8 @@
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<!-- مكتبة EmailJS -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/emailjs.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
@@ -22,6 +24,11 @@
 <div id="root"></div>
 <script type="text/babel">
 const { useState, useEffect, useMemo } = React;
+
+// تهيئة مفتاح EmailJS العام فور التشغيل
+try {
+  emailjs.init("1YVvuqYAcvu8EWWaS");
+} catch (e) { console.error(e); }
 
 const SUPABASE_URL = "https://epslzxcwurnueboeujbt.supabase.co";
 const SUPABASE_KEY = "sb_publishable_1KmMcVM-XtVlajEStTAL7g_0HropMG5";
@@ -61,7 +68,7 @@ const STRINGS = {
   ar: {
     title: "حِرَفِي", subtitle: "دليل الحرفيين والمهنيين لمدينة الدحموني",
     searchPlaceholder: "ابحث عن حرفة، اسم، أو خدمة...", chooseCategory: "اختر التصنيف",
-    registerCta: "سجّل كحرفي في المنصة", topRated: "الأعلى تقييماً", viewAll: "عرض الكل ←",
+    registerCta: "سجّل كحرفي في المنصة", topRated: "الأعلى تقياً", viewAll: "عرض الكل ←",
     noCraftsmenYet: "لا يوجد حرفيون بعد — كن أول من يسجّل", allCrafts: "كل الحرف",
     noResults: "لا توجد نتائج مطابقة", tryOther: "جرّب تصنيفاً أو حياً آخر", loading: "جاري التحميل...",
     navHome: "الرئيسية", navSearch: "البحث", navRegister: "أنا حرفي", yearsExp: "سنوات خبرة",
@@ -554,24 +561,41 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
   const [files, setFiles] = useState([]);
   const [error, setError] = useState("");
   
-  // نظام التحقق OTP الخاص بالحرفي
+  // نظام التحقق OTP الخاص بالحرفي عبر EmailJS
   const [step, setStep] = useState('form'); // 'form' أو 'otp'
   const [generatedOtp, setGeneratedOtp] = useState('');
   const [enteredOtp, setEnteredOtp] = useState('');
+  const [sendingEmail, setSendingEmail] = useState(false);
 
   const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     if (!form.name.trim() || !form.phone.trim() || !form.bio.trim()) { setError(t.requiredError); return; }
     if (form.cat === "other" && !form.otherCat.trim()) { setError(t.otherCraftError); return; }
     if (!/^0[5-7][0-9]{8}$/.test(form.phone.trim())) { setError(t.phoneError); return; }
     if (!form.email.trim() || !form.password.trim()) { setError(t.emailError); return; }
     
     setError("");
-    // توليد رمز OTP داخلي وإرساله وهمياً للإيميل
+    setSendingEmail(true);
+
+    // توليد رمز عشوائي مكون من 4 أرقام
     const randomCode = Math.floor(1000 + Math.random() * 9000).toString();
     setGeneratedOtp(randomCode);
-    setStep('otp');
+
+    try {
+      // إرسال الكود عبر EmailJS بالمعرفات الفعلية
+      await emailjs.send("service_7o6k9pi", "template_u6jiuu6", {
+        to_email: form.email,
+        to_name: form.name,
+        otp_code: randomCode
+      });
+      setSendingEmail(false);
+      setStep('otp');
+    } catch (err) {
+      console.error("EmailJS Error:", err);
+      setSendingEmail(false);
+      setError("فشل إرسال رمز التحقق إلى البريد الإلكتروني، تأكد من صحة البريد.");
+    }
   };
 
   const handleVerifyAndSubmit = (e) => {
@@ -609,7 +633,6 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
           <Field label={t.experience}><input value={form.exp} onChange={(e) => update("exp", e.target.value.replace(/\D/g, ""))} className="ipt" inputMode="numeric" /></Field>
           <Field label={t.phone}><input value={form.phone} onChange={(e) => update("phone", e.target.value.replace(/\D/g, ""))} className="ipt" placeholder="0550123456" dir="ltr" inputMode="numeric" /></Field>
           
-          {/* حقول البريد وكلمة المرور الخاصة بالحرفي فقط */}
           <Field label="البريد الإلكتروني (للتحقق وتأكيد الحساب)">
             <input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} className="ipt" placeholder="name@example.com" dir="ltr" />
           </Field>
@@ -632,21 +655,17 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
           <Field label={t.bio}><textarea value={form.bio} onChange={(e) => update("bio", e.target.value)} className="ipt" rows="3"></textarea></Field>
           {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
           
-          <button onClick={handleNextStep} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 transition" style={{ background: "#D9A441" }}>
-            التالي (التحقق من البريد)
+          <button onClick={handleNextStep} disabled={sendingEmail} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 transition" style={{ background: "#D9A441", opacity: sendingEmail ? 0.7 : 1 }}>
+            {sendingEmail ? "جاري إرسال رمز التحقق للإيميل..." : "التالي (إرسال رمز التحقق للإيميل)"}
           </button>
           <p className="text-[11px] text-stone-400 text-center leading-relaxed">{t.reviewNote}</p>
         </div>
       ) : (
-        /* شاشة إدخال رمز التحقق OTP للحرفي عبر البريد */
+        /* شاشة إدخال رمز التحقق OTP الذي أرسله EmailJS للإيميل */
         <form onSubmit={handleVerifyAndSubmit} className="space-y-4 text-center py-4">
           <div>
             <h3 className="text-sm font-bold text-stone-800 mb-1">تأكيد البريد الإلكتروني</h3>
-            <p className="text-xs text-stone-500 mb-4">تم إرسال رمز التحقق إلى بريدك: <span className="font-bold text-[#123B3B]">{form.email}</span></p>
-
-            <div className="bg-amber-100 border border-amber-300 text-amber-800 p-3 rounded-xl mb-4 text-xs font-bold">
-              رمز التحقق التجريبي المرسل لإيميلك هو: <span className="text-sm tracking-widest text-red-600">{generatedOtp}</span>
-            </div>
+            <p className="text-xs text-stone-500 mb-4">تم إرسال رمز التحقق عبر البريد إلى: <span className="font-bold text-[#123B3B]">{form.email}</span></p>
 
             <input 
               type="text" 
