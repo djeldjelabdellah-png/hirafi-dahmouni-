@@ -11,12 +11,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
-  body { font-family: 'Tajawal', sans-serif; background:#F5F2EA; margin:0; }
-  .spinner { border: 3px solid #DCD5C4; border-top-color: #123B3B; border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite; }
+  body { font-family: 'Tajawal', sans-serif; background:#F8F7F4; margin:0; color: #2D2A26; }
+  .spinner { border: 3px solid #E6E2D8; border-top-color: #0F3030; border-radius: 50%; width: 28px; height: 28px; animation: spin 0.7s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  /* إخفاء شريط التمرير لمعرض الصور مع الإبقاء على إمكانية السحب */
   .hide-scrollbar::-webkit-scrollbar { display: none; }
   .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .glass-header { background: rgba(15, 48, 48, 0.98); backdrop-filter: blur(10px); }
 </style>
 </head>
 <body>
@@ -31,21 +31,21 @@ const SB_HEADERS = {
   Authorization: `Bearer ${SUPABASE_KEY}`,
   "Content-Type": "application/json",
 };
-const ADMIN_PIN = "p@ssw0rd";
+const ADMIN_PIN = "AdminSecret2026"; // تم تحديث كلمة السر هنا
 
 const TELEGRAM_TOKEN = "8610113650:AAHoX6Zan8q7q7Y7J0WTXBDP9klNCTppa2U";
 const TELEGRAM_CHAT_ID = "1109544250";
 
 const CATEGORIES = [
-  { id: "plumb", name: { ar: "سباكة", en: "Plumbing" }, icon: "🔧", color: "#2C6E6E" },
-  { id: "elec", name: { ar: "كهرباء", en: "Electrical" }, icon: "⚡", color: "#D9A441" },
-  { id: "carp", name: { ar: "نجارة", en: "Carpentry" }, icon: "🔨", color: "#8B5E3C" },
-  { id: "paint", name: { ar: "دهان", en: "Painting" }, icon: "🎨", color: "#5C7A8A" },
-  { id: "build", name: { ar: "بناء", en: "Construction" }, icon: "🏗️", color: "#7A5C4B" },
-  { id: "tailor", name: { ar: "خياطة", en: "Tailoring" }, icon: "✂️", color: "#B5566B" },
-  { id: "mech", name: { ar: "ميكانيك", en: "Mechanic" }, icon: "🚗", color: "#3D5A6C" },
-  { id: "clean", name: { ar: "تنظيف", en: "Cleaning" }, icon: "✨", color: "#4A8B6F" },
-  { id: "other", name: { ar: "أخرى", en: "Other" }, icon: "➕", color: "#7D7568" },
+  { id: "plumb", name: { ar: "سباكة", en: "Plumbing" }, icon: "🔧", color: "#1D5C5C" },
+  { id: "elec", name: { ar: "كهرباء", en: "Electrical" }, icon: "⚡", color: "#C68B29" },
+  { id: "carp", name: { ar: "نجارة", en: "Carpentry" }, icon: "🔨", color: "#7A4E2D" },
+  { id: "paint", name: { ar: "دهان", en: "Painting" }, icon: "🎨", color: "#4A6B7C" },
+  { id: "build", name: { ar: "بناء", en: "Construction" }, icon: "🏗️", color: "#6B4E3D" },
+  { id: "tailor", name: { ar: "خياطة", en: "Tailoring" }, icon: "✂️", color: "#9E3F55" },
+  { id: "mech", name: { ar: "ميكانيك", en: "Mechanic" }, icon: "🚗", color: "#2E4F63" },
+  { id: "clean", name: { ar: "تنظيف", en: "Cleaning" }, icon: "✨", color: "#2E7351" },
+  { id: "other", name: { ar: "أخرى", en: "Other" }, icon: "➕", color: "#6E675F" },
 ];
 
 const NEIGHBORHOODS = [
@@ -61,47 +61,48 @@ const NEIGHBORHOODS = [
 const STRINGS = {
   ar: {
     title: "حِرَفِي", subtitle: "دليل الحرفيين والمهنيين لمدينة الدحموني",
-    searchPlaceholder: "ابحث عن حرفة، اسم، أو خدمة...", chooseCategory: "اختر التصنيف",
-    registerCta: "سجّل كحرفي في المنصة", topRated: "الأعلى تقييماً", viewAll: "عرض الكل ←",
-    noCraftsmenYet: "لا يوجد حرفيون بعد — كن أول من يسجّل", allCrafts: "كل الحرف",
-    noResults: "لا توجد نتائج مطابقة", tryOther: "جرّب تصنيفاً أو حياً آخر", loading: "جاري التحميل...",
-    navHome: "الرئيسية", navSearch: "البحث", navRegister: "أنا حرفي", yearsExp: "سنوات خبرة",
-    newLabel: "جديد", reviewsLabel: "تقييم", call: "اتصال", whatsapp: "واتساب",
-    registerTitle: "تسجيل حرفي جديد", fullName: "الاسم الكامل", craft: "الحرفة / التخصص",
-    otherCraft: "اكتب اسم الحرفة", neighborhood: "الحي / المنطقة", experience: "سنوات الخبرة",
-    phone: "رقم الهاتف", bio: "نبذة عن الخدمات المقدمة", submitBtn: "إرسال للمراجعة",
-    submitting: "جاري الإرسال...", uploadingImages: "جاري رفع الصور...", chooseImages: "صور الأعمال (اختياري)",
-    galleryNote: "يمكنك تحديد أكثر من صورة معاً", galleryTitle: "معرض الأعمال",
-    reviewNote: "سيُراجع طلبك من طرف الإدارة قبل ظهوره في المنصة، عادة خلال 24 ساعة",
-    requiredError: "الرجاء تعبئة الاسم ورقم الهاتف والوصف", otherCraftError: "الرجاء كتابة اسم الحرفة",
-    phoneError: "رقم الهاتف غير صحيح (مثال: 0550123456)", toastSubmitted: "تم إرسال طلبك، سيُنشر بعد المراجعة",
-    toastFailSubmit: "تعذّر إرسال الطلب، حاول مجدداً", toastFailConnect: "تعذّر الاتصال بالخادم",
-    adminTitle: "لوحة المراجعة", adminPinPrompt: "أدخل رمز الإدارة للمتابعة", adminPinPlaceholder: "الرمز السري",
-    adminPinWrong: "رمز خاطئ", adminLogin: "دخول", adminNoPending: "لا توجد طلبات بانتظار المراجعة",
-    pendingLabel: "قيد المراجعة", approveBtn: "قبول ونشر", rejectBtn: "رفض", all: "الكل",
-    rateThis: "قيّم هذا الحرفي", thanksRating: "شكراً لتقييمك!", shareBtn: "مشاركة", shareCopied: "تم نسخ الرابط",
+    searchPlaceholder: "ابحث عن حرفة، خدمة، أو اسم حرفي...", chooseCategory: "التخصصات المهنية",
+    registerCta: "سجّل كحرفي وانضم إلينا", topRated: "الأعلى تقيماً وثقة", viewAll: "عرض الكل",
+    noCraftsmenYet: "لا يوجد حرفيون معتمدون بعد — كن أول من يسجّل", allCrafts: "جميع الحرف",
+    noResults: "لا توجد نتائج مطابقة لبحثك", tryOther: "جرّب تغيير الكلمة أو اختيار تصنيف آخر", loading: "جاري تحميل المنصة...",
+    navHome: "الرئيسية", navSearch: "البحث المتقدم", navRegister: "انضم كحرفي", yearsExp: "سنوات خبرة",
+    newLabel: "جديد بالمنصة", reviewsLabel: "تقييم", call: "اتصال هاتفي", whatsapp: "مراسلة واتساب",
+    registerTitle: "تسجيل حساب حرفي جديد", fullName: "الاسم واللقب", craft: "مجال الحرفة / التخصص",
+    otherCraft: "حدد اسم الحرفة بدقة", neighborhood: "حي الإقامة / النشاط", experience: "سنوات الخبرة المهنية",
+    phone: "رقم الهاتف النقال", bio: "نبذة تعريفية عن الخدمات والخبرة", submitBtn: "إرسال الطلب للمراجعة",
+    submitting: "جاري المعالجة...", uploadingImages: "جاري رفع صور معرض الأعمال...", chooseImages: "صور من أعمالي (اختياري)",
+    galleryNote: "يمكنك تحديد عدة صور دفعة واحدة لإبراز جودة عملك", galleryTitle: "معرض الأعمال والخدمات",
+    reviewNote: "سيتم مراجعة طلبك والتحقق من البيانات قبل النشر رسمياً، عادة خلال أقل من 24 ساعة",
+    requiredError: "الرجاء تعبئة الاسم ورقم الهاتف والنبذة التعريفية", otherCraftError: "الرجاء كتابة اسم الحرفة الخاصة بك",
+    phoneError: "رقم الهاتف غير صحيح (يجب أن يبدأ بـ 05, 06 أو 07 ويحتوي على 10 أرقام)", 
+    toastSubmitted: "تم إرسال طلبك بنجاح، سيُنشر فور مراجعته من الإدارة",
+    toastFailSubmit: "تعذّر إرسال الطلب، تأكد من الاتصال وحاول مجدداً", toastFailConnect: "فشل الاتصال بالخادم، تأكد من الإنترنت",
+    adminTitle: "لوحة تحكم الإدارة", adminPinPrompt: "أدخل كلمة المرور الخاصة بالإدارة للمتابعة", adminPinPlaceholder: "كلمة المرور السرية",
+    adminPinWrong: "كلمة المرور غير صحيحة", adminLogin: "تسجيل الدخول", adminNoPending: "لا توجد طلبات جديدة بانتظار المراجعة حالياً",
+    pendingLabel: "قيد المراجعة والتدقيق", approveBtn: "قبول ونشر بالمنصة", rejectBtn: "رفض وحذف", all: "الكل",
+    rateThis: "أعطِ رأيك وتقييمك لهذا الحرفي", thanksRating: "شكراً لك، تم تسجيل تقييمك بنجاح!", shareBtn: "مشاركة الحرفي", shareCopied: "تم نسخ رابط الحرفي إلى الحافظة",
   },
   en: {
     title: "Hirafi", subtitle: "Craftsmen & Tradespeople Directory — Dahmouni",
-    searchPlaceholder: "Search a trade, name, or service...", chooseCategory: "Choose a category",
-    registerCta: "Register as a craftsman", topRated: "Top Rated", viewAll: "View all →",
-    noCraftsmenYet: "No craftsmen yet — be the first to register", allCrafts: "All trades",
-    noResults: "No matching results", tryOther: "Try another category or neighborhood", loading: "Loading...",
-    navHome: "Home", navSearch: "Search", navRegister: "I'm a craftsman", yearsExp: "years experience",
+    searchPlaceholder: "Search trade, service, or name...", chooseCategory: "Professional Trades",
+    registerCta: "Register as a Craftsman", topRated: "Top Rated & Trusted", viewAll: "View all",
+    noCraftsmenYet: "No craftsmen yet — be the first to join", allCrafts: "All Trades",
+    noResults: "No matching results found", tryOther: "Try searching with another keyword or category", loading: "Loading platform...",
+    navHome: "Home", navSearch: "Search", navRegister: "Join as Craftsman", yearsExp: "years exp",
     newLabel: "New", reviewsLabel: "reviews", call: "Call", whatsapp: "WhatsApp",
-    registerTitle: "New Craftsman Registration", fullName: "Full name", craft: "Trade / Specialty",
-    otherCraft: "Type your trade", neighborhood: "Neighborhood", experience: "Years of experience",
-    phone: "Phone number", bio: "Brief description of services", submitBtn: "Submit for review",
-    submitting: "Submitting...", uploadingImages: "Uploading images...", chooseImages: "Portfolio images (Optional)",
-    galleryNote: "You can select multiple images", galleryTitle: "Portfolio",
-    reviewNote: "Your request will be reviewed by an admin before publishing, usually within 24 hours",
+    registerTitle: "New Craftsman Registration", fullName: "Full Name", craft: "Trade / Specialty",
+    otherCraft: "Type your trade", neighborhood: "Neighborhood", experience: "Years of Experience",
+    phone: "Phone Number", bio: "Brief description of services", submitBtn: "Submit for Review",
+    submitting: "Submitting...", uploadingImages: "Uploading portfolio images...", chooseImages: "Portfolio Images (Optional)",
+    galleryNote: "You can select multiple images to showcase your work", galleryTitle: "Portfolio",
+    reviewNote: "Your request will be reviewed by management before publishing",
     requiredError: "Please fill in name, phone and description", otherCraftError: "Please type your trade name",
-    phoneError: "Invalid phone number (e.g. 0550123456)", toastSubmitted: "Your request was submitted for review",
-    toastFailSubmit: "Failed to submit, try again", toastFailConnect: "Could not connect to server",
-    adminTitle: "Review Panel", adminPinPrompt: "Enter admin code to continue", adminPinPlaceholder: "Secret code",
-    adminPinWrong: "Wrong code", adminLogin: "Enter", adminNoPending: "No pending requests",
-    pendingLabel: "Pending review", approveBtn: "Approve & publish", rejectBtn: "Reject", all: "All",
-    rateThis: "Rate this craftsman", thanksRating: "Thanks for rating!", shareBtn: "Share", shareCopied: "Link copied",
+    phoneError: "Invalid phone number format", toastSubmitted: "Submitted for review successfully",
+    toastFailSubmit: "Submission failed, try again", toastFailConnect: "Connection error",
+    adminTitle: "Admin Panel", adminPinPrompt: "Enter admin password to continue", adminPinPlaceholder: "Password",
+    adminPinWrong: "Incorrect password", adminLogin: "Login", adminNoPending: "No pending requests",
+    pendingLabel: "Pending review", approveBtn: "Approve & Publish", rejectBtn: "Reject", all: "All",
+    rateThis: "Rate this craftsman", thanksRating: "Thank you for rating!", shareBtn: "Share", shareCopied: "Link copied",
   },
 };
 
@@ -112,7 +113,6 @@ const hoodName = (hoodAr, lang) => {
   return h ? h[lang] : hoodAr;
 };
 
-// تحديث دوال قاعدة البيانات لتشمل روابط الصور
 const toDb = (c) => ({
   name: c.name, cat: c.cat, other_cat: c.otherCat || null, hood: c.hood,
   exp: c.exp, phone: c.phone, bio: c.bio, status: c.status || "pending",
@@ -126,11 +126,11 @@ const fromDb = (r) => ({
 
 function Stars({ value }) {
   return (
-    <span style={{ letterSpacing: "1px" }}>
+    <div className="flex items-center gap-0.5">
       {[1, 2, 3, 4, 5].map((i) => (
-        <span key={i} style={{ color: i <= Math.round(value || 0) ? "#D9A441" : "#D6D0C2", fontSize: 13 }}>★</span>
+        <span key={i} className={`text-xs ${i <= Math.round(value || 0) ? "text-amber-500" : "text-stone-300"}`}>★</span>
       ))}
-    </span>
+    </div>
   );
 }
 
@@ -139,15 +139,15 @@ function RatingInput({ onRate }) {
   const [done, setDone] = useState(false);
   if (done) return null;
   return (
-    <span style={{ letterSpacing: "2px", fontSize: 22, cursor: "pointer" }}>
+    <div className="flex gap-1 text-2xl cursor-pointer">
       {[1, 2, 3, 4, 5].map((i) => (
         <span key={i}
           onMouseEnter={() => setHover(i)}
           onMouseLeave={() => setHover(0)}
           onClick={() => { onRate(i); setDone(true); }}
-          style={{ color: i <= hover ? "#D9A441" : "#D6D0C2" }}>★</span>
+          className={`transition transform hover:scale-125 ${i <= hover ? "text-amber-500" : "text-stone-300"}`}>★</span>
       ))}
-    </span>
+    </div>
   );
 }
 
@@ -188,26 +188,17 @@ function App() {
   const registerCraftsman = async (data) => {
     setSaving(true);
     let uploadedUrls = [];
-    
     try {
-      // 1. رفع الصور إذا وجدت
       if (data.files && data.files.length > 0) {
         setUploadingText(t.uploadingImages);
         for (const file of data.files) {
-          // توليد اسم عشوائي آمن لتجنب مشكلة الرموز العربية في أسماء الملفات
           const ext = file.name.split('.').pop();
           const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
-          
           const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/craftsmen-gallery/${fileName}`, {
             method: 'POST',
-            headers: {
-              apikey: SUPABASE_KEY,
-              Authorization: `Bearer ${SUPABASE_KEY}`,
-              'Content-Type': file.type
-            },
+            headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, 'Content-Type': file.type },
             body: file
           });
-          
           if (uploadRes.ok) {
             uploadedUrls.push(`${SUPABASE_URL}/storage/v1/object/public/craftsmen-gallery/${fileName}`);
           }
@@ -215,7 +206,6 @@ function App() {
         setUploadingText("");
       }
 
-      // 2. إدخال البيانات في قاعدة البيانات
       const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen`, {
         method: "POST",
         headers: { ...SB_HEADERS, Prefer: "return=representation" },
@@ -223,30 +213,29 @@ function App() {
       });
       if (!res.ok) throw new Error("insert failed");
 
-      // 3. إرسال الإشعار الفوري إلى تلغرام
       try {
         const selectedCat = CATEGORIES.find(c => c.id === data.cat);
         const craftTitle = data.cat === "other" ? data.otherCat : (selectedCat ? selectedCat.name.ar : data.cat);
         const imagesNote = uploadedUrls.length > 0 ? `\n📸 **مرفق:** ${uploadedUrls.length} صور للأعمال` : "";
-        const telegramMessage = `🛠 **تسجيل حرفي جديد على المنصة!**\n\n` +
-                                `👤 **الاسم الكامل:** ${data.name}\n` +
-                                `📞 **رقم الهاتف:** ${data.phone}\n` +
+        const telegramMessage = `🛠 **طلب تسجيل حرفي جديد!**\n\n` +
+                                `👤 **الاسم:** ${data.name}\n` +
+                                `📞 **الهاتف:** ${data.phone}\n` +
                                 `🧰 **الحرفة:** ${craftTitle}\n` +
-                                `📍 **المنطقة/الحي:** ${data.hood}\n` +
-                                `⭐ **خبرة:** ${data.exp} سنوات\n` +
-                                `📝 **الوصف:** ${data.bio}` + imagesNote;
+                                `📍 **المنطقة:** ${data.hood}\n` +
+                                `⭐ **الخبرة:** ${data.exp} سنوات\n` +
+                                `📝 **النبذة:** ${data.bio}` + imagesNote;
 
         fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: telegramMessage, parse_mode: "Markdown" })
         });
-      } catch (tgError) { console.error("Telegram notification failed:", tgError); }
+      } catch (tgError) { console.error(tgError); }
 
       await fetchList();
       setView("home");
       setToast(t.toastSubmitted);
-      setTimeout(() => setToast(null), 3500);
+      setTimeout(() => setToast(null), 4000);
     } catch (e) {
       setToast(t.toastFailSubmit);
       setUploadingText("");
@@ -280,7 +269,7 @@ function App() {
       });
       await fetchList();
       setToast(t.thanksRating);
-      setTimeout(() => setToast(null), 2500);
+      setTimeout(() => setToast(null), 3000);
     } catch (e) { setToast(t.toastFailConnect); }
   };
 
@@ -291,7 +280,7 @@ function App() {
     } else {
       navigator.clipboard.writeText(url);
       setToast(t.shareCopied);
-      setTimeout(() => setToast(null), 2000);
+      setTimeout(() => setToast(null), 2500);
     }
   };
 
@@ -308,122 +297,152 @@ function App() {
   }, [approved, query, activeCat, activeHood, lang]);
 
   return (
-    <div style={{ minHeight: "100vh" }} dir={dir}>
-      <header className="sticky top-0 z-20 px-4 pt-5 pb-4" style={{ background: "#123B3B" }}>
+    <div className="min-h-screen flex flex-col max-w-lg mx-auto bg-[#F8F7F4] shadow-2xl relative pb-20" dir={dir}>
+      {/* Header احترافي */}
+      <header className="glass-header sticky top-0 z-30 px-5 pt-6 pb-5 text-white shadow-md rounded-b-3xl">
         <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-white font-black text-xl leading-tight">{t.title}</h1>
-            <p className="text-[11px]" style={{ color: "#8FBFBF" }}>{t.subtitle}</p>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 font-black text-lg">ح</div>
+            <div>
+              <h1 className="font-black text-lg tracking-wide leading-none">{t.title}</h1>
+              <p className="text-[11px] text-stone-300 mt-1">{t.subtitle}</p>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <button onClick={() => setLang(lang === "ar" ? "en" : "ar")}
-              className="px-2.5 h-9 rounded-full flex items-center justify-center gap-1 text-white text-xs font-bold" style={{ background: "#1B4B4B" }}>
+              className="px-3 h-9 rounded-xl flex items-center justify-center gap-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition">
               🌐 {lang === "ar" ? "EN" : "AR"}
             </button>
-            <div onClick={() => setView("admin")} className="w-11 h-11 rounded-full flex items-center justify-center text-white text-lg" style={{ background: "#D9A441", cursor: "pointer" }}>⚙️</div>
+            <button onClick={() => setView("admin")} className="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-sm transition">⚙️</button>
           </div>
         </div>
+
         {(view === "home" || view === "list") && (
-          <div className="flex items-center gap-2 rounded-2xl px-3 py-2.5" style={{ background: "#1B4B4B" }}>
-            <span style={{ opacity: 0.6 }}>🔍</span>
+          <div className="flex items-center gap-3 bg-white/10 border border-white/15 rounded-2xl px-4 py-3 transition focus-within:bg-white/15 focus-within:border-amber-400/60">
+            <span className="text-stone-300">🔍</span>
             <input
               value={query}
               onChange={(e) => { setQuery(e.target.value); setView("list"); }}
               placeholder={t.searchPlaceholder}
-              className="bg-transparent outline-none text-sm text-white placeholder-[#8FBFBF] flex-1"
+              className="bg-transparent outline-none text-sm text-white placeholder-stone-300 w-full"
             />
+            {query && <button onClick={() => setQuery("")} className="text-stone-300 text-xs">✕</button>}
           </div>
         )}
       </header>
 
       {list === null ? (
-        <div className="flex flex-col items-center justify-center py-24 text-stone-400 gap-2">
+        <div className="flex-1 flex flex-col items-center justify-center py-32 text-stone-400 gap-3">
           <div className="spinner"></div>
-          <span className="text-xs font-bold">{t.loading}</span>
+          <span className="text-xs font-bold tracking-wider">{t.loading}</span>
         </div>
       ) : (
-        <>
+        <div className="flex-1 px-4 pt-5 pb-6">
           {view === "home" && (
-            <main className="px-4 pb-24">
-              <div className="flex gap-2 overflow-x-auto py-4 hide-scrollbar">
+            <main className="space-y-6">
+              {/* اختيار الأحياء */}
+              <div className="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
                 {[t.all, ...NEIGHBORHOODS.map((h) => h[lang])].map((h, idx) => {
                   const hoodValue = idx === 0 ? t.all : NEIGHBORHOODS[idx - 1].ar;
+                  const isActive = activeHood === hoodValue;
                   return (
-                    <button key={h} onClick={() => setActiveHood(hoodValue)} className="whitespace-nowrap text-xs font-bold px-3.5 py-2 rounded-full border transition"
-                      style={activeHood === hoodValue ? { background: "#123B3B", color: "white", borderColor: "#123B3B" } : { background: "white", color: "#123B3B", borderColor: "#DCD5C4" }}>
+                    <button key={h} onClick={() => setActiveHood(hoodValue)} 
+                      className={`whitespace-nowrap text-xs font-bold px-4 py-2.5 rounded-2xl transition shadow-xs ${
+                        isActive ? "bg-[#0F3030] text-white shadow-sm" : "bg-white text-stone-600 border border-stone-200 hover:border-stone-300"
+                      }`}>
                       {h}
                     </button>
                   );
                 })}
               </div>
 
-              <h2 className="font-black text-[#123B3B] text-sm mb-3 mt-2">{t.chooseCategory}</h2>
-              <div className="grid grid-cols-4 gap-3 mb-6">
-                {CATEGORIES.map((c) => {
-                  const count = approved.filter((x) => x.cat === c.id).length;
-                  return (
-                    <button key={c.id} onClick={() => { setActiveCat(c.id); setView("list"); }} className="flex flex-col items-center gap-1.5">
-                      <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm relative" style={{ background: c.color + "1A", border: `1.5px solid ${c.color}33` }}>
-                        <span style={{ fontSize: 22 }}>{c.icon}</span>
-                        {count > 0 && <span className="absolute -top-1.5 -left-1.5 text-[9px] font-black text-white rounded-full w-4 h-4 flex items-center justify-center" style={{ background: c.color }}>{count}</span>}
-                      </div>
-                      <span className="text-[11px] font-bold text-[#3A3A3A]">{c.name[lang]}</span>
-                    </button>
-                  );
-                })}
+              {/* الأقسام والتصنيفات */}
+              <div>
+                <div className="flex items-center justify-between mb-3.5">
+                  <h2 className="font-black text-[#0F3030] text-sm">{t.chooseCategory}</h2>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  {CATEGORIES.map((c) => {
+                    const count = approved.filter((x) => x.cat === c.id).length;
+                    return (
+                      <button key={c.id} onClick={() => { setActiveCat(c.id); setView("list"); }} 
+                        className="group bg-white p-3.5 rounded-2xl flex flex-col items-center text-center border border-stone-200/80 hover:border-[#0F3030]/40 transition shadow-xs hover:shadow-md">
+                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-2 transition transform group-hover:scale-105" style={{ background: c.color + "15", border: `1px solid ${c.color}30` }}>
+                          <span style={{ fontSize: 22 }}>{c.icon}</span>
+                        </div>
+                        <span className="text-xs font-bold text-stone-800 truncate w-full">{c.name[lang]}</span>
+                        <span className="text-[10px] text-stone-400 mt-0.5">{count} حرفي</span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
-              <button onClick={() => setView("register")} className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-white text-sm mb-6" style={{ background: "#D9A441" }}>
-                <span>+</span> {t.registerCta}
+              {/* زر التسجيل البارز */}
+              <button onClick={() => setView("register")} 
+                className="w-full relative overflow-hidden group bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white p-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 shadow-md transition transform active:scale-98">
+                <span className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center text-base">+</span>
+                <span>{t.registerCta}</span>
               </button>
 
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="font-black text-[#123B3B] text-sm">{t.topRated}</h2>
-                <button onClick={() => setView("list")} className="text-[11px] font-bold" style={{ color: "#D9A441" }}>{t.viewAll}</button>
-              </div>
-              <div className="space-y-3">
-                {approved.length === 0 ? (
-                  <p className="text-center text-xs text-stone-400 py-6">{t.noCraftsmenYet}</p>
-                ) : (
-                  [...approved].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 3).map((c) => (
-                    <CraftCard key={c.id} c={c} cat={catInfo(c.cat)} lang={lang} t={t} onClick={() => setSelected(c)} />
-                  ))
-                )}
+              {/* قائمة الأعلى تقييماً */}
+              <div>
+                <div className="flex items-center justify-between mb-3.5">
+                  <h2 className="font-black text-[#0F3030] text-sm">{t.topRated}</h2>
+                  <button onClick={() => setView("list")} className="text-xs font-bold text-amber-600 hover:underline">{t.viewAll} →</button>
+                </div>
+                <div className="space-y-3">
+                  {approved.length === 0 ? (
+                    <div className="bg-white rounded-2xl p-8 text-center border border-stone-200">
+                      <p className="text-xs text-stone-400 font-bold">{t.noCraftsmenYet}</p>
+                    </div>
+                  ) : (
+                    [...approved].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 3).map((c) => (
+                      <CraftCard key={c.id} c={c} cat={catInfo(c.cat)} lang={lang} t={t} onClick={() => setSelected(c)} />
+                    ))
+                  )}
+                </div>
               </div>
             </main>
           )}
 
           {view === "list" && (
-            <main className="px-4 pb-24 pt-4">
-              <div className="flex items-center gap-2 mb-4">
-                <button onClick={() => { setView("home"); setActiveCat(null); setQuery(""); }} className="text-[#123B3B]">{dir === "rtl" ? "←" : "→"}</button>
-                <h2 className="font-black text-[#123B3B] text-base flex-1">
-                  {activeCat ? catInfo(activeCat).name[lang] : t.navSearch}
-                  <span className="text-xs font-normal text-stone-500"> ({filtered.length})</span>
-                </h2>
+            <main className="space-y-4">
+              <div className="flex items-center gap-3 mb-2">
+                <button onClick={() => { setView("home"); setActiveCat(null); setQuery(""); }} 
+                  className="w-9 h-9 rounded-xl bg-white border border-stone-200 flex items-center justify-center text-[#0F3030] font-bold shadow-xs">
+                  {dir === "rtl" ? "←" : "→"}
+                </button>
+                <div>
+                  <h2 className="font-black text-[#0F3030] text-base">
+                    {activeCat ? catInfo(activeCat).name[lang] : t.navSearch}
+                  </h2>
+                  <p className="text-[11px] text-stone-400">{filtered.length} حرفي متوفر</p>
+                </div>
               </div>
 
-              <div className="flex gap-2 overflow-x-auto pb-3 hide-scrollbar">
-                <button onClick={() => setActiveCat(null)} className="whitespace-nowrap text-[11px] font-bold px-3 py-1.5 rounded-full border"
-                  style={!activeCat ? { background: "#123B3B", color: "white", borderColor: "#123B3B" } : { background: "white", color: "#123B3B", borderColor: "#DCD5C4" }}>
+              {/* فلاتر أفقية سريعة */}
+              <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
+                <button onClick={() => setActiveCat(null)} 
+                  className={`whitespace-nowrap text-xs font-bold px-3.5 py-2 rounded-xl border transition ${!activeCat ? "bg-[#0F3030] text-white border-[#0F3030]" : "bg-white text-stone-600 border-stone-200"}`}>
                   {t.allCrafts}
                 </button>
                 {CATEGORIES.map((c) => (
-                  <button key={c.id} onClick={() => setActiveCat(c.id)} className="whitespace-nowrap text-[11px] font-bold px-3 py-1.5 rounded-full border"
-                    style={activeCat === c.id ? { background: c.color, color: "white", borderColor: c.color } : { background: "white", color: "#123B3B", borderColor: "#DCD5C4" }}>
+                  <button key={c.id} onClick={() => setActiveCat(c.id)} 
+                    className={`whitespace-nowrap text-xs font-bold px-3.5 py-2 rounded-xl border transition ${activeCat === c.id ? "bg-[#0F3030] text-white border-[#0F3030]" : "bg-white text-stone-600 border-stone-200"}`}>
                     {c.name[lang]}
                   </button>
                 ))}
               </div>
 
               {filtered.length === 0 ? (
-                <div className="text-center py-16 text-stone-400">
-                  <div style={{ fontSize: 32 }} className="mb-3">🗂️</div>
-                  <p className="text-sm font-bold">{t.noResults}</p>
-                  <p className="text-xs mt-1">{t.tryOther}</p>
+                <div className="bg-white rounded-3xl p-12 text-center border border-stone-200 mt-6 shadow-xs">
+                  <div className="text-4xl mb-3">🔍</div>
+                  <p className="text-sm font-bold text-stone-700">{t.noResults}</p>
+                  <p className="text-xs text-stone-400 mt-1">{t.tryOther}</p>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-3 pt-1">
                   {filtered.map((c) => <CraftCard key={c.id} c={c} cat={catInfo(c.cat)} lang={lang} t={t} onClick={() => setSelected(c)} />)}
                 </div>
               )}
@@ -435,46 +454,60 @@ function App() {
           )}
 
           {view === "admin" && (
-            <main className="px-4 pb-24 pt-4">
-              <h2 className="font-black text-[#123B3B] text-base mb-4">{t.adminTitle}</h2>
+            <main className="space-y-4">
+              <div className="flex items-center gap-3 mb-2">
+                <button onClick={() => setView("home")} className="w-9 h-9 rounded-xl bg-white border border-stone-200 flex items-center justify-center text-[#0F3030] font-bold">
+                  {dir === "rtl" ? "←" : "→"}
+                </button>
+                <h2 className="font-black text-[#0F3030] text-base">{t.adminTitle}</h2>
+              </div>
+
               {!adminUnlocked ? (
-                <div className="bg-white rounded-2xl p-5 border" style={{ borderColor: "#E6E0D2" }}>
-                  <p className="text-xs text-stone-500 font-bold mb-3">{t.adminPinPrompt}</p>
+                <div className="bg-white rounded-3xl p-6 border border-stone-200 shadow-sm space-y-4">
+                  <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center text-xl mb-1">🔒</div>
+                  <p className="text-xs text-stone-500 font-bold">{t.adminPinPrompt}</p>
                   <input value={pinInput} onChange={(e) => { setPinInput(e.target.value); setPinError(false); }} type="password"
-                    className="w-full border rounded-xl px-3 py-2.5 text-sm mb-2 outline-none"
-                    style={{ borderColor: pinError ? "#C0392B" : "#DCD5C4" }} placeholder={t.adminPinPlaceholder} />
-                  {pinError && <p className="text-[11px] text-red-600 font-bold mb-2">{t.adminPinWrong}</p>}
+                    className="w-full border-2 rounded-2xl px-4 py-3 text-sm outline-none transition focus:border-[#0F3030]"
+                    style={{ borderColor: pinError ? "#C0392B" : "#E6E2D8" }} placeholder={t.adminPinPlaceholder} />
+                  {pinError && <p className="text-[11px] text-red-600 font-bold">{t.adminPinWrong}</p>}
                   <button onClick={() => pinInput === ADMIN_PIN ? setAdminUnlocked(true) : setPinError(true)}
-                    className="w-full py-2.5 rounded-xl font-bold text-white text-sm" style={{ background: "#123B3B" }}>{t.adminLogin}</button>
+                    className="w-full py-3.5 rounded-2xl font-black text-white text-sm bg-[#0F3030] hover:bg-[#164545] transition shadow-md">
+                    {t.adminLogin}
+                  </button>
                 </div>
               ) : pending.length === 0 ? (
-                <p className="text-center text-xs text-stone-400 py-10">{t.adminNoPending}</p>
+                <div className="bg-white rounded-3xl p-12 text-center border border-stone-200 text-stone-400">
+                  <div className="text-3xl mb-2">✨</div>
+                  <p className="text-xs font-bold">{t.adminNoPending}</p>
+                </div>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {pending.map((c) => (
-                    <div key={c.id} className="bg-white rounded-2xl p-4 border" style={{ borderColor: "#E6E0D2" }}>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-black text-[#123B3B] text-sm">{c.name}</span>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "#D9A44122", color: "#B8842E" }}>🕐 {t.pendingLabel}</span>
+                    <div key={c.id} className="bg-white rounded-3xl p-5 border border-stone-200 shadow-xs space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="font-black text-[#0F3030] text-base">{c.name}</span>
+                        <span className="text-[10px] font-bold px-2.5 py-1 rounded-xl bg-amber-50 text-amber-700 border border-amber-200">🕐 {t.pendingLabel}</span>
                       </div>
-                      <p className="text-[11px] text-stone-500 mb-1">{craftName(c, lang)} · {hoodName(c.hood, lang)} · {c.exp} {t.yearsExp}</p>
-                      <p className="text-xs text-stone-600 mb-1">{c.bio}</p>
-                      <p className="text-[11px] font-mono text-stone-500 mb-3" dir="ltr">{c.phone}</p>
+                      <p className="text-xs text-stone-500 font-bold">{craftName(c, lang)} · {hoodName(c.hood, lang)} · {c.exp} {t.yearsExp}</p>
+                      <p className="text-xs text-stone-700 bg-[#F8F7F4] p-3 rounded-2xl leading-relaxed">{c.bio}</p>
+                      <p className="text-xs font-mono font-bold text-[#0F3030]" dir="ltr">{c.phone}</p>
                       
-                      {/* معاينة صور الأعمال في لوحة الإدارة */}
                       {c.galleryUrls && c.galleryUrls.length > 0 && (
-                        <div className="flex gap-2 overflow-x-auto pb-2 mb-3 hide-scrollbar">
-                          {c.galleryUrls.map((url, i) => (
-                            <a key={i} href={url} target="_blank" rel="noreferrer">
-                              <img src={url} className="w-12 h-12 rounded object-cover border border-stone-200 shrink-0" alt="عمل" />
-                            </a>
-                          ))}
+                        <div>
+                          <p className="text-[11px] font-bold text-stone-400 mb-1.5">معرض الأعمال المرفق:</p>
+                          <div className="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
+                            {c.galleryUrls.map((url, i) => (
+                              <a key={i} href={url} target="_blank" rel="noreferrer">
+                                <img src={url} className="w-14 h-14 rounded-xl object-cover border border-stone-200 shrink-0 hover:opacity-90" alt="عمل" />
+                              </a>
+                            ))}
+                          </div>
                         </div>
                       )}
 
-                      <div className="grid grid-cols-2 gap-2">
-                        <button onClick={() => approveCraftsman(c.id)} className="py-2 rounded-xl font-bold text-white text-xs" style={{ background: "#3DAA5C" }}>✅ {t.approveBtn}</button>
-                        <button onClick={() => rejectCraftsman(c.id)} className="py-2 rounded-xl font-bold text-xs border" style={{ borderColor: "#DCD5C4", color: "#8A8375" }}>{t.rejectBtn}</button>
+                      <div className="grid grid-cols-2 gap-2.5 pt-2 border-t border-stone-100">
+                        <button onClick={() => approveCraftsman(c.id)} className="py-2.5 rounded-xl font-bold text-white text-xs bg-emerald-600 hover:bg-emerald-700 transition shadow-xs">✅ {t.approveBtn}</button>
+                        <button onClick={() => rejectCraftsman(c.id)} className="py-2.5 rounded-xl font-bold text-xs border border-stone-200 text-stone-500 hover:bg-stone-50 transition">🗑️ {t.rejectBtn}</button>
                       </div>
                     </div>
                   ))}
@@ -482,71 +515,84 @@ function App() {
               )}
             </main>
           )}
-        </>
+        </div>
       )}
 
-      <nav className="fixed bottom-0 inset-x-0 bg-white border-t flex justify-around py-2.5" style={{ borderColor: "#E6E0D2" }}>
-        <button onClick={() => setView("home")} className="flex flex-col items-center gap-0.5">
-          <span style={{ fontSize: 18, opacity: view === "home" ? 1 : 0.4 }}>🏠</span>
-          <span className="text-[10px] font-bold" style={{ color: view === "home" ? "#123B3B" : "#B0A996" }}>{t.navHome}</span>
+      {/* تنقل سفلي عائم واحترافي */}
+      <nav className="fixed bottom-0 inset-x-0 max-w-lg mx-auto bg-white/95 backdrop-blur-md border-t border-stone-200/80 flex justify-around py-3 px-2 z-30 shadow-lg rounded-t-3xl">
+        <button onClick={() => setView("home")} className={`flex flex-col items-center gap-1 transition ${view === "home" ? "text-[#0F3030] scale-105" : "text-stone-400 hover:text-stone-600"}`}>
+          <span className="text-xl">🏠</span>
+          <span className="text-[10px] font-bold">{t.navHome}</span>
         </button>
-        <button onClick={() => setView("list")} className="flex flex-col items-center gap-0.5">
-          <span style={{ fontSize: 18, opacity: view === "list" ? 1 : 0.4 }}>🔍</span>
-          <span className="text-[10px] font-bold" style={{ color: view === "list" ? "#123B3B" : "#B0A996" }}>{t.navSearch}</span>
+        <button onClick={() => setView("list")} className={`flex flex-col items-center gap-1 transition ${view === "list" ? "text-[#0F3030] scale-105" : "text-stone-400 hover:text-stone-600"}`}>
+          <span className="text-xl">🔍</span>
+          <span className="text-[10px] font-bold">{t.navSearch}</span>
         </button>
-        <button onClick={() => setView("register")} className="flex flex-col items-center gap-0.5">
-          <span style={{ fontSize: 18, opacity: view === "register" ? 1 : 0.4 }}>➕</span>
-          <span className="text-[10px] font-bold" style={{ color: view === "register" ? "#123B3B" : "#B0A996" }}>{t.navRegister}</span>
+        <button onClick={() => setView("register")} className={`flex flex-col items-center gap-1 transition ${view === "register" ? "text-[#0F3030] scale-105" : "text-stone-400 hover:text-stone-600"}`}>
+          <span className="text-xl">➕</span>
+          <span className="text-[10px] font-bold">{t.navRegister}</span>
         </button>
       </nav>
 
+      {/* Toast Notification */}
       {toast && (
-        <div className="fixed bottom-20 inset-x-4 z-40 bg-[#123B3B] text-white text-xs font-bold rounded-xl px-4 py-3 text-center shadow-lg">{toast}</div>
+        <div className="fixed bottom-24 inset-x-6 z-50 bg-[#0F3030] text-white text-xs font-bold rounded-2xl px-5 py-3.5 text-center shadow-xl border border-white/10 animate-fade-in">
+          {toast}
+        </div>
       )}
 
+      {/* نافذة الملف الشخصي للحرفي */}
       {selected && (
-        <div className="fixed inset-0 z-30 flex items-end justify-center" style={{ background: "rgba(18,30,30,0.5)" }} onClick={() => setSelected(null)}>
-          <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-t-3xl w-full max-w-md p-5 relative max-h-[90vh] overflow-y-auto hide-scrollbar">
-            <button onClick={() => setSelected(null)} className="absolute left-4 top-4 text-stone-400 text-lg">✕</button>
-            <div className="flex items-start gap-3 mb-4">
-              <div className="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0" style={{ background: catInfo(selected.cat).color + "1A" }}>
-                <span style={{ fontSize: 28 }}>{catInfo(selected.cat).icon}</span>
+        <div className="fixed inset-0 z-40 flex items-end justify-center bg-black/50 backdrop-blur-xs animate-fade-in" onClick={() => setSelected(null)}>
+          <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-t-3xl w-full max-w-lg p-6 relative max-h-[88vh] overflow-y-auto hide-scrollbar shadow-2xl space-y-5">
+            <button onClick={() => setSelected(null)} className="absolute left-5 top-5 w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-500 font-bold hover:bg-stone-200">✕</button>
+            
+            <div className="flex items-start gap-4">
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 shadow-sm" style={{ background: catInfo(selected.cat).color + "15", border: `1.5px solid ${catInfo(selected.cat).color}30` }}>
+                <span style={{ fontSize: 30 }}>{catInfo(selected.cat).icon}</span>
               </div>
-              <div className="flex-1">
-                <h3 className="font-black text-[#123B3B] text-base">{selected.name}</h3>
-                <p className="text-xs text-stone-500 font-bold">{craftName(selected, lang)} · {selected.exp} {t.yearsExp}</p>
-                <div className="flex items-center gap-1.5 mt-1">
+              <div className="flex-1 min-w-0 pr-6">
+                <h3 className="font-black text-[#0F3030] text-lg truncate">{selected.name}</h3>
+                <p className="text-xs text-stone-500 font-bold mt-0.5">{craftName(selected, lang)} · {selected.exp} {t.yearsExp}</p>
+                <div className="flex items-center gap-2 mt-1.5">
                   <Stars value={selected.rating} />
-                  <span className="text-xs font-bold text-stone-600">{selected.rating ? selected.rating.toFixed(1) : t.newLabel} {selected.reviews ? `(${selected.reviews} ${t.reviewsLabel})` : ""}</span>
+                  <span className="text-xs font-bold text-stone-700">{selected.rating ? selected.rating.toFixed(1) : t.newLabel} {selected.reviews ? `(${selected.reviews} ${t.reviewsLabel})` : ""}</span>
                 </div>
               </div>
-              <button onClick={() => shareCraftsman(selected)} className="text-lg" title={t.shareBtn}>🔗</button>
+              <button onClick={() => shareCraftsman(selected)} className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center text-stone-600 hover:bg-stone-200" title={t.shareBtn}>🔗</button>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-stone-500 mb-3"><span>📍</span><span>{hoodName(selected.hood, lang)}</span></div>
-            <p className="text-sm text-stone-700 leading-relaxed mb-4" style={{ background: "#F5F2EA", padding: "10px 12px", borderRadius: 12 }}>{selected.bio}</p>
 
-            {/* عرض معرض الصور في الملف الشخصي */}
+            <div className="flex items-center gap-2 text-xs font-bold text-stone-500 bg-stone-50 px-3.5 py-2.5 rounded-xl">
+              <span>📍</span><span>{hoodName(selected.hood, lang)}</span>
+            </div>
+
+            <p className="text-sm text-stone-700 leading-relaxed bg-[#F8F7F4] p-4 rounded-2xl border border-stone-200/60">{selected.bio}</p>
+
             {selected.galleryUrls && selected.galleryUrls.length > 0 && (
-              <div className="mb-5">
-                <h4 className="text-xs font-bold text-stone-500 mb-2">{t.galleryTitle}</h4>
-                <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
+              <div>
+                <h4 className="text-xs font-black text-[#0F3030] mb-2.5">{t.galleryTitle}</h4>
+                <div className="flex gap-2.5 overflow-x-auto pb-2 hide-scrollbar">
                   {selected.galleryUrls.map((url, i) => (
                     <a key={i} href={url} target="_blank" rel="noreferrer" className="shrink-0">
-                      <img src={url} alt={`عمل ${i + 1}`} className="w-24 h-24 object-cover rounded-xl border border-stone-200" />
+                      <img src={url} alt={`عمل ${i + 1}`} className="w-28 h-28 object-cover rounded-2xl border border-stone-200 shadow-xs hover:opacity-95 transition" />
                     </a>
                   ))}
                 </div>
               </div>
             )}
 
-            <div className="flex items-center justify-between mb-4 px-1">
-              <span className="text-xs font-bold text-stone-500">{t.rateThis}</span>
+            <div className="bg-stone-50 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 border border-stone-200/60">
+              <span className="text-xs font-bold text-stone-600">{t.rateThis}</span>
               <RatingInput onRate={(v) => rateCraftsman(selected, v)} />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <a href={`tel:${selected.phone}`} className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-white text-sm" style={{ background: "#123B3B" }}>📞 {t.call}</a>
-              <a href={`https://wa.me/213${selected.phone.slice(1)}`} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-white text-sm" style={{ background: "#3DAA5C" }}>💬 {t.whatsapp}</a>
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <a href={`tel:${selected.phone}`} className="flex items-center justify-center gap-2.5 py-3.5 rounded-2xl font-black text-white text-sm bg-[#0F3030] hover:bg-[#164545] shadow-md transition">
+                <span>📞</span><span>{t.call}</span>
+              </a>
+              <a href={`https://wa.me/213${selected.phone.slice(1)}`} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2.5 py-3.5 rounded-2xl font-black text-white text-sm bg-emerald-600 hover:bg-emerald-700 shadow-md transition">
+                <span>💬</span><span>{t.whatsapp}</span>
+              </a>
             </div>
           </div>
         </div>
@@ -570,77 +616,86 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
   };
 
   return (
-    <main className="px-4 pb-24 pt-4">
-      <div className="flex items-center gap-2 mb-5">
-        <button onClick={onBack} className="text-[#123B3B]">{lang === "ar" ? "←" : "→"}</button>
-        <h2 className="font-black text-[#123B3B] text-base">{t.registerTitle}</h2>
+    <main className="space-y-4">
+      <div className="flex items-center gap-3 mb-2">
+        <button onClick={onBack} className="w-9 h-9 rounded-xl bg-white border border-stone-200 flex items-center justify-center text-[#0F3030] font-bold">
+          {lang === "ar" ? "←" : "→"}
+        </button>
+        <h2 className="font-black text-[#0F3030] text-base">{t.registerTitle}</h2>
       </div>
-      <div className="space-y-4">
-        <Field label={t.fullName}><input value={form.name} onChange={(e) => update("name", e.target.value)} className="ipt" /></Field>
+
+      <div className="bg-white rounded-3xl p-6 border border-stone-200 shadow-sm space-y-4">
+        <Field label={t.fullName}><input value={form.name} onChange={(e) => update("name", e.target.value)} className="ipt" placeholder="مثال: أحمد بن محمد" /></Field>
+        
         <Field label={t.craft}>
           <select value={form.cat} onChange={(e) => update("cat", e.target.value)} className="ipt">
             {CATEGORIES.map((c) => <option key={c.id} value={c.id}>{c.name[lang]}</option>)}
           </select>
         </Field>
+
         {form.cat === "other" && (
-          <Field label={t.otherCraft}><input value={form.otherCat} onChange={(e) => update("otherCat", e.target.value)} className="ipt" /></Field>
+          <Field label={t.otherCraft}><input value={form.otherCat} onChange={(e) => update("otherCat", e.target.value)} className="ipt" placeholder="اكتب اسم الحرفة هنا" /></Field>
         )}
+
         <Field label={t.neighborhood}>
           <select value={form.hood} onChange={(e) => update("hood", e.target.value)} className="ipt">
             {NEIGHBORHOODS.map((h) => <option key={h.ar} value={h.ar}>{h[lang]}</option>)}
           </select>
         </Field>
-        <Field label={t.experience}><input value={form.exp} onChange={(e) => update("exp", e.target.value.replace(/\D/g, ""))} className="ipt" inputMode="numeric" /></Field>
+
+        <Field label={t.experience}><input value={form.exp} onChange={(e) => update("exp", e.target.value.replace(/\D/g, ""))} className="ipt" placeholder="عدد سنوات الخبرة (مثال: 5)" inputMode="numeric" /></Field>
+        
         <Field label={t.phone}><input value={form.phone} onChange={(e) => update("phone", e.target.value.replace(/\D/g, ""))} className="ipt" placeholder="0550123456" dir="ltr" inputMode="numeric" /></Field>
         
-        {/* حقل رفع صور معرض الأعمال الجديد */}
         <Field label={t.chooseImages}>
-          <input 
-            type="file" 
-            accept="image/*" 
-            multiple 
-            onChange={(e) => setFiles(Array.from(e.target.files))} 
-            className="ipt bg-white" 
-            style={{ padding: "8px 12px" }} 
-          />
-          <small className="text-[10px] text-stone-500 mt-1 block font-bold">{t.galleryNote}</small>
+          <input type="file" accept="image/*" multiple onChange={(e) => setFiles(Array.from(e.target.files))} className="ipt file:ml-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#0F3030] file:text-white hover:file:bg-[#164545] cursor-pointer" />
+          <small className="text-[11px] text-stone-400 mt-1.5 block font-bold">{t.galleryNote}</small>
         </Field>
 
-        <Field label={t.bio}><textarea value={form.bio} onChange={(e) => update("bio", e.target.value)} className="ipt" rows="3"></textarea></Field>
-        {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
+        <Field label={t.bio}><textarea value={form.bio} onChange={(e) => update("bio", e.target.value)} className="ipt" rows="3" placeholder="اكتب تفاصيل خدماتك، أوقات العمل، والمنطقة التي تغطيها..."></textarea></Field>
         
-        <button onClick={submit} disabled={saving} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 transition" style={{ background: "#D9A441", opacity: saving ? 0.7 : 1 }}>
+        {error && <p className="text-xs text-red-600 font-bold bg-red-50 p-3 rounded-xl border border-red-200">{error}</p>}
+        
+        <button onClick={submit} disabled={saving} 
+          className="w-full py-4 rounded-2xl font-black text-white text-sm bg-amber-500 hover:bg-amber-600 transition shadow-md flex items-center justify-center gap-2 disabled:opacity-70">
           {saving ? (uploadingText || t.submitting) : t.submitBtn}
         </button>
-        <p className="text-[11px] text-stone-400 text-center leading-relaxed">{t.reviewNote}</p>
+        
+        <p className="text-[11px] text-stone-400 text-center leading-relaxed px-2">{t.reviewNote}</p>
       </div>
-      <style>{`.ipt { width: 100%; border: 1.5px solid #DCD5C4; border-radius: 14px; padding: 11px 14px; font-size: 14px; outline: none; background: white; font-family: inherit; } .ipt:focus { border-color: #123B3B; }`}</style>
+
+      <style>{`
+        .ipt { width: 100%; border: 1.5px solid #E6E2D8; border-radius: 16px; padding: 12px 16px; font-size: 14px; outline: none; background: #F8F7F4; font-family: inherit; color: #2D2A26; transition: all 0.2s; } 
+        .ipt:focus { border-color: #0F3030; background: white; box-shadow: 0 0 0 3px rgba(15,48,48,0.08); }
+      `}</style>
     </main>
   );
 }
 
 function Field({ label, children }) {
-  return (<div><label className="text-xs font-bold text-[#123B3B] mb-1.5 block">{label}</label>{children}</div>);
+  return (<div className="space-y-1.5"><label className="text-xs font-black text-[#0F3030] block">{label}</label>{children}</div>);
 }
 
 function CraftCard({ c, cat, lang, t, onClick }) {
   return (
-    <button onClick={onClick} className="w-full bg-white rounded-2xl p-3.5 flex items-center gap-3 text-start shadow-sm border" style={{ borderColor: "#E6E0D2" }}>
-      <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: cat.color + "1A" }}>
-        <span style={{ fontSize: 20 }}>{cat.icon}</span>
+    <button onClick={onClick} className="w-full bg-white rounded-2xl p-4 flex items-center gap-3.5 text-start border border-stone-200/80 shadow-xs hover:shadow-md transition group">
+      <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 transition transform group-hover:scale-105" style={{ background: cat.color + "15", border: `1px solid ${cat.color}30` }}>
+        <span style={{ fontSize: 24 }}>{cat.icon}</span>
       </div>
       <div className="flex-1 min-w-0">
-        <span className="font-black text-[#123B3B] text-sm truncate block">{c.name}</span>
-        <p className="text-[11px] text-stone-500 truncate">{craftName(c, lang)} · {hoodName(c.hood, lang)}</p>
-        <div className="flex items-center gap-1 mt-0.5">
+        <span className="font-black text-[#0F3030] text-sm truncate block">{c.name}</span>
+        <p className="text-xs text-stone-500 font-bold truncate mt-0.5">{craftName(c, lang)} · {hoodName(c.hood, lang)}</p>
+        <div className="flex items-center gap-2 mt-1.5">
           <Stars value={c.rating} />
-          <span className="text-[10px] text-stone-400">{c.reviews ? `(${c.reviews})` : t.newLabel}</span>
+          <span className="text-[11px] font-bold text-stone-500">{c.rating ? c.rating.toFixed(1) : t.newLabel}</span>
           {c.galleryUrls && c.galleryUrls.length > 0 && (
-            <span className="text-[10px] text-stone-400 border-r border-stone-300 pr-1 mr-1">📸 {c.galleryUrls.length}</span>
+            <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200/60">📸 {c.galleryUrls.length}</span>
           )}
         </div>
       </div>
-      <span className="text-stone-300">‹</span>
+      <div className="w-8 h-8 rounded-full bg-stone-50 flex items-center justify-center text-stone-400 group-hover:bg-[#0F3030] group-hover:text-white transition">
+        {dir === "rtl" ? "‹" : "›"}
+      </div>
     </button>
   );
 }
