@@ -31,7 +31,7 @@ const SB_HEADERS = {
   Authorization: `Bearer ${SUPABASE_KEY}`,
   "Content-Type": "application/json",
 };
-const ADMIN_PIN = "AdminSecret2026"; // تم تحديث كلمة السر هنا
+const ADMIN_PIN = "AdminSecret2026";
 
 const TELEGRAM_TOKEN = "8610113650:AAHoX6Zan8q7q7Y7J0WTXBDP9klNCTppa2U";
 const TELEGRAM_CHAT_ID = "1109544250";
@@ -298,7 +298,6 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col max-w-lg mx-auto bg-[#F8F7F4] shadow-2xl relative pb-20" dir={dir}>
-      {/* Header احترافي */}
       <header className="glass-header sticky top-0 z-30 px-5 pt-6 pb-5 text-white shadow-md rounded-b-3xl">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
@@ -340,7 +339,6 @@ function App() {
         <div className="flex-1 px-4 pt-5 pb-6">
           {view === "home" && (
             <main className="space-y-6">
-              {/* اختيار الأحياء */}
               <div className="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
                 {[t.all, ...NEIGHBORHOODS.map((h) => h[lang])].map((h, idx) => {
                   const hoodValue = idx === 0 ? t.all : NEIGHBORHOODS[idx - 1].ar;
@@ -356,7 +354,6 @@ function App() {
                 })}
               </div>
 
-              {/* الأقسام والتصنيفات */}
               <div>
                 <div className="flex items-center justify-between mb-3.5">
                   <h2 className="font-black text-[#0F3030] text-sm">{t.chooseCategory}</h2>
@@ -378,14 +375,12 @@ function App() {
                 </div>
               </div>
 
-              {/* زر التسجيل البارز */}
               <button onClick={() => setView("register")} 
                 className="w-full relative overflow-hidden group bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white p-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 shadow-md transition transform active:scale-98">
                 <span className="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center text-base">+</span>
                 <span>{t.registerCta}</span>
               </button>
 
-              {/* قائمة الأعلى تقييماً */}
               <div>
                 <div className="flex items-center justify-between mb-3.5">
                   <h2 className="font-black text-[#0F3030] text-sm">{t.topRated}</h2>
@@ -421,7 +416,6 @@ function App() {
                 </div>
               </div>
 
-              {/* فلاتر أفقية سريعة */}
               <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
                 <button onClick={() => setActiveCat(null)} 
                   className={`whitespace-nowrap text-xs font-bold px-3.5 py-2 rounded-xl border transition ${!activeCat ? "bg-[#0F3030] text-white border-[#0F3030]" : "bg-white text-stone-600 border-stone-200"}`}>
@@ -518,7 +512,6 @@ function App() {
         </div>
       )}
 
-      {/* تنقل سفلي عائم واحترافي */}
       <nav className="fixed bottom-0 inset-x-0 max-w-lg mx-auto bg-white/95 backdrop-blur-md border-t border-stone-200/80 flex justify-around py-3 px-2 z-30 shadow-lg rounded-t-3xl">
         <button onClick={() => setView("home")} className={`flex flex-col items-center gap-1 transition ${view === "home" ? "text-[#0F3030] scale-105" : "text-stone-400 hover:text-stone-600"}`}>
           <span className="text-xl">🏠</span>
@@ -534,16 +527,14 @@ function App() {
         </button>
       </nav>
 
-      {/* Toast Notification */}
       {toast && (
         <div className="fixed bottom-24 inset-x-6 z-50 bg-[#0F3030] text-white text-xs font-bold rounded-2xl px-5 py-3.5 text-center shadow-xl border border-white/10 animate-fade-in">
           {toast}
         </div>
       )}
 
-      {/* نافذة الملف الشخصي للحرفي */}
       {selected && (
-        <div className="fixed inset-0 z-40 flex items-end justify-center bg-black/50 backdrop-blur-xs animate-fade-in" onClick={() => setSelected(null)}>
+        <div className="fixed inset-0 z-40 flex items-end justify-center bg-black/50 backdrop-blur-sm animate-fade-in" onClick={() => setSelected(null)}>
           <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-t-3xl w-full max-w-lg p-6 relative max-h-[88vh] overflow-y-auto hide-scrollbar shadow-2xl space-y-5">
             <button onClick={() => setSelected(null)} className="absolute left-5 top-5 w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-500 font-bold hover:bg-stone-200">✕</button>
             
