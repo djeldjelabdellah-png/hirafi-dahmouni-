@@ -8,7 +8,6 @@
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<!-- مكتبة EmailJS -->
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/emailjs.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <style>
@@ -25,10 +24,11 @@
 <script type="text/babel">
 const { useState, useEffect, useMemo } = React;
 
-// تهيئة مفتاح EmailJS العام فور التشغيل
 try {
-  emailjs.init("1YVvuqYAcvu8EWWaS");
-} catch (e) { console.error(e); }
+  if (window.emailjs) {
+    emailjs.init("1YVvuqYAcvu8EWWaS");
+  }
+} catch (e) { console.error("EmailJS init error:", e); }
 
 const SUPABASE_URL = "https://epslzxcwurnueboeujbt.supabase.co";
 const SUPABASE_KEY = "sb_publishable_1KmMcVM-XtVlajEStTAL7g_0HropMG5";
@@ -581,7 +581,6 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
     setGeneratedOtp(randomCode);
 
     try {
-      // إرسال القيم بأكثر من مفتاح محتمل لتجنب أخطاء تطابق القالب في EmailJS
       const templateParams = {
         to_email: form.email,
         email: form.email,
@@ -734,8 +733,11 @@ function CraftCard({ c, cat, lang, t, onClick }) {
   );
 }
 
-const root = ReactDOM.createRoot(getElementById("root") || document.getElementById("root"));
-root.render(<App />);
+const rootElement = document.getElementById("root");
+if (rootElement) {
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(<App />);
+}
 </script>
 </body>
 </html>
