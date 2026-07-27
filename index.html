@@ -1,652 +1,179 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>حِرَفِي - دليل الحرفيين والمهنيين لمدينة الدحموني</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
-  body { font-family: 'Tajawal', sans-serif; background:#F5F2EA; margin:0; }
-  .spinner { border: 3px solid #DCD5C4; border-top-color: #123B3B; border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  /* إخفاء شريط التمرير لمعرض الصور مع الإبقاء على إمكانية السحب */
-  .hide-scrollbar::-webkit-scrollbar { display: none; }
-  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-</style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>حرفي - دليل الحرفيين والمهنيين</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Google Fonts (Tajawal) -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Tajawal', sans-serif; }
+    </style>
 </head>
-<body>
-<div id="root"></div>
-<script type="text/babel">
-const { useState, useEffect, useMemo } = React;
+<body class="bg-slate-50 text-slate-800">
 
-const SUPABASE_URL = "https://epslzxcwurnueboeujbt.supabase.co";
-const SUPABASE_KEY = "sb_publishable_1KmMcVM-XtVlajEStTAL7g_0HropMG5";
-const SB_HEADERS = {
-  apikey: SUPABASE_KEY,
-  Authorization: `Bearer ${SUPABASE_KEY}`,
-  "Content-Type": "application/json",
-};
-const ADMIN_PIN = "p@ssw0rd";
+    <div id="root"></div>
 
-const TELEGRAM_TOKEN = "8610113650:AAHoX6Zan8q7q7Y7J0WTXBDP9klNCTppa2U";
-const TELEGRAM_CHAT_ID = "1109544250";
+    <script type="text/babel">
+        function App() {
+            const [currentTab, setCurrentTab] = React.useState('home');
+            const [searchQuery, setSearchQuery] = React.useState('');
 
-const CATEGORIES = [
-  { id: "plumb", name: { ar: "سباكة", en: "Plumbing" }, icon: "🔧", color: "#2C6E6E" },
-  { id: "elec", name: { ar: "كهرباء", en: "Electrical" }, icon: "⚡", color: "#D9A441" },
-  { id: "carp", name: { ar: "نجارة", en: "Carpentry" }, icon: "🔨", color: "#8B5E3C" },
-  { id: "paint", name: { ar: "دهان", en: "Painting" }, icon: "🎨", color: "#5C7A8A" },
-  { id: "build", name: { ar: "بناء", en: "Construction" }, icon: "🏗️", color: "#7A5C4B" },
-  { id: "tailor", name: { ar: "خياطة", en: "Tailoring" }, icon: "✂️", color: "#B5566B" },
-  { id: "mech", name: { ar: "ميكانيك", en: "Mechanic" }, icon: "🚗", color: "#3D5A6C" },
-  { id: "clean", name: { ar: "تنظيف", en: "Cleaning" }, icon: "✨", color: "#4A8B6F" },
-  { id: "other", name: { ar: "أخرى", en: "Other" }, icon: "➕", color: "#7D7568" },
-];
+            // قائمة تجريبية للحرفيين
+            const artisans = [
+                { id: 1, name: 'محمد أمين', profession: 'كهربائي بناء وصيانة', phone: '0550123456', rating: 4.8, city: 'الجزائر' },
+                { id: 2, name: 'إبراهيم خليل', profession: 'سباك وصحي', phone: '0661987654', rating: 4.9, city: 'الجزائر' },
+                { id: 3, name: 'عبد القادر بن عيسى', profession: 'نجاب أثاث وتصميم', phone: '0770554433', rating: 4.7, city: 'الجزائر' },
+                { id: 4, name: 'سمير بوعلام', profession: 'مصلح مكيفات وأجهزة', phone: '0540112233', rating: 4.6, city: 'الجزائر' }
+            ];
 
-const NEIGHBORHOODS = [
-  { ar: "حي مزيان", en: "Mezyan" },
-  { ar: "حي المحطة", en: "Al Mahata" },
-  { ar: "حي 100 مسكن", en: "100 Logements" },
-  { ar: "حي المقبرة", en: "Al Maqbra" },
-  { ar: "حي البناء الذاتي", en: "Auto-Construction" },
-  { ar: "حي العقيد لطفي", en: "Colonel Lotfi" },
-  { ar: "حي 300 سكن", en: "300 Logements" },
-];
+            const filteredArtisans = artisans.filter(item => 
+                item.name.includes(searchQuery) || item.profession.includes(searchQuery)
+            );
 
-const STRINGS = {
-  ar: {
-    title: "حِرَفِي", subtitle: "دليل الحرفيين والمهنيين لمدينة الدحموني",
-    searchPlaceholder: "ابحث عن حرفة، اسم، أو خدمة...", chooseCategory: "اختر التصنيف",
-    registerCta: "سجّل كحرفي في المنصة", topRated: "الأعلى تقييماً", viewAll: "عرض الكل ←",
-    noCraftsmenYet: "لا يوجد حرفيون بعد — كن أول من يسجّل", allCrafts: "كل الحرف",
-    noResults: "لا توجد نتائج مطابقة", tryOther: "جرّب تصنيفاً أو حياً آخر", loading: "جاري التحميل...",
-    navHome: "الرئيسية", navSearch: "البحث", navRegister: "أنا حرفي", yearsExp: "سنوات خبرة",
-    newLabel: "جديد", reviewsLabel: "تقييم", call: "اتصال", whatsapp: "واتساب",
-    registerTitle: "تسجيل حرفي جديد", fullName: "الاسم الكامل", craft: "الحرفة / التخصص",
-    otherCraft: "اكتب اسم الحرفة", neighborhood: "الحي / المنطقة", experience: "سنوات الخبرة",
-    phone: "رقم الهاتف", bio: "نبذة عن الخدمات المقدمة", submitBtn: "إرسال للمراجعة",
-    submitting: "جاري الإرسال...", uploadingImages: "جاري رفع الصور...", chooseImages: "صور الأعمال (اختياري)",
-    galleryNote: "يمكنك تحديد أكثر من صورة معاً", galleryTitle: "معرض الأعمال",
-    reviewNote: "سيُراجع طلبك من طرف الإدارة قبل ظهوره في المنصة، عادة خلال 24 ساعة",
-    requiredError: "الرجاء تعبئة الاسم ورقم الهاتف والوصف", otherCraftError: "الرجاء كتابة اسم الحرفة",
-    phoneError: "رقم الهاتف غير صحيح (مثال: 0550123456)", toastSubmitted: "تم إرسال طلبك، سيُنشر بعد المراجعة",
-    toastFailSubmit: "تعذّر إرسال الطلب، حاول مجدداً", toastFailConnect: "تعذّر الاتصال بالخادم",
-    adminTitle: "لوحة المراجعة", adminPinPrompt: "أدخل رمز الإدارة للمتابعة", adminPinPlaceholder: "الرمز السري",
-    adminPinWrong: "رمز خاطئ", adminLogin: "دخول", adminNoPending: "لا توجد طلبات بانتظار المراجعة",
-    pendingLabel: "قيد المراجعة", approveBtn: "قبول ونشر", rejectBtn: "رفض", all: "الكل",
-    rateThis: "قيّم هذا الحرفي", thanksRating: "شكراً لتقييمك!", shareBtn: "مشاركة", shareCopied: "تم نسخ الرابط",
-  },
-  en: {
-    title: "Hirafi", subtitle: "Craftsmen & Tradespeople Directory — Dahmouni",
-    searchPlaceholder: "Search a trade, name, or service...", chooseCategory: "Choose a category",
-    registerCta: "Register as a craftsman", topRated: "Top Rated", viewAll: "View all →",
-    noCraftsmenYet: "No craftsmen yet — be the first to register", allCrafts: "All trades",
-    noResults: "No matching results", tryOther: "Try another category or neighborhood", loading: "Loading...",
-    navHome: "Home", navSearch: "Search", navRegister: "I'm a craftsman", yearsExp: "years experience",
-    newLabel: "New", reviewsLabel: "reviews", call: "Call", whatsapp: "WhatsApp",
-    registerTitle: "New Craftsman Registration", fullName: "Full name", craft: "Trade / Specialty",
-    otherCraft: "Type your trade", neighborhood: "Neighborhood", experience: "Years of experience",
-    phone: "Phone number", bio: "Brief description of services", submitBtn: "Submit for review",
-    submitting: "Submitting...", uploadingImages: "Uploading images...", chooseImages: "Portfolio images (Optional)",
-    galleryNote: "You can select multiple images", galleryTitle: "Portfolio",
-    reviewNote: "Your request will be reviewed by an admin before publishing, usually within 24 hours",
-    requiredError: "Please fill in name, phone and description", otherCraftError: "Please type your trade name",
-    phoneError: "Invalid phone number (e.g. 0550123456)", toastSubmitted: "Your request was submitted for review",
-    toastFailSubmit: "Failed to submit, try again", toastFailConnect: "Could not connect to server",
-    adminTitle: "Review Panel", adminPinPrompt: "Enter admin code to continue", adminPinPlaceholder: "Secret code",
-    adminPinWrong: "Wrong code", adminLogin: "Enter", adminNoPending: "No pending requests",
-    pendingLabel: "Pending review", approveBtn: "Approve & publish", rejectBtn: "Reject", all: "All",
-    rateThis: "Rate this craftsman", thanksRating: "Thanks for rating!", shareBtn: "Share", shareCopied: "Link copied",
-  },
-};
-
-const catInfo = (id) => CATEGORIES.find((c) => c.id === id) || CATEGORIES[0];
-const craftName = (c, lang) => (c.cat === "other" && c.otherCat ? c.otherCat : catInfo(c.cat).name[lang]);
-const hoodName = (hoodAr, lang) => {
-  const h = NEIGHBORHOODS.find((n) => n.ar === hoodAr);
-  return h ? h[lang] : hoodAr;
-};
-
-// تحديث دوال قاعدة البيانات لتشمل روابط الصور
-const toDb = (c) => ({
-  name: c.name, cat: c.cat, other_cat: c.otherCat || null, hood: c.hood,
-  exp: c.exp, phone: c.phone, bio: c.bio, status: c.status || "pending",
-  rating: c.rating || 0, reviews: c.reviews || 0, gallery_urls: c.galleryUrls || []
-});
-const fromDb = (r) => ({
-  id: r.id, name: r.name, cat: r.cat, otherCat: r.other_cat, hood: r.hood,
-  exp: r.exp, phone: r.phone, bio: r.bio, status: r.status, rating: r.rating, 
-  reviews: r.reviews, galleryUrls: r.gallery_urls || []
-});
-
-function Stars({ value }) {
-  return (
-    <span style={{ letterSpacing: "1px" }}>
-      {[1, 2, 3, 4, 5].map((i) => (
-        <span key={i} style={{ color: i <= Math.round(value || 0) ? "#D9A441" : "#D6D0C2", fontSize: 13 }}>★</span>
-      ))}
-    </span>
-  );
-}
-
-function RatingInput({ onRate }) {
-  const [hover, setHover] = useState(0);
-  const [done, setDone] = useState(false);
-  if (done) return null;
-  return (
-    <span style={{ letterSpacing: "2px", fontSize: 22, cursor: "pointer" }}>
-      {[1, 2, 3, 4, 5].map((i) => (
-        <span key={i}
-          onMouseEnter={() => setHover(i)}
-          onMouseLeave={() => setHover(0)}
-          onClick={() => { onRate(i); setDone(true); }}
-          style={{ color: i <= hover ? "#D9A441" : "#D6D0C2" }}>★</span>
-      ))}
-    </span>
-  );
-}
-
-function App() {
-  const [lang, setLang] = useState("ar");
-  const t = STRINGS[lang];
-  const dir = lang === "ar" ? "rtl" : "ltr";
-
-  const [list, setList] = useState(null);
-  const [query, setQuery] = useState("");
-  const [activeCat, setActiveCat] = useState(null);
-  const [activeHood, setActiveHood] = useState(t.all);
-  const [selected, setSelected] = useState(null);
-  const [view, setView] = useState("home");
-  const [toast, setToast] = useState(null);
-  const [saving, setSaving] = useState(false);
-  const [uploadingText, setUploadingText] = useState("");
-  const [adminUnlocked, setAdminUnlocked] = useState(false);
-  const [pinInput, setPinInput] = useState("");
-  const [pinError, setPinError] = useState(false);
-
-  useEffect(() => { setActiveHood(t.all); }, [lang]);
-  useEffect(() => { document.documentElement.setAttribute("dir", dir); document.documentElement.setAttribute("lang", lang); }, [dir, lang]);
-
-  const fetchList = async () => {
-    try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?select=*&order=created_at.desc`, { headers: SB_HEADERS });
-      const data = await res.json();
-      setList(Array.isArray(data) ? data.map(fromDb) : []);
-    } catch (e) {
-      setList([]);
-      setToast(t.toastFailConnect);
-    }
-  };
-
-  useEffect(() => { fetchList(); }, []);
-
-  const registerCraftsman = async (data) => {
-    setSaving(true);
-    let uploadedUrls = [];
-    
-    try {
-      // 1. رفع الصور إذا وجدت
-      if (data.files && data.files.length > 0) {
-        setUploadingText(t.uploadingImages);
-        for (const file of data.files) {
-          // توليد اسم عشوائي آمن لتجنب مشكلة الرموز العربية في أسماء الملفات
-          const ext = file.name.split('.').pop();
-          const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
-          
-          const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/craftsmen-gallery/${fileName}`, {
-            method: 'POST',
-            headers: {
-              apikey: SUPABASE_KEY,
-              Authorization: `Bearer ${SUPABASE_KEY}`,
-              'Content-Type': file.type
-            },
-            body: file
-          });
-          
-          if (uploadRes.ok) {
-            uploadedUrls.push(`${SUPABASE_URL}/storage/v1/object/public/craftsmen-gallery/${fileName}`);
-          }
-        }
-        setUploadingText("");
-      }
-
-      // 2. إدخال البيانات في قاعدة البيانات
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen`, {
-        method: "POST",
-        headers: { ...SB_HEADERS, Prefer: "return=representation" },
-        body: JSON.stringify(toDb({ ...data, galleryUrls: uploadedUrls, status: "pending", rating: 0, reviews: 0 })),
-      });
-      if (!res.ok) throw new Error("insert failed");
-
-      // 3. إرسال الإشعار الفوري إلى تلغرام
-      try {
-        const selectedCat = CATEGORIES.find(c => c.id === data.cat);
-        const craftTitle = data.cat === "other" ? data.otherCat : (selectedCat ? selectedCat.name.ar : data.cat);
-        const imagesNote = uploadedUrls.length > 0 ? `\n📸 **مرفق:** ${uploadedUrls.length} صور للأعمال` : "";
-        const telegramMessage = `🛠 **تسجيل حرفي جديد على المنصة!**\n\n` +
-                                `👤 **الاسم الكامل:** ${data.name}\n` +
-                                `📞 **رقم الهاتف:** ${data.phone}\n` +
-                                `🧰 **الحرفة:** ${craftTitle}\n` +
-                                `📍 **المنطقة/الحي:** ${data.hood}\n` +
-                                `⭐ **خبرة:** ${data.exp} سنوات\n` +
-                                `📝 **الوصف:** ${data.bio}` + imagesNote;
-
-        fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: telegramMessage, parse_mode: "Markdown" })
-        });
-      } catch (tgError) { console.error("Telegram notification failed:", tgError); }
-
-      await fetchList();
-      setView("home");
-      setToast(t.toastSubmitted);
-      setTimeout(() => setToast(null), 3500);
-    } catch (e) {
-      setToast(t.toastFailSubmit);
-      setUploadingText("");
-    }
-    setSaving(false);
-  };
-
-  const approveCraftsman = async (id) => {
-    try {
-      await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${id}`, {
-        method: "PATCH", headers: SB_HEADERS, body: JSON.stringify({ status: "approved" }),
-      });
-      await fetchList();
-    } catch (e) { setToast(t.toastFailConnect); }
-  };
-
-  const rejectCraftsman = async (id) => {
-    try {
-      await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${id}`, { method: "DELETE", headers: SB_HEADERS });
-      await fetchList();
-    } catch (e) { setToast(t.toastFailConnect); }
-  };
-
-  const rateCraftsman = async (craftsman, value) => {
-    const newReviews = (craftsman.reviews || 0) + 1;
-    const newRating = (((craftsman.rating || 0) * (craftsman.reviews || 0)) + value) / newReviews;
-    try {
-      await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${craftsman.id}`, {
-        method: "PATCH", headers: SB_HEADERS,
-        body: JSON.stringify({ rating: newRating, reviews: newReviews }),
-      });
-      await fetchList();
-      setToast(t.thanksRating);
-      setTimeout(() => setToast(null), 2500);
-    } catch (e) { setToast(t.toastFailConnect); }
-  };
-
-  const shareCraftsman = (c) => {
-    const url = `${window.location.href.split("?")[0]}?craftsman=${c.id}`;
-    if (navigator.share) {
-      navigator.share({ title: c.name, text: craftName(c, lang), url });
-    } else {
-      navigator.clipboard.writeText(url);
-      setToast(t.shareCopied);
-      setTimeout(() => setToast(null), 2000);
-    }
-  };
-
-  const approved = useMemo(() => (list || []).filter((c) => c.status === "approved"), [list]);
-  const pending = useMemo(() => (list || []).filter((c) => c.status === "pending"), [list]);
-
-  const filtered = useMemo(() => {
-    return approved.filter((c) => {
-      const matchCat = activeCat ? c.cat === activeCat : true;
-      const matchHood = activeHood === t.all ? true : c.hood === activeHood;
-      const matchQuery = query ? c.name.includes(query) || craftName(c, lang).includes(query) || c.bio.includes(query) : true;
-      return matchCat && matchHood && matchQuery;
-    }).sort((a, b) => (b.rating || 0) - (a.rating || 0));
-  }, [approved, query, activeCat, activeHood, lang]);
-
-  return (
-    <div style={{ minHeight: "100vh" }} dir={dir}>
-      <header className="sticky top-0 z-20 px-4 pt-5 pb-4" style={{ background: "#123B3B" }}>
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-white font-black text-xl leading-tight">{t.title}</h1>
-            <p className="text-[11px]" style={{ color: "#8FBFBF" }}>{t.subtitle}</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button onClick={() => setLang(lang === "ar" ? "en" : "ar")}
-              className="px-2.5 h-9 rounded-full flex items-center justify-center gap-1 text-white text-xs font-bold" style={{ background: "#1B4B4B" }}>
-              🌐 {lang === "ar" ? "EN" : "AR"}
-            </button>
-            <div onClick={() => setView("admin")} className="w-11 h-11 rounded-full flex items-center justify-center text-white text-lg" style={{ background: "#D9A441", cursor: "pointer" }}>⚙️</div>
-          </div>
-        </div>
-        {(view === "home" || view === "list") && (
-          <div className="flex items-center gap-2 rounded-2xl px-3 py-2.5" style={{ background: "#1B4B4B" }}>
-            <span style={{ opacity: 0.6 }}>🔍</span>
-            <input
-              value={query}
-              onChange={(e) => { setQuery(e.target.value); setView("list"); }}
-              placeholder={t.searchPlaceholder}
-              className="bg-transparent outline-none text-sm text-white placeholder-[#8FBFBF] flex-1"
-            />
-          </div>
-        )}
-      </header>
-
-      {list === null ? (
-        <div className="flex flex-col items-center justify-center py-24 text-stone-400 gap-2">
-          <div className="spinner"></div>
-          <span className="text-xs font-bold">{t.loading}</span>
-        </div>
-      ) : (
-        <>
-          {view === "home" && (
-            <main className="px-4 pb-24">
-              <div className="flex gap-2 overflow-x-auto py-4 hide-scrollbar">
-                {[t.all, ...NEIGHBORHOODS.map((h) => h[lang])].map((h, idx) => {
-                  const hoodValue = idx === 0 ? t.all : NEIGHBORHOODS[idx - 1].ar;
-                  return (
-                    <button key={h} onClick={() => setActiveHood(hoodValue)} className="whitespace-nowrap text-xs font-bold px-3.5 py-2 rounded-full border transition"
-                      style={activeHood === hoodValue ? { background: "#123B3B", color: "white", borderColor: "#123B3B" } : { background: "white", color: "#123B3B", borderColor: "#DCD5C4" }}>
-                      {h}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <h2 className="font-black text-[#123B3B] text-sm mb-3 mt-2">{t.chooseCategory}</h2>
-              <div className="grid grid-cols-4 gap-3 mb-6">
-                {CATEGORIES.map((c) => {
-                  const count = approved.filter((x) => x.cat === c.id).length;
-                  return (
-                    <button key={c.id} onClick={() => { setActiveCat(c.id); setView("list"); }} className="flex flex-col items-center gap-1.5">
-                      <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm relative" style={{ background: c.color + "1A", border: `1.5px solid ${c.color}33` }}>
-                        <span style={{ fontSize: 22 }}>{c.icon}</span>
-                        {count > 0 && <span className="absolute -top-1.5 -left-1.5 text-[9px] font-black text-white rounded-full w-4 h-4 flex items-center justify-center" style={{ background: c.color }}>{count}</span>}
-                      </div>
-                      <span className="text-[11px] font-bold text-[#3A3A3A]">{c.name[lang]}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              <button onClick={() => setView("register")} className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-white text-sm mb-6" style={{ background: "#D9A441" }}>
-                <span>+</span> {t.registerCta}
-              </button>
-
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="font-black text-[#123B3B] text-sm">{t.topRated}</h2>
-                <button onClick={() => setView("list")} className="text-[11px] font-bold" style={{ color: "#D9A441" }}>{t.viewAll}</button>
-              </div>
-              <div className="space-y-3">
-                {approved.length === 0 ? (
-                  <p className="text-center text-xs text-stone-400 py-6">{t.noCraftsmenYet}</p>
-                ) : (
-                  [...approved].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 3).map((c) => (
-                    <CraftCard key={c.id} c={c} cat={catInfo(c.cat)} lang={lang} t={t} onClick={() => setSelected(c)} />
-                  ))
-                )}
-              </div>
-            </main>
-          )}
-
-          {view === "list" && (
-            <main className="px-4 pb-24 pt-4">
-              <div className="flex items-center gap-2 mb-4">
-                <button onClick={() => { setView("home"); setActiveCat(null); setQuery(""); }} className="text-[#123B3B]">{dir === "rtl" ? "←" : "→"}</button>
-                <h2 className="font-black text-[#123B3B] text-base flex-1">
-                  {activeCat ? catInfo(activeCat).name[lang] : t.navSearch}
-                  <span className="text-xs font-normal text-stone-500"> ({filtered.length})</span>
-                </h2>
-              </div>
-
-              <div className="flex gap-2 overflow-x-auto pb-3 hide-scrollbar">
-                <button onClick={() => setActiveCat(null)} className="whitespace-nowrap text-[11px] font-bold px-3 py-1.5 rounded-full border"
-                  style={!activeCat ? { background: "#123B3B", color: "white", borderColor: "#123B3B" } : { background: "white", color: "#123B3B", borderColor: "#DCD5C4" }}>
-                  {t.allCrafts}
-                </button>
-                {CATEGORIES.map((c) => (
-                  <button key={c.id} onClick={() => setActiveCat(c.id)} className="whitespace-nowrap text-[11px] font-bold px-3 py-1.5 rounded-full border"
-                    style={activeCat === c.id ? { background: c.color, color: "white", borderColor: c.color } : { background: "white", color: "#123B3B", borderColor: "#DCD5C4" }}>
-                    {c.name[lang]}
-                  </button>
-                ))}
-              </div>
-
-              {filtered.length === 0 ? (
-                <div className="text-center py-16 text-stone-400">
-                  <div style={{ fontSize: 32 }} className="mb-3">🗂️</div>
-                  <p className="text-sm font-bold">{t.noResults}</p>
-                  <p className="text-xs mt-1">{t.tryOther}</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {filtered.map((c) => <CraftCard key={c.id} c={c} cat={catInfo(c.cat)} lang={lang} t={t} onClick={() => setSelected(c)} />)}
-                </div>
-              )}
-            </main>
-          )}
-
-          {view === "register" && (
-            <RegisterForm onBack={() => setView("home")} onSubmit={registerCraftsman} saving={saving} uploadingText={uploadingText} t={t} lang={lang} />
-          )}
-
-          {view === "admin" && (
-            <main className="px-4 pb-24 pt-4">
-              <h2 className="font-black text-[#123B3B] text-base mb-4">{t.adminTitle}</h2>
-              {!adminUnlocked ? (
-                <div className="bg-white rounded-2xl p-5 border" style={{ borderColor: "#E6E0D2" }}>
-                  <p className="text-xs text-stone-500 font-bold mb-3">{t.adminPinPrompt}</p>
-                  <input value={pinInput} onChange={(e) => { setPinInput(e.target.value); setPinError(false); }} type="password"
-                    className="w-full border rounded-xl px-3 py-2.5 text-sm mb-2 outline-none"
-                    style={{ borderColor: pinError ? "#C0392B" : "#DCD5C4" }} placeholder={t.adminPinPlaceholder} />
-                  {pinError && <p className="text-[11px] text-red-600 font-bold mb-2">{t.adminPinWrong}</p>}
-                  <button onClick={() => pinInput === ADMIN_PIN ? setAdminUnlocked(true) : setPinError(true)}
-                    className="w-full py-2.5 rounded-xl font-bold text-white text-sm" style={{ background: "#123B3B" }}>{t.adminLogin}</button>
-                </div>
-              ) : pending.length === 0 ? (
-                <p className="text-center text-xs text-stone-400 py-10">{t.adminNoPending}</p>
-              ) : (
-                <div className="space-y-3">
-                  {pending.map((c) => (
-                    <div key={c.id} className="bg-white rounded-2xl p-4 border" style={{ borderColor: "#E6E0D2" }}>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-black text-[#123B3B] text-sm">{c.name}</span>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "#D9A44122", color: "#B8842E" }}>🕐 {t.pendingLabel}</span>
-                      </div>
-                      <p className="text-[11px] text-stone-500 mb-1">{craftName(c, lang)} · {hoodName(c.hood, lang)} · {c.exp} {t.yearsExp}</p>
-                      <p className="text-xs text-stone-600 mb-1">{c.bio}</p>
-                      <p className="text-[11px] font-mono text-stone-500 mb-3" dir="ltr">{c.phone}</p>
-                      
-                      {/* معاينة صور الأعمال في لوحة الإدارة */}
-                      {c.galleryUrls && c.galleryUrls.length > 0 && (
-                        <div className="flex gap-2 overflow-x-auto pb-2 mb-3 hide-scrollbar">
-                          {c.galleryUrls.map((url, i) => (
-                            <a key={i} href={url} target="_blank" rel="noreferrer">
-                              <img src={url} className="w-12 h-12 rounded object-cover border border-stone-200 shrink-0" alt="عمل" />
-                            </a>
-                          ))}
+            return (
+                <div className="flex flex-col h-screen max-w-md mx-auto bg-white shadow-xl overflow-hidden border-x border-slate-200">
+                    
+                    {/* رأس التطبيق (Header) */}
+                    <header className="bg-emerald-600 text-white p-4 shadow-md flex justify-between items-center">
+                        <div>
+                            <h1 className="text-xl font-extrabold tracking-wide">منصة حِرَفِي</h1>
+                            <p className="text-xs text-emerald-100">دليلك الموثوق للمهنيين والحرفيين</p>
                         </div>
-                      )}
+                        <span className="bg-emerald-700 text-xs px-2.5 py-1 rounded-full font-medium">نسخة التجربة</span>
+                    </header>
 
-                      <div className="grid grid-cols-2 gap-2">
-                        <button onClick={() => approveCraftsman(c.id)} className="py-2 rounded-xl font-bold text-white text-xs" style={{ background: "#3DAA5C" }}>✅ {t.approveBtn}</button>
-                        <button onClick={() => rejectCraftsman(c.id)} className="py-2 rounded-xl font-bold text-xs border" style={{ borderColor: "#DCD5C4", color: "#8A8375" }}>{t.rejectBtn}</button>
-                      </div>
-                    </div>
-                  ))}
+                    {/* محتوى الشاشات */}
+                    <main className="flex-1 overflow-y-auto p-4 bg-slate-50">
+                        {currentTab === 'home' && (
+                            <div className="space-y-4">
+                                {/* شريط البحث */}
+                                <div className="relative">
+                                    <input 
+                                        type="text" 
+                                        placeholder="ابحث عن حرفي، كهربائي، سباك..." 
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="w-full p-3 pr-10 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white text-sm shadow-sm"
+                                    />
+                                    <span className="absolute right-3 top-3.5 text-slate-400">🔍</span>
+                                </div>
+
+                                {/* إعلان ترحيبي */}
+                                <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl p-4 text-white shadow-sm">
+                                    <h2 className="font-bold text-lg mb-1">هل تبحث عن حرفي ماهر؟</h2>
+                                    <p className="text-xs text-emerald-100 leading-relaxed">تصفح قائمة المهنيين المعتمدين وتواصل معهم مباشرة بضغطة زر واحدة.</p>
+                                </div>
+
+                                {/* قائمة الحرفيين */}
+                                <div>
+                                    <h3 className="font-bold text-slate-700 mb-3 text-sm">أبرز الحرفيين المتاحين</h3>
+                                    <div className="space-y-3">
+                                        {filteredArtisans.map(artisan => (
+                                            <div key={artisan.id} className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex justify-between items-center hover:shadow-md transition">
+                                                <div>
+                                                    <h4 className="font-bold text-slate-800 text-base">{artisan.name}</h4>
+                                                    <p className="text-xs text-emerald-600 font-medium mt-0.5">{artisan.profession}</p>
+                                                    <div className="flex items-center gap-2 mt-2 text-xs text-slate-500">
+                                                        <span>📍 {artisan.city}</span>
+                                                        <span>⭐ {artisan.rating}</span>
+                                                    </div>
+                                                </div>
+                                                <a 
+                                                    href={`tel:${artisan.phone}`} 
+                                                    className="bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white p-2.5 rounded-xl transition text-sm font-bold flex items-center justify-center shadow-sm"
+                                                    title="اتصال"
+                                                >
+                                                    📞
+                                                </a>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {currentTab === 'add' && (
+                            <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 space-y-4">
+                                <h2 className="font-bold text-lg text-slate-800">تسجيل حرفي جديد</h2>
+                                <p className="text-xs text-slate-500">أدخل معلوماتك ليتم إضافتك إلى الدليل العام.</p>
+                                
+                                <div className="space-y-3">
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-600 mb-1">الاسم الكامل</label>
+                                        <input type="text" className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="مثال: أحمد بن محمد" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-600 mb-1">الحرفة / الاختصاص</label>
+                                        <input type="text" className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="مثال: تركيب مطابخ / تبريد" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-600 mb-1">رقم الهاتف</label>
+                                        <input type="tel" className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="05xxxxxxxx" />
+                                    </div>
+                                    <button 
+                                        onClick={() => alert('تم إرسال طلب التسجيل بنجاح!')}
+                                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-3 rounded-xl transition text-sm shadow-md mt-2"
+                                    >
+                                        إرسال الطلب
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {currentTab === 'profile' && (
+                            <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 text-center space-y-3">
+                                <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl mx-auto font-bold">
+                                    ح
+                                </div>
+                                <h2 className="font-bold text-lg text-slate-800">منصة حِرَفِي</h2>
+                                <p className="text-xs text-slate-500 leading-relaxed">
+                                    التطبيق الرسمي للربط بين المواطنين والحرفيين المهرة لتقديم الخدمات المنزلية والتقنية بكل سهولة وسرعة.
+                                </p>
+                                <div className="pt-4 border-t border-slate-100 text-xs text-slate-400">
+                                    الإصدار التجريبي 1.0.0
+                                </div>
+                            </div>
+                        )}
+                    </main>
+
+                    {/* شريط التنقل السفلي (Bottom Navigation) */}
+                    <nav className="bg-white border-t border-slate-200 flex justify-around p-2 shadow-lg">
+                        <button 
+                            onClick={() => setCurrentTab('home')}
+                            className={`flex flex-col items-center flex-1 py-1 text-xs font-bold transition ${currentTab === 'home' ? 'text-emerald-600' : 'text-slate-400 hover:text-slate-600'}`}
+                        >
+                            <span className="text-lg">🏠</span>
+                            الرئيسية
+                        </button>
+                        <button 
+                            onClick={() => setCurrentTab('add')}
+                            className={`flex flex-col items-center flex-1 py-1 text-xs font-bold transition ${currentTab === 'add' ? 'text-emerald-600' : 'text-slate-400 hover:text-slate-600'}`}
+                        >
+                            <span className="text-lg">➕</span>
+                            انضم كحرفي
+                        </button>
+                        <button 
+                            onClick={() => setCurrentTab('profile')}
+                            className={`flex flex-col items-center flex-1 py-1 text-xs font-bold transition ${currentTab === 'profile' ? 'text-emerald-600' : 'text-slate-400 hover:text-slate-600'}`}
+                        >
+                            <span className="text-lg">👤</span>
+                            حول التطبيق
+                        </button>
+                    </nav>
+
                 </div>
-              )}
-            </main>
-          )}
-        </>
-      )}
+            );
+        }
 
-      <nav className="fixed bottom-0 inset-x-0 bg-white border-t flex justify-around py-2.5" style={{ borderColor: "#E6E0D2" }}>
-        <button onClick={() => setView("home")} className="flex flex-col items-center gap-0.5">
-          <span style={{ fontSize: 18, opacity: view === "home" ? 1 : 0.4 }}>🏠</span>
-          <span className="text-[10px] font-bold" style={{ color: view === "home" ? "#123B3B" : "#B0A996" }}>{t.navHome}</span>
-        </button>
-        <button onClick={() => setView("list")} className="flex flex-col items-center gap-0.5">
-          <span style={{ fontSize: 18, opacity: view === "list" ? 1 : 0.4 }}>🔍</span>
-          <span className="text-[10px] font-bold" style={{ color: view === "list" ? "#123B3B" : "#B0A996" }}>{t.navSearch}</span>
-        </button>
-        <button onClick={() => setView("register")} className="flex flex-col items-center gap-0.5">
-          <span style={{ fontSize: 18, opacity: view === "register" ? 1 : 0.4 }}>➕</span>
-          <span className="text-[10px] font-bold" style={{ color: view === "register" ? "#123B3B" : "#B0A996" }}>{t.navRegister}</span>
-        </button>
-      </nav>
-
-      {toast && (
-        <div className="fixed bottom-20 inset-x-4 z-40 bg-[#123B3B] text-white text-xs font-bold rounded-xl px-4 py-3 text-center shadow-lg">{toast}</div>
-      )}
-
-      {selected && (
-        <div className="fixed inset-0 z-30 flex items-end justify-center" style={{ background: "rgba(18,30,30,0.5)" }} onClick={() => setSelected(null)}>
-          <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-t-3xl w-full max-w-md p-5 relative max-h-[90vh] overflow-y-auto hide-scrollbar">
-            <button onClick={() => setSelected(null)} className="absolute left-4 top-4 text-stone-400 text-lg">✕</button>
-            <div className="flex items-start gap-3 mb-4">
-              <div className="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0" style={{ background: catInfo(selected.cat).color + "1A" }}>
-                <span style={{ fontSize: 28 }}>{catInfo(selected.cat).icon}</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="font-black text-[#123B3B] text-base">{selected.name}</h3>
-                <p className="text-xs text-stone-500 font-bold">{craftName(selected, lang)} · {selected.exp} {t.yearsExp}</p>
-                <div className="flex items-center gap-1.5 mt-1">
-                  <Stars value={selected.rating} />
-                  <span className="text-xs font-bold text-stone-600">{selected.rating ? selected.rating.toFixed(1) : t.newLabel} {selected.reviews ? `(${selected.reviews} ${t.reviewsLabel})` : ""}</span>
-                </div>
-              </div>
-              <button onClick={() => shareCraftsman(selected)} className="text-lg" title={t.shareBtn}>🔗</button>
-            </div>
-            <div className="flex items-center gap-1.5 text-xs text-stone-500 mb-3"><span>📍</span><span>{hoodName(selected.hood, lang)}</span></div>
-            <p className="text-sm text-stone-700 leading-relaxed mb-4" style={{ background: "#F5F2EA", padding: "10px 12px", borderRadius: 12 }}>{selected.bio}</p>
-
-            {/* عرض معرض الصور في الملف الشخصي */}
-            {selected.galleryUrls && selected.galleryUrls.length > 0 && (
-              <div className="mb-5">
-                <h4 className="text-xs font-bold text-stone-500 mb-2">{t.galleryTitle}</h4>
-                <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
-                  {selected.galleryUrls.map((url, i) => (
-                    <a key={i} href={url} target="_blank" rel="noreferrer" className="shrink-0">
-                      <img src={url} alt={`عمل ${i + 1}`} className="w-24 h-24 object-cover rounded-xl border border-stone-200" />
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className="flex items-center justify-between mb-4 px-1">
-              <span className="text-xs font-bold text-stone-500">{t.rateThis}</span>
-              <RatingInput onRate={(v) => rateCraftsman(selected, v)} />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <a href={`tel:${selected.phone}`} className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-white text-sm" style={{ background: "#123B3B" }}>📞 {t.call}</a>
-              <a href={`https://wa.me/213${selected.phone.slice(1)}`} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-white text-sm" style={{ background: "#3DAA5C" }}>💬 {t.whatsapp}</a>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
-  const [form, setForm] = useState({ name: "", cat: "plumb", otherCat: "", hood: NEIGHBORHOODS[0].ar, exp: "", phone: "", bio: "" });
-  const [files, setFiles] = useState([]);
-  const [error, setError] = useState("");
-  const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
-
-  const submit = () => {
-    if (!form.name.trim() || !form.phone.trim() || !form.bio.trim()) { setError(t.requiredError); return; }
-    if (form.cat === "other" && !form.otherCat.trim()) { setError(t.otherCraftError); return; }
-    if (!/^0[5-7][0-9]{8}$/.test(form.phone.trim())) { setError(t.phoneError); return; }
-    setError("");
-    onSubmit({ ...form, otherCat: form.otherCat.trim(), phone: form.phone.trim(), exp: Number(form.exp) || 0, files });
-  };
-
-  return (
-    <main className="px-4 pb-24 pt-4">
-      <div className="flex items-center gap-2 mb-5">
-        <button onClick={onBack} className="text-[#123B3B]">{lang === "ar" ? "←" : "→"}</button>
-        <h2 className="font-black text-[#123B3B] text-base">{t.registerTitle}</h2>
-      </div>
-      <div className="space-y-4">
-        <Field label={t.fullName}><input value={form.name} onChange={(e) => update("name", e.target.value)} className="ipt" /></Field>
-        <Field label={t.craft}>
-          <select value={form.cat} onChange={(e) => update("cat", e.target.value)} className="ipt">
-            {CATEGORIES.map((c) => <option key={c.id} value={c.id}>{c.name[lang]}</option>)}
-          </select>
-        </Field>
-        {form.cat === "other" && (
-          <Field label={t.otherCraft}><input value={form.otherCat} onChange={(e) => update("otherCat", e.target.value)} className="ipt" /></Field>
-        )}
-        <Field label={t.neighborhood}>
-          <select value={form.hood} onChange={(e) => update("hood", e.target.value)} className="ipt">
-            {NEIGHBORHOODS.map((h) => <option key={h.ar} value={h.ar}>{h[lang]}</option>)}
-          </select>
-        </Field>
-        <Field label={t.experience}><input value={form.exp} onChange={(e) => update("exp", e.target.value.replace(/\D/g, ""))} className="ipt" inputMode="numeric" /></Field>
-        <Field label={t.phone}><input value={form.phone} onChange={(e) => update("phone", e.target.value.replace(/\D/g, ""))} className="ipt" placeholder="0550123456" dir="ltr" inputMode="numeric" /></Field>
-        
-        {/* حقل رفع صور معرض الأعمال الجديد */}
-        <Field label={t.chooseImages}>
-          <input 
-            type="file" 
-            accept="image/*" 
-            multiple 
-            onChange={(e) => setFiles(Array.from(e.target.files))} 
-            className="ipt bg-white" 
-            style={{ padding: "8px 12px" }} 
-          />
-          <small className="text-[10px] text-stone-500 mt-1 block font-bold">{t.galleryNote}</small>
-        </Field>
-
-        <Field label={t.bio}><textarea value={form.bio} onChange={(e) => update("bio", e.target.value)} className="ipt" rows="3"></textarea></Field>
-        {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
-        
-        <button onClick={submit} disabled={saving} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 transition" style={{ background: "#D9A441", opacity: saving ? 0.7 : 1 }}>
-          {saving ? (uploadingText || t.submitting) : t.submitBtn}
-        </button>
-        <p className="text-[11px] text-stone-400 text-center leading-relaxed">{t.reviewNote}</p>
-      </div>
-      <style>{`.ipt { width: 100%; border: 1.5px solid #DCD5C4; border-radius: 14px; padding: 11px 14px; font-size: 14px; outline: none; background: white; font-family: inherit; } .ipt:focus { border-color: #123B3B; }`}</style>
-    </main>
-  );
-}
-
-function Field({ label, children }) {
-  return (<div><label className="text-xs font-bold text-[#123B3B] mb-1.5 block">{label}</label>{children}</div>);
-}
-
-function CraftCard({ c, cat, lang, t, onClick }) {
-  return (
-    <button onClick={onClick} className="w-full bg-white rounded-2xl p-3.5 flex items-center gap-3 text-start shadow-sm border" style={{ borderColor: "#E6E0D2" }}>
-      <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: cat.color + "1A" }}>
-        <span style={{ fontSize: 20 }}>{cat.icon}</span>
-      </div>
-      <div className="flex-1 min-w-0">
-        <span className="font-black text-[#123B3B] text-sm truncate block">{c.name}</span>
-        <p className="text-[11px] text-stone-500 truncate">{craftName(c, lang)} · {hoodName(c.hood, lang)}</p>
-        <div className="flex items-center gap-1 mt-0.5">
-          <Stars value={c.rating} />
-          <span className="text-[10px] text-stone-400">{c.reviews ? `(${c.reviews})` : t.newLabel}</span>
-          {c.galleryUrls && c.galleryUrls.length > 0 && (
-            <span className="text-[10px] text-stone-400 border-r border-stone-300 pr-1 mr-1">📸 {c.galleryUrls.length}</span>
-          )}
-        </div>
-      </div>
-      <span className="text-stone-300">‹</span>
-    </button>
-  );
-}
-
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<App />);
-</script>
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
 </body>
 </html>
