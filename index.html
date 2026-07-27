@@ -561,8 +561,7 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
   const [files, setFiles] = useState([]);
   const [error, setError] = useState("");
   
-  // نظام التحقق OTP الخاص بالحرفي عبر EmailJS
-  const [step, setStep] = useState('form'); // 'form' أو 'otp'
+  const [step, setStep] = useState('form');
   const [generatedOtp, setGeneratedOtp] = useState('');
   const [enteredOtp, setEnteredOtp] = useState('');
   const [sendingEmail, setSendingEmail] = useState(false);
@@ -578,29 +577,34 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
     setError("");
     setSendingEmail(true);
 
-    // توليد رمز عشوائي مكون من 4 أرقام
     const randomCode = Math.floor(1000 + Math.random() * 9000).toString();
     setGeneratedOtp(randomCode);
 
     try {
-      // إرسال الكود عبر EmailJS بالمعرفات الفعلية
-      await emailjs.send("service_7o6k9pi", "template_u6jiuu6", {
+      // إرسال القيم بأكثر من مفتاح محتمل لتجنب أخطاء تطابق القالب في EmailJS
+      const templateParams = {
         to_email: form.email,
+        email: form.email,
         to_name: form.name,
-        otp_code: randomCode
-      });
+        name: form.name,
+        otp_code: randomCode,
+        passcode: randomCode,
+        message: randomCode
+      };
+
+      await emailjs.send("service_7o6k9pi", "template_u6jiuu6", templateParams);
       setSendingEmail(false);
       setStep('otp');
     } catch (err) {
-      console.error("EmailJS Error:", err);
+      console.error("EmailJS Detailed Error:", err);
       setSendingEmail(false);
-      setError("فشل إرسال رمز التحقق إلى البريد الإلكتروني، تأكد من صحة البريد.");
+      setError("فشل إرسال رمز التحقق. تأكد من صحة الإيميل وأن قالب EmailJS يدعم المتغيرات.");
     }
   };
 
   const handleVerifyAndSubmit = (e) => {
     e.preventDefault();
-    if (enteredOtp === generatedOtp) {
+    if (enteredOtp.trim() === generatedOtp) {
       onSubmit({ ...form, otherCat: form.otherCat.trim(), phone: form.phone.trim(), exp: Number(form.exp) || 0, files });
     } else {
       setError('رمز التحقق غير صحيح، يرجى المحاولة.');
@@ -661,7 +665,6 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
           <p className="text-[11px] text-stone-400 text-center leading-relaxed">{t.reviewNote}</p>
         </div>
       ) : (
-        /* شاشة إدخال رمز التحقق OTP الذي أرسله EmailJS للإيميل */
         <form onSubmit={handleVerifyAndSubmit} className="space-y-4 text-center py-4">
           <div>
             <h3 className="text-sm font-bold text-stone-800 mb-1">تأكيد البريد الإلكتروني</h3>
@@ -731,7 +734,7 @@ function CraftCard({ c, cat, lang, t, onClick }) {
   );
 }
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
+const root = ReactDOM.createRoot(getElementById("root") || document.getElementById("root"));
 root.render(<App />);
 </script>
 </body>
