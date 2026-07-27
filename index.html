@@ -26,9 +26,10 @@
             const [isLoginView, setIsLoginView] = React.useState(false); 
             const [userType, setUserType] = React.useState('user'); 
 
-            // الحقول الأساسية
+            // الحقول كاملة: الاسم، الهاتف، الوصف، الإيميل، وكلمة المرور
             const [username, setUsername] = React.useState('');
             const [phone, setPhone] = React.useState('');
+            const [description, setDescription] = React.useState('');
             const [email, setEmail] = React.useState('');
             const [password, setPassword] = React.useState('');
             const [confirmPassword, setConfirmPassword] = React.useState('');
@@ -36,54 +37,62 @@
             const handleSubmit = (e) => {
                 e.preventDefault();
                 
-                // التحقق من تطابق كلمات المرور في حالة إنشاء حساب جديد
                 if (!isLoginView && password !== confirmPassword) {
                     alert('كلمتا المرور غير متطابقتين!');
                     return;
                 }
 
-                alert(isLoginView ? 'تم تسجيل الدخول بنجاح!' : 'تم إنشاء الحساب بنجاح!');
+                const formData = {
+                    username,
+                    phone,
+                    description,
+                    email,
+                    userType: userType === 'user' ? 'مستخدم' : 'مقدم خدمة'
+                };
+
+                console.log('بيانات التسجيل:', formData);
+                alert(isLoginView ? 'تم تسجيل الدخول بنجاح!' : 'تم إنشاء الحساب بنجاح وإضافة كافة البيانات!');
             };
 
             return (
                 <div className="flex flex-col flex-1 bg-[#182232]">
                     
                     {/* القسم العلوي والشعار */}
-                    <div className="pt-8 pb-10 px-6 text-center flex flex-col items-center">
-                        <div className="w-24 h-24 bg-white rounded-2xl p-2 shadow-lg border-2 border-slate-700 flex items-center justify-center">
+                    <div className="pt-6 pb-6 px-6 text-center flex flex-col items-center">
+                        <div className="w-20 h-20 bg-white rounded-2xl p-2 shadow-lg border-2 border-slate-700 flex items-center justify-center">
                             <div className="text-center">
-                                <span className="text-3xl">👨‍🔧</span>
-                                <div className="text-slate-800 font-extrabold text-sm tracking-wider mt-1">حرفي</div>
+                                <span className="text-2xl">👨‍🔧</span>
+                                <div className="text-slate-800 font-extrabold text-xs tracking-wider mt-1">حرفي</div>
                             </div>
                         </div>
                     </div>
 
                     {/* القسم السفلي */}
-                    <div className="flex-1 bg-[#F2F3F5] rounded-t-[35px] px-6 pt-6 pb-8 flex flex-col justify-between shadow-inner">
+                    <div className="flex-1 bg-[#F2F3F5] rounded-t-[35px] px-6 pt-5 pb-6 flex flex-col justify-between shadow-inner">
                         
                         <form onSubmit={handleSubmit} className="flex flex-col flex-1 justify-between">
                             <div>
                                 {/* أزرار التبديل */}
-                                <div className="flex items-center justify-between mb-6">
+                                <div className="flex items-center justify-between mb-4">
                                     <button 
                                         type="button"
                                         onClick={() => setIsLoginView(true)}
-                                        className={`text-lg font-bold transition ${isLoginView ? 'text-slate-800 border-b-2 border-slate-800 pb-1' : 'text-slate-400'}`}
+                                        className={`text-base font-bold transition ${isLoginView ? 'text-slate-800 border-b-2 border-slate-800 pb-1' : 'text-slate-400'}`}
                                     >
                                         تسجيل الدخول
                                     </button>
                                     <button 
                                         type="button"
                                         onClick={() => setIsLoginView(false)}
-                                        className={`bg-[#2C3847] text-white px-5 py-2 rounded-full text-sm font-bold shadow-md transition ${!isLoginView ? '' : 'opacity-70'}`}
+                                        className={`bg-[#2C3847] text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-md transition ${!isLoginView ? '' : 'opacity-70'}`}
                                     >
                                         حساب جديد
                                     </button>
                                 </div>
 
                                 {/* اختيار نوع الحساب */}
-                                <div className="flex items-center justify-center gap-8 mb-6 bg-white py-3 px-4 rounded-xl shadow-sm border border-slate-200">
-                                    <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-slate-700">
+                                <div className="flex items-center justify-center gap-8 mb-4 bg-white py-2.5 px-4 rounded-xl shadow-sm border border-slate-200">
+                                    <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-700">
                                         <input 
                                             type="radio" 
                                             name="userType" 
@@ -93,7 +102,7 @@
                                         />
                                         مستخدم
                                     </label>
-                                    <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-slate-700">
+                                    <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-700">
                                         <input 
                                             type="radio" 
                                             name="userType" 
@@ -105,8 +114,8 @@
                                     </label>
                                 </div>
 
-                                {/* الحقول كاملة */}
-                                <div className="space-y-4">
+                                {/* الحقول كاملة ومجتمعة */}
+                                <div className="space-y-3">
                                     
                                     <div className="relative">
                                         <input 
@@ -115,9 +124,9 @@
                                             value={username}
                                             onChange={(e) => setUsername(e.target.value)}
                                             required
-                                            className="w-full bg-white py-3.5 pr-12 pl-4 rounded-xl border border-slate-200 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:border-[#EAB308] shadow-sm"
+                                            className="w-full bg-white py-3 pr-11 pl-3 rounded-xl border border-slate-200 text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:border-[#EAB308] shadow-sm"
                                         />
-                                        <span className="absolute right-4 top-3.5 text-[#EAB308] text-lg">👤</span>
+                                        <span className="absolute right-3.5 top-3 text-[#EAB308] text-base">👤</span>
                                     </div>
 
                                     <div className="relative">
@@ -127,21 +136,34 @@
                                             value={phone}
                                             onChange={(e) => setPhone(e.target.value)}
                                             required
-                                            className="w-full bg-white py-3.5 pr-12 pl-4 rounded-xl border border-slate-200 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:border-[#EAB308] shadow-sm"
+                                            className="w-full bg-white py-3 pr-11 pl-3 rounded-xl border border-slate-200 text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:border-[#EAB308] shadow-sm"
                                         />
-                                        <span className="absolute right-4 top-3.5 text-[#EAB308] text-lg">📱</span>
+                                        <span className="absolute right-3.5 top-3 text-[#EAB308] text-base">📱</span>
                                     </div>
 
+                                    {/* البريد الإلكتروني (يظهر دائماً الآن في التسجيل والدخول حسب الحاجة) */}
                                     <div className="relative">
                                         <input 
                                             type="email" 
                                             placeholder="البريد الإلكتروني"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
-                                            required={!isLoginView}
-                                            className="w-full bg-white py-3.5 pr-12 pl-4 rounded-xl border border-slate-200 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:border-[#EAB308] shadow-sm"
+                                            required
+                                            className="w-full bg-white py-3 pr-11 pl-3 rounded-xl border border-slate-200 text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:border-[#EAB308] shadow-sm"
                                         />
-                                        <span className="absolute right-4 top-3.5 text-[#EAB308] text-lg">✉️</span>
+                                        <span className="absolute right-3.5 top-3 text-[#EAB308] text-base">✉️</span>
+                                    </div>
+
+                                    {/* وصف الخدمة أو الاختصاص */}
+                                    <div className="relative">
+                                        <textarea 
+                                            placeholder="وصف الخدمة أو الاختصاص (مثال: كهربائي، سباك...)"
+                                            value={description}
+                                            onChange={(e) => setDescription(e.target.value)}
+                                            rows="2"
+                                            className="w-full bg-white py-2.5 pr-11 pl-3 rounded-xl border border-slate-200 text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:border-[#EAB308] shadow-sm resize-none"
+                                        ></textarea>
+                                        <span className="absolute right-3.5 top-2.5 text-[#EAB308] text-base">📝</span>
                                     </div>
 
                                     <div className="relative">
@@ -150,10 +172,10 @@
                                             placeholder="كلمة المرور"
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
-                                            required={!isLoginView}
-                                            className="w-full bg-white py-3.5 pr-12 pl-4 rounded-xl border border-slate-200 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:border-[#EAB308] shadow-sm"
+                                            required
+                                            className="w-full bg-white py-3 pr-11 pl-3 rounded-xl border border-slate-200 text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:border-[#EAB308] shadow-sm"
                                         />
-                                        <span className="absolute right-4 top-3.5 text-[#EAB308] text-lg">🔒</span>
+                                        <span className="absolute right-3.5 top-3 text-[#EAB308] text-base">🔒</span>
                                     </div>
 
                                     {!isLoginView && (
@@ -164,9 +186,9 @@
                                                 value={confirmPassword}
                                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                                 required
-                                                className="w-full bg-white py-3.5 pr-12 pl-4 rounded-xl border border-slate-200 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:border-[#EAB308] shadow-sm"
+                                                className="w-full bg-white py-3 pr-11 pl-3 rounded-xl border border-slate-200 text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:border-[#EAB308] shadow-sm"
                                             />
-                                            <span className="absolute right-4 top-3.5 text-[#EAB308] text-lg">🔒</span>
+                                            <span className="absolute right-3.5 top-3 text-[#EAB308] text-base">🔒</span>
                                         </div>
                                     )}
 
@@ -174,10 +196,10 @@
                             </div>
 
                             {/* زر الإرسال والشروط */}
-                            <div className="mt-6 space-y-4">
+                            <div className="mt-4 space-y-3">
                                 <button 
                                     type="submit"
-                                    className="w-full bg-[#2C3847] hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl transition shadow-md text-sm"
+                                    className="w-full bg-[#2C3847] hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition shadow-md text-xs"
                                 >
                                     {isLoginView ? 'تسجيل الدخول' : 'إتمام التسجيل'}
                                 </button>
@@ -189,11 +211,11 @@
                                             id="terms" 
                                             className="w-4 h-4 accent-[#2C3847] rounded cursor-pointer"
                                         />
-                                        <label htmlFor="terms" className="text-xs text-slate-600 font-medium">
+                                        <label htmlFor="terms" className="text-[11px] text-slate-600 font-medium">
                                             الموافقة على الشروط والأحكام
                                         </label>
                                     </div>
-                                    <span className="text-xs text-blue-600 underline cursor-pointer">الشروط</span>
+                                    <span className="text-[11px] text-blue-600 underline cursor-pointer">الشروط</span>
                                 </div>
                             </div>
 
