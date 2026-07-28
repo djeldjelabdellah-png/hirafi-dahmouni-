@@ -231,7 +231,11 @@ function App() {
         headers: { ...SB_HEADERS, Prefer: "return=representation" },
         body: JSON.stringify(toDb({ ...data, galleryUrls: uploadedUrls, status: "pending", rating: 0, reviews: 0 })),
       });
-      if (!res.ok) throw new Error("insert failed");
+      
+      if (!res.ok) {
+        const errJson = await res.json();
+        throw new Error(errJson.message || errJson.details || "insert failed");
+      }
 
       try {
         const selectedCat = CATEGORIES.find(c => c.id === data.cat);
@@ -258,7 +262,7 @@ function App() {
       setToast(t.toastSubmitted);
       setTimeout(() => setToast(null), 3500);
     } catch (e) {
-      setToast(t.toastFailSubmit);
+      setToast("خطأ تقني: " + (e.message || "فشل الاتصال"));
       setUploadingText("");
     }
     setSaving(false);
