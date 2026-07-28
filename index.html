@@ -42,9 +42,6 @@ const SB_HEADERS = {
 };
 const ADMIN_PIN = "p@ssw0rd";
 
-const TELEGRAM_TOKEN = "8610113650:AAHoX6Zan8q7q7Y7J0WTXBDP9klNCTppa2U";
-const TELEGRAM_CHAT_ID = "1109544250";
-
 const CATEGORIES = [
   { id: "plumb", name: { ar: "سباكة", en: "Plumbing" }, icon: "🔧", color: "#2C6E6E" },
   { id: "elec", name: { ar: "كهرباء", en: "Electrical" }, icon: "⚡", color: "#D9A441" },
@@ -79,15 +76,15 @@ const STRINGS = {
     registerTitle: "تسجيل حرفي جديد", editTitle: "تعديل بيانات الحرفي", fullName: "الاسم الكامل", email: "البريد الإلكتروني",
     craft: "الحرفة / التخصص", otherCraft: "اكتب اسم الحرفة", neighborhood: "الحي / المنطقة",
     experience: "سنوات الخبرة", phone: "رقم الهاتف", bio: "نبذة عن الخدمات المقدمة", submitBtn: "إرسال رمز التحقق",
-    updateBtn: "حفظ التعديلات",
-    verifyTitle: "التحقق من البريد الإلكتروني", verifySubtitle: "تم إرسال رمز التحقق (OTP) إلى بريدك الإلكتروني عبر EmailJS. أدخله أدناه:",
-    verifyCodePlaceholder: "أدخل الرمز المكون من 6 أرقام", confirmVerifyBtn: "تأكيد الرمز للمتابعة",
+    updateBtn: "حفظ التعديلات", deleteAccountBtn: "حذف ملفي نهائياً", deleteConfirmMsg: "هل أنت متأكد من رغبتك في حذف ملفك نهائياً من المنصة؟ لا يمكن التراجع عن هذا الإجراء.",
+    verifyTitle: "التحقق من البريد الإلكتروني", verifySubtitle: "تم إرسال رمز التحقق (OTP مكون من 4 أرقام) إلى بريدك الإلكتروني. أدخله أدناه:",
+    verifyCodePlaceholder: "أدخل الرمز المكون من 4 أرقام", confirmVerifyBtn: "تأكيد الرمز للمتابعة",
     submitting: "جاري الإرسال...", uploadingImages: "جاري رفع الصور...", chooseImages: "صور الأعمال (اختياري)",
     galleryNote: "يمكنك تحديد أكثر من صورة معاً", galleryTitle: "معرض الأعمال",
     reviewNote: "سيُراجع طلبك من طرف الإدارة قبل ظهوره في المنصة، عادة خلال 24 ساعة",
     requiredError: "الرجاء تعبئة الاسم، البريد، رقم الهاتف والوصف", otherCraftError: "الرجاء كتابة اسم الحرفة",
     phoneError: "رقم الهاتف غير صحيح (مثال: 0550123456)", emailError: "الرجاء إدخال بريد إلكتروني صحيح",
-    toastSubmitted: "تم إرسال طلبك، سيُنشر بعد المراجعة", toastUpdated: "تم تحديث بياناتك بنجاح!", toastFailSubmit: "تعذّر إرسال الطلب، حاول مجدداً", toastFailConnect: "تعذّر الاتصال بالخادم",
+    toastSubmitted: "تم إرسال طلبك، سيُنشر بعد المراجعة", toastUpdated: "تم تحديث بياناتك بنجاح!", toastDeleted: "تم حذف ملفك نهائياً من المنصة", toastFailSubmit: "تعذّر إرسال الطلب، حاول مجدداً", toastFailConnect: "تعذّر الاتصال بالخادم",
     adminTitle: "لوحة المراجعة", adminPinPrompt: "أدخل رمز الإدارة للمتابعة", adminPinPlaceholder: "الرمز السري",
     adminPinWrong: "رمز خاطئ", adminLogin: "دخول", adminNoPending: "لا توجد طلبات بانتظار المراجعة",
     pendingLabel: "قيد المراجعة", approveBtn: "قبول ونشر", rejectBtn: "رفض", all: "الكل",
@@ -107,9 +104,9 @@ const STRINGS = {
     registerTitle: "New Craftsman Registration", editTitle: "Edit Craftsman Profile", fullName: "Full name", email: "Email address",
     craft: "Trade / Specialty", otherCraft: "Type your trade", neighborhood: "Neighborhood", experience: "Years of experience",
     phone: "Phone number", bio: "Brief description of services", submitBtn: "Send verification code",
-    updateBtn: "Save changes",
-    verifyTitle: "Email Verification", verifySubtitle: "Verification code (OTP) sent to your email via EmailJS. Enter it below:",
-    verifyCodePlaceholder: "Enter 6-digit code", confirmVerifyBtn: "Confirm code & continue",
+    updateBtn: "Save changes", deleteAccountBtn: "Delete my profile permanently", deleteConfirmMsg: "Are you sure you want to permanently delete your profile? This action cannot be undone.",
+    verifyTitle: "Email Verification", verifySubtitle: "Verification code (4-digit OTP) sent to your email. Enter it below:",
+    verifyCodePlaceholder: "Enter 4-digit code", confirmVerifyBtn: "Confirm code & continue",
     submitting: "Submitting...", uploadingImages: "Uploading images...", chooseImages: "Portfolio images (Optional)",
     galleryNote: "You can select multiple images", galleryTitle: "Portfolio",
     reviewNote: "Your request will be reviewed by an admin before publishing, usually within 24 hours",
@@ -117,6 +114,7 @@ const STRINGS = {
     phoneError: "Invalid phone number (e.g. 0550123456)", emailError: "Please enter a valid email",
     toastSubmitted: "Your request was submitted for review",
     toastUpdated: "Your profile has been updated successfully!",
+    toastDeleted: "Your profile has been permanently deleted",
     toastFailSubmit: "Failed to submit, try again", toastFailConnect: "Could not connect to server",
     adminTitle: "Review Panel", adminPinPrompt: "Enter admin code to continue", adminPinPlaceholder: "Secret code",
     adminPinWrong: "Wrong code", adminLogin: "Enter", adminNoPending: "No pending requests",
@@ -178,7 +176,6 @@ function App() {
   const [editingCraftsman, setEditingCraftsman] = useState(null);
   const [completingCraftsman, setCompletingCraftsman] = useState(null);
 
-  // حالات نموذج التقييم والتعليق الجديد
   const [newRatingVal, setNewRatingVal] = useState(5);
   const [newReviewerName, setNewReviewerName] = useState("");
   const [newCommentText, setNewCommentText] = useState("");
@@ -305,12 +302,33 @@ function App() {
     setSaving(false);
   };
 
+  // وظيفة حذف الحرفي نهائياً من قاعدة البيانات
+  const deleteCraftsmanAccount = async (id) => {
+    if (!window.confirm(t.deleteConfirmMsg)) return;
+    setSaving(true);
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${id}`, {
+        method: "DELETE",
+        headers: SB_HEADERS,
+      });
+      if (!res.ok) throw new Error("delete failed");
+
+      await fetchList();
+      changeView("home");
+      setToast(t.toastDeleted);
+      setTimeout(() => setToast(null), 3500);
+    } catch (e) {
+      setToast(t.toastFailSubmit);
+    }
+    setSaving(false);
+  };
+
   const completeRegistrationEmail = async (craftsmanId, newEmail) => {
     setSaving(true);
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${craftsmanId}`, {
         method: "PATCH",
-        headers: { ...SB_HEADERS },
+        headers: SB_HEADERS,
         body: JSON.stringify({ email: newEmail }),
       });
       if (!res.ok) throw new Error("Failed");
@@ -340,7 +358,6 @@ function App() {
     } catch (e) { setToast(t.toastFailConnect); }
   };
 
-  // وظيفة إضافة تقييم مع تعليق نصي وتحديث السجل وحساب المتوسط في قاعدة البيانات
   const submitReviewAndComment = async (e) => {
     e.preventDefault();
     if (!newReviewerName.trim() || !newCommentText.trim()) return;
@@ -606,6 +623,7 @@ function App() {
               craftsman={editingCraftsman} 
               onBack={() => changeView("home")} 
               onSubmit={updateCraftsman} 
+              onDelete={deleteCraftsmanAccount}
               saving={saving} 
               uploadingText={uploadingText} 
               t={t} 
@@ -717,7 +735,6 @@ function App() {
               </div>
             )}
 
-            {/* قسم التعليقات والتقييمات المتكامل */}
             <div className="mb-5 border-t pt-4" style={{ borderColor: "#E6E0D2" }}>
               <h4 className="text-xs font-black text-[#123B3B] mb-3">{t.reviewsTitle} ({selected.reviewList ? selected.reviewList.length : 0})</h4>
               
@@ -740,7 +757,6 @@ function App() {
                 )}
               </div>
 
-              {/* نموذج إضافة تقييم وتعليق جديد */}
               <form onSubmit={submitReviewAndComment} className="p-3 rounded-2xl bg-white border" style={{ borderColor: "#DCD5C4" }}>
                 <p className="text-xs font-bold text-[#123B3B] mb-2">{t.addReviewBtn}</p>
                 <div className="flex items-center justify-center gap-1 mb-2">
@@ -809,7 +825,8 @@ function CompleteRegistrationView({ craftsman, onBack, onComplete, saving, t, la
       return;
     }
     setError("");
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    // مولد رمز التحقق المكون من 4 أرقام
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
     setGeneratedOtp(otp);
 
     setLoading(true);
@@ -861,7 +878,7 @@ function CompleteRegistrationView({ craftsman, onBack, onComplete, saving, t, la
         <form onSubmit={handleVerifyOtp} className="space-y-4 bg-white p-5 rounded-2xl border" style={{ borderColor: "#E6E0D2" }}>
           <p className="text-xs text-stone-600 font-bold leading-relaxed">{t.verifySubtitle}</p>
           <Field label={t.verifyTitle}>
-            <input value={verificationCode} onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))} className="ipt text-center text-lg tracking-widest font-mono" placeholder={t.verifyCodePlaceholder} maxLength="6" dir="ltr" inputMode="numeric" />
+            <input value={verificationCode} onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))} className="ipt text-center text-lg tracking-widest font-mono" placeholder={t.verifyCodePlaceholder} maxLength="4" dir="ltr" inputMode="numeric" />
           </Field>
           {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
           <button type="submit" disabled={saving} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2" style={{ background: "#3DAA5C", opacity: saving ? 0.7 : 1 }}>
@@ -897,7 +914,8 @@ function EditAuthView({ onBack, allCraftsmen, t, lang, onVerified }) {
     setMatchedCraftsman(found);
     setError("");
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    // توليد رمز التحقق المكون من 4 أرقام
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
     setGeneratedOtp(otp);
 
     setLoading(true);
@@ -945,7 +963,7 @@ function EditAuthView({ onBack, allCraftsmen, t, lang, onVerified }) {
         <form onSubmit={handleVerifyOtp} className="space-y-4 bg-white p-5 rounded-2xl border" style={{ borderColor: "#E6E0D2" }}>
           <p className="text-xs text-stone-600 font-bold leading-relaxed">{t.verifySubtitle}</p>
           <Field label={t.verifyTitle}>
-            <input value={verificationCode} onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))} className="ipt text-center text-lg tracking-widest font-mono" placeholder={t.verifyCodePlaceholder} maxLength="6" dir="ltr" inputMode="numeric" />
+            <input value={verificationCode} onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))} className="ipt text-center text-lg tracking-widest font-mono" placeholder={t.verifyCodePlaceholder} maxLength="4" dir="ltr" inputMode="numeric" />
           </Field>
           {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
           <button type="submit" className="w-full py-3.5 rounded-2xl font-black text-white text-sm" style={{ background: "#3DAA5C" }}>
@@ -958,7 +976,7 @@ function EditAuthView({ onBack, allCraftsmen, t, lang, onVerified }) {
   );
 }
 
-function EditForm({ craftsman, onBack, onSubmit, saving, uploadingText, t, lang }) {
+function EditForm({ craftsman, onBack, onSubmit, onDelete, saving, uploadingText, t, lang }) {
   const [form, setForm] = useState({
     name: craftsman.name || "",
     cat: craftsman.cat || "plumb",
@@ -1019,6 +1037,11 @@ function EditForm({ craftsman, onBack, onSubmit, saving, uploadingText, t, lang 
         <button type="submit" disabled={saving} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 transition" style={{ background: "#D9A441", opacity: saving ? 0.7 : 1 }}>
           {saving ? (uploadingText || t.submitting) : t.updateBtn}
         </button>
+
+        {/* زر الحذف النهائي من المنصة */}
+        <button type="button" onClick={() => onDelete(craftsman.id)} disabled={saving} className="w-full py-3 rounded-2xl font-black text-xs text-red-600 border border-red-200 bg-red-50 mt-2 transition">
+          🗑️ {t.deleteAccountBtn}
+        </button>
       </form>
       <style>{`.ipt { width: 100%; border: 1.5px solid #DCD5C4; border-radius: 14px; padding: 11px 14px; font-size: 14px; outline: none; background: white; font-family: inherit; } .ipt:focus { border-color: #123B3B; }`}</style>
     </main>
@@ -1044,7 +1067,8 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
     if (!/^0[5-7][0-9]{8}$/.test(form.phone.trim())) { setError(t.phoneError); return; }
     
     setError("");
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    // رمز التحقق المكون من 4 أرقام
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
     setGeneratedOtp(otp);
 
     setIsSendingOtp(true);
@@ -1117,7 +1141,7 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
         <form onSubmit={handleVerifyAndComplete} className="space-y-4 bg-white p-5 rounded-2xl border" style={{ borderColor: "#E6E0D2" }}>
           <p className="text-xs text-stone-600 font-bold leading-relaxed">{t.verifySubtitle}</p>
           <Field label={t.verifyTitle}>
-            <input value={verificationCode} onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))} className="ipt text-center text-lg tracking-widest font-mono" placeholder={t.verifyCodePlaceholder} maxLength="6" dir="ltr" inputMode="numeric" />
+            <input value={verificationCode} onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))} className="ipt text-center text-lg tracking-widest font-mono" placeholder={t.verifyCodePlaceholder} maxLength="4" dir="ltr" inputMode="numeric" />
           </Field>
           {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
           <button type="submit" disabled={saving} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 transition" style={{ background: "#3DAA5C", opacity: saving ? 0.7 : 1 }}>
