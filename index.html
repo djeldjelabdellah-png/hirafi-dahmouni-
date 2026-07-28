@@ -568,9 +568,10 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
   const [form, setForm] = useState({ name: "", email: "", cat: "plumb", otherCat: "", hood: NEIGHBORHOODS[0].ar, exp: "", phone: "", bio: "" });
   const [files, setFiles] = useState([]);
   const [error, setError] = useState("");
-  const [step, setStep] = useState(1); // الخطوة 1: النموذج، الخطوة 2: إدخال الكود
+  const [step, setStep] = useState(1);
   const [generatedOtp, setGeneratedOtp] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
 
   const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -583,7 +584,6 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
     
     setError("");
     
-    // توليد رمز تحقق عشوائي من 6 أرقام
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(otp);
 
@@ -593,14 +593,13 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
         to_name: form.name.trim()
     };
 
-    setSaving(true);
-    // إرسال البريد عبر EmailJS باستخدام المعرفات الخاصة بك
+    setIsSendingOtp(true);
     emailjs.send('service_in25o7y', 'template_o73g9ys', templateParams)
         .then(function(response) {
-           setSaving(false);
-           setStep(2); // الانتقال لواجهة إدخال رمز التحقق
+           setIsSendingOtp(false);
+           setStep(2);
         }, function(error) {
-           setSaving(false);
+           setIsSendingOtp(false);
            setError('فشل إرسال رمز التحقق عبر البريد الإلكتروني، يرجى المحاولة لاحقاً.');
         });
   };
@@ -614,7 +613,6 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
     setError("");
 
     if (verificationCode.trim() === generatedOtp) {
-      // مطابقة صحيحة، إرسال البيانات وإتمام التسجيل
       onSubmit({ ...form, otherCat: form.otherCat.trim(), email: form.email.trim(), phone: form.phone.trim(), exp: Number(form.exp) || 0, files });
     } else {
       setError('رمز التحقق غير صحيح، يرجى إعادة المحاولة.');
@@ -624,7 +622,7 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
   return (
     <main className="px-4 pb-24 pt-4">
       <div className="flex items-center gap-2 mb-5">
-        <button onClick={onBack} className="text-[#123B3B]">{lang === "ar" ? "←" : "→"}</button>
+        <button type="button" onClick={onBack} className="text-[#123B3B]">{lang === "ar" ? "←" : "→"}</button>
         <h2 className="font-black text-[#123B3B] text-base">{step === 1 ? t.registerTitle : t.verifyTitle}</h2>
       </div>
 
@@ -663,8 +661,8 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
           <Field label={t.bio}><textarea value={form.bio} onChange={(e) => update("bio", e.target.value)} className="ipt" rows="3"></textarea></Field>
           {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
           
-          <button type="submit" disabled={saving} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 transition" style={{ background: "#D9A441", opacity: saving ? 0.7 : 1 }}>
-            {saving ? t.submitting : t.submitBtn}
+          <button type="submit" disabled={isSendingOtp} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 transition" style={{ background: "#D9A441", opacity: isSendingOtp ? 0.7 : 1 }}>
+            {isSendingOtp ? t.submitting : t.submitBtn}
           </button>
           <p className="text-[11px] text-stone-400 text-center leading-relaxed">{t.reviewNote}</p>
         </form>
