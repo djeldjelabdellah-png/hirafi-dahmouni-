@@ -4,8 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تسجيل حرفي جديد - منصة حرفي</title>
-    <!-- مكتبة Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- مكتبة EmailJS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+       (function(){
+          emailjs.init({
+            publicKey: "1YVvuqYAcvu8EWWaS",
+          });
+       })();
+    </script>
     <style>
         body { font-family: Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; height: 100vh; }
         .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
@@ -39,82 +46,63 @@
 </div>
 
 <script>
-    // ضع مفاتيح Supabase الخاصة بك هنا
-    const SUPABASE_URL = 'ضع_رابط_مروعك_هنا';
-    const SUPABASE_ANON_KEY = 'ضع_مفتاح_anon_هنا';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
     let userEmail = '';
+    let generatedOtp = '';
+    let artisanName = '';
 
-    // الخطوة 1: تسجيل الحرفي في نظام المصادقة
-    async function registerCraftsman() {
-        const name = document.getElementById('craftsman-name').value;
+    // الخطوة 1: توليد وإرسال رمز التحقق عبر EmailJS
+    function registerCraftsman() {
+        artisanName = document.getElementById('craftsman-name').value;
         userEmail = document.getElementById('signup-email').value;
         const password = document.getElementById('signup-password').value;
 
-        if (!name || !userEmail || !password) {
+        if (!artisanName || !userEmail || !password) {
             alert('الرجاء ملء جميع الحقول المطلوبة');
             return;
         }
 
-        // إنشاء المستخدم في Supabase Auth مع حفظ اسمه في الـ metadata
-        const { data, error } = await supabase.auth.signUp({
-            email: userEmail,
-            password: password,
-            options: {
-                data: { full_name: name }
-            }
-        });
+        // توليد رمز تحقق عشوائي من 6 أرقام
+        generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
-        if (error) {
-            alert('خطأ في التسجيل: ' + error.message);
-        } else {
-            alert('تم إرسال رمز التحقق إلى بريدك الإلكتروني بنجاح.');
-            document.getElementById('signup-section').classList.add('hidden');
-            document.getElementById('verify-section').classList.remove('hidden');
-        }
+        const templateParams = {
+            to_email: userEmail,
+            otp_code: generatedOtp,
+            to_name: artisanName
+        };
+
+        // إرسال البريد الإلكتروني باستخدام Service ID و Template ID الخاص بك
+        emailjs.send('service_in25o7y', 'template_o73g9ys', templateParams)
+            .then(function(response) {
+               console.log('تم إرسال البريد بنجاح!', response.status, response.text);
+               alert('تم إرسال رمز التحقق إلى بريدك الإلكتروني بنجاح.');
+               
+               // الانتقال لواجهة إدخال الرمز
+               document.getElementById('signup-section').classList.add('hidden');
+               document.getElementById('verify-section').classList.remove('hidden');
+            }, function(error) {
+               console.log('فشل إرسال البريد:', error);
+               alert('حدث خطأ أثناء إرسال البريد الإلكتروني، يرجى المحاولة لاحقا.');
+            });
     }
 
-    // الخطوة 2: التحقق من الرمز وإضافة السجل إلى جدول الحرفيين بوضع معلق (is_approved = false)
-    async function verifyEmailCode() {
-        const token = document.getElementById('verification-code').value;
+    // الخطوة 2: التحقق من الرمز المدخل مقارنة بالرمز المرسل
+    function verifyEmailCode() {
+        const enteredToken = document.getElementById('verification-code').value;
 
-        if (!token) {
+        if (!enteredToken) {
             alert('الرجاء إدخال رمز التحقق');
             return;
         }
 
-        const { data, error } = await supabase.auth.verifyOtp({
-            email: userEmail,
-            token: token,
-            type: 'signup'
-        });
-
-        if (error) {
-            alert('الرمز غير صحيح أو انتهت صلاحيته: ' + error.message);
-        } else {
-            // الحصول على الـ user_id الجديد
-            const { data: { user } } = await supabase.auth.getUser();
-            
-            if (user) {
-                // إدراج الحرفي في الجدول الخاص بك مع ضبط is_approved على false (بانتظار موافقتك)
-                const { error: insertError } = await supabase
-                    .from('craftsmen')
-                    .insert([
-                        { 
-                            user_id: user.id, 
-                            name: user.user_metadata.full_name || 'حرفي جديد', 
-                            is_approved: false 
-                        }
-                    ]);
-
-                if (insertError) {
-                    console.error(insertError);
-                }
-            }
-
+        if (enteredToken.trim() === generatedOtp) {
             alert('تم تأكيد بريدك الإلكتروني بنجاح! حسابك الآن بانتظار مراجعة وموافقة الإدارة لكي يظهر في المنصة.');
-            window.location.href = 'index.html'; // العودة للرئيسية أو صفحة انتظار
+            
+            // يمكنك هنا حفظ بيانات الحرفي محلياً أو إرسالها لقاعدة البيانات الخاصة بك
+            localStorage.setItem('approved_artisan', JSON.stringify({ name: artisanName, email: userEmail }));
+            
+            window.location.href = 'index.html'; // العودة للرئيسية
+        } else {
+            alert('رمز التحقق غير صحيح، يرجى إعادة المحاولة.');
         }
     }
 </script>
