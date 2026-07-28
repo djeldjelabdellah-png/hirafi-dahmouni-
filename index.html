@@ -82,7 +82,7 @@ const STRINGS = {
     updateBtn: "حفظ التعديلات",
     verifyTitle: "التحقق من البريد الإلكتروني", verifySubtitle: "تم إرسال رمز التحقق (OTP) إلى بريدك الإلكتروني عبر EmailJS. أدخله أدناه:",
     verifyCodePlaceholder: "أدخل الرمز المكون من 6 أرقام", confirmVerifyBtn: "تأكيد الرمز للمتابعة",
-    submitting: "جاري الإرسال...", uploadingImages: "جاري رفع الصور...", chooseImages: "صور الأعمال (اختياري الجديد)",
+    submitting: "جاري الإرسال...", uploadingImages: "جاري رفع الصور...", chooseImages: "صور الأعمال (اختياري)",
     galleryNote: "يمكنك تحديد أكثر من صورة معاً", galleryTitle: "معرض الأعمال",
     reviewNote: "سيُراجع طلبك من طرف الإدارة قبل ظهوره في المنصة، عادة خلال 24 ساعة",
     requiredError: "الرجاء تعبئة الاسم، البريد، رقم الهاتف والوصف", otherCraftError: "الرجاء كتابة اسم الحرفة",
@@ -177,7 +177,7 @@ function App() {
   const [activeCat, setActiveCat] = useState(null);
   const [activeHood, setActiveHood] = useState(t.all);
   const [selected, setSelected] = useState(null);
-  const [view, setView] = useState("home"); // home, list, register, edit_auth, edit_form, admin
+  const [view, setView] = useState("home");
   const [toast, setToast] = useState(null);
   const [saving, setSaving] = useState(false);
   const [uploadingText, setUploadingText] = useState("");
@@ -185,7 +185,6 @@ function App() {
   const [pinInput, setPinInput] = useState("");
   const [pinError, setPinError] = useState(false);
 
-  // لحفظ بيانات الحرفي الذي يقوم بالتعديل
   const [editingCraftsman, setEditingCraftsman] = useState(null);
 
   useEffect(() => { setActiveHood(t.all); }, [lang]);
@@ -274,7 +273,6 @@ function App() {
     setSaving(false);
   };
 
-  // دالة تحديث بيانات الحرفي الموجود مسبقاً
   const updateCraftsman = async (data) => {
     setSaving(true);
     let uploadedUrls = editingCraftsman.galleryUrls || [];
@@ -519,7 +517,6 @@ function App() {
             <RegisterForm onBack={() => setView("home")} onSubmit={registerCraftsman} saving={saving} uploadingText={uploadingText} t={t} lang={lang} />
           )}
 
-          {/* شاشة التحقق للتعديل */}
           {view === "edit_auth" && (
             <EditAuthView 
               onBack={() => setView("home")} 
@@ -533,7 +530,6 @@ function App() {
             />
           )}
 
-          {/* شاشة تعديل البيانات الفعلية */}
           {view === "edit_form" && editingCraftsman && (
             <EditForm 
               craftsman={editingCraftsman} 
@@ -666,7 +662,6 @@ function App() {
   );
 }
 
-// مكون التحقق من البريد الإلكتروني لتعديل البيانات
 function EditAuthView({ onBack, allCraftsmen, t, lang, onVerified }) {
   const [emailInput, setEmailInput] = useState("");
   const [step, setStep] = useState(1);
@@ -751,7 +746,6 @@ function EditAuthView({ onBack, allCraftsmen, t, lang, onVerified }) {
   );
 }
 
-// نموذج تعديل البيانات الفعلية
 function EditForm({ craftsman, onBack, onSubmit, saving, uploadingText, t, lang }) {
   const [form, setForm] = useState({
     name: craftsman.name || "",
@@ -952,7 +946,7 @@ function CraftCard({ c, cat, lang, t, onClick }) {
 }
 
 const rootElement = document.getElementById("root");
-if, (rootElement) {
+if (rootElement) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(<App />);
 }
