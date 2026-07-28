@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>حِرَفِي - دليل الحرفيين والمهنيين لمدينة الدحموني</title>
-  <script defer src="/_vercel/insights/script.js"></script>
+<script defer src="/_vercel/insights/script.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -91,9 +91,10 @@ const STRINGS = {
     adminTitle: "لوحة المراجعة", adminPinPrompt: "أدخل رمز الإدارة للمتابعة", adminPinPlaceholder: "الرمز السري",
     adminPinWrong: "رمز خاطئ", adminLogin: "دخول", adminNoPending: "لا توجد طلبات بانتظار المراجعة",
     pendingLabel: "قيد المراجعة", approveBtn: "قبول ونشر", rejectBtn: "رفض", all: "الكل",
-    rateThis: "قيّم هذا الحرفي", thanksRating: "شكراً لتقييمك!", shareBtn: "مشاركة", shareCopied: "تم نسخ الرابط",
+    rateThis: "قيّم هذا الحرفي", thanksRating: "شكراً لتقييمك وتعليقك!", shareBtn: "مشاركة", shareCopied: "تم نسخ الرابط",
     completeRegistrationBanner: "أنت مسجل مسبقاً بدون بريد إلكتروني. انقر هنا لإكمال تسجيلك وتأكيد بريدك!",
     completeRegTitle: "إكمال التسجيل وتأكيد البريد",
+    reviewsTitle: "آراء والتقييمات", addReviewBtn: "إضافة تقييم وتعليق", reviewerName: "اسمك الكريم", reviewComment: "اكتب رأيك أو تجربتك مع الحرفي...", sendReview: "إرسال التقييم",
   },
   en: {
     title: "Hirafi", subtitle: "Craftsmen & Tradespeople Directory — Dahmouni",
@@ -120,9 +121,10 @@ const STRINGS = {
     adminTitle: "Review Panel", adminPinPrompt: "Enter admin code to continue", adminPinPlaceholder: "Secret code",
     adminPinWrong: "Wrong code", adminLogin: "Enter", adminNoPending: "No pending requests",
     pendingLabel: "Pending review", approveBtn: "Approve & publish", rejectBtn: "Reject", all: "All",
-    rateThis: "Rate this craftsman", thanksRating: "Thanks for rating!", shareBtn: "Share", shareCopied: "Link copied",
+    rateThis: "Rate this craftsman", thanksRating: "Thanks for your rating & review!", shareBtn: "Share", shareCopied: "Link copied",
     completeRegistrationBanner: "You registered previously without an email. Click here to complete your registration!",
     completeRegTitle: "Complete Registration & Verify Email",
+    reviewsTitle: "Reviews & Comments", addReviewBtn: "Add rating & comment", reviewerName: "Your name", reviewComment: "Write your review about this craftsman...", sendReview: "Submit Review",
   },
 };
 
@@ -136,12 +138,13 @@ const hoodName = (hoodAr, lang) => {
 const toDb = (c) => ({
   name: c.name, email: c.email || null, cat: c.cat, other_cat: c.otherCat || null, hood: c.hood,
   exp: c.exp, phone: c.phone, bio: c.bio, status: c.status || "pending",
-  rating: c.rating || 0, reviews: c.reviews || 0, gallery_urls: c.galleryUrls || []
+  rating: c.rating || 0, reviews: c.reviews || 0, gallery_urls: c.galleryUrls || [],
+  review_list: c.reviewList || []
 });
 const fromDb = (r) => ({
   id: r.id, name: r.name, email: r.email, cat: r.cat, otherCat: r.other_cat, hood: r.hood,
   exp: r.exp, phone: r.phone, bio: r.bio, status: r.status, rating: r.rating, 
-  reviews: r.reviews, galleryUrls: r.gallery_urls || []
+  reviews: r.reviews, galleryUrls: r.gallery_urls || [], reviewList: r.review_list || []
 });
 
 function Stars({ value }) {
@@ -149,23 +152,6 @@ function Stars({ value }) {
     <span style={{ letterSpacing: "1px" }}>
       {[1, 2, 3, 4, 5].map((i) => (
         <span key={i} style={{ color: i <= Math.round(value || 0) ? "#D9A441" : "#D6D0C2", fontSize: 13 }}>★</span>
-      ))}
-    </span>
-  );
-}
-
-function RatingInput({ onRate }) {
-  const [hover, setHover] = useState(0);
-  const [done, setDone] = useState(false);
-  if (done) return null;
-  return (
-    <span style={{ letterSpacing: "2px", fontSize: 22, cursor: "pointer" }}>
-      {[1, 2, 3, 4, 5].map((i) => (
-        <span key={i}
-          onMouseEnter={() => setHover(i)}
-          onMouseLeave={() => setHover(0)}
-          onClick={() => { onRate(i); setDone(true); }}
-          style={{ color: i <= hover ? "#D9A441" : "#D6D0C2" }}>★</span>
       ))}
     </span>
   );
@@ -192,15 +178,24 @@ function App() {
   const [editingCraftsman, setEditingCraftsman] = useState(null);
   const [completingCraftsman, setCompletingCraftsman] = useState(null);
 
-  // تفعيل زر الرجوع في الهاتف والتنقل الآمن بين الشاشات
-  const changeView = (newView, pushHistory = true) => {
-    if (pushHistory && newView !== view) {
+  // حالات نموذج التقييم والتعليق الجديد
+  const [newRatingVal, setNewRatingVal] = useState(5);
+  const [newReviewerName, setNewReviewerName] = useState("");
+  const [newCommentText, setNewCommentText] = useState("");
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+
+  const changeView = (newView) => {
+    if (newView !== view) {
       window.history.pushState({ view: newView }, "");
+      setView(newView);
+      window.scrollTo(0, 0);
     }
-    setView(newView);
   };
 
   useEffect(() => {
+    if (!window.history.state) {
+      window.history.replaceState({ view: "home" }, "");
+    }
     const handlePopState = (event) => {
       if (event.state && event.state.view) {
         setView(event.state.view);
@@ -209,7 +204,6 @@ function App() {
       }
     };
     window.addEventListener("popstate", handlePopState);
-    window.history.replaceState({ view: "home" }, "");
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
@@ -232,24 +226,17 @@ function App() {
   const registerCraftsman = async (data) => {
     setSaving(true);
     let uploadedUrls = [];
-    
     try {
       if (data.files && data.files.length > 0) {
         setUploadingText(t.uploadingImages);
         for (const file of data.files) {
           const ext = file.name.split('.').pop();
           const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
-          
           const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/craftsmen-gallery/${fileName}`, {
             method: 'POST',
-            headers: {
-              apikey: SUPABASE_KEY,
-              Authorization: `Bearer ${SUPABASE_KEY}`,
-              'Content-Type': file.type
-            },
+            headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, 'Content-Type': file.type },
             body: file
           });
-          
           if (uploadRes.ok) {
             uploadedUrls.push(`${SUPABASE_URL}/storage/v1/object/public/craftsmen-gallery/${fileName}`);
           }
@@ -260,33 +247,9 @@ function App() {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen`, {
         method: "POST",
         headers: { ...SB_HEADERS, Prefer: "return=representation" },
-        body: JSON.stringify(toDb({ ...data, galleryUrls: uploadedUrls, status: "pending", rating: 0, reviews: 0 })),
+        body: JSON.stringify(toDb({ ...data, galleryUrls: uploadedUrls, status: "pending", rating: 0, reviews: 0, reviewList: [] })),
       });
-      
-      if (!res.ok) {
-        const errJson = await res.json();
-        throw new Error(errJson.message || errJson.details || "insert failed");
-      }
-
-      try {
-        const selectedCat = CATEGORIES.find(c => c.id === data.cat);
-        const craftTitle = data.cat === "other" ? data.otherCat : (selectedCat ? selectedCat.name.ar : data.cat);
-        const imagesNote = uploadedUrls.length > 0 ? `\n📸 **مرفق:** ${uploadedUrls.length} صور للأعمال` : "";
-        const telegramMessage = `🛠 **تسجيل حرفي جديد على المنصة!**\n\n` +
-                                `👤 **الاسم الكامل:** ${data.name}\n` +
-                                `📧 **البريد الإلكتروني:** ${data.email || 'غير متوفر'}\n` +
-                                `📞 **رقم الهاتف:** ${data.phone}\n` +
-                                `🧰 **الحرفة:** ${craftTitle}\n` +
-                                `📍 **المنطقة/الحي:** ${data.hood}\n` +
-                                `⭐ **خبرة:** ${data.exp} سنوات\n` +
-                                `📝 **الوصف:** ${data.bio}` + imagesNote;
-
-        fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: telegramMessage, parse_mode: "Markdown" })
-        });
-      } catch (tgError) { console.error("Telegram notification failed:", tgError); }
+      if (!res.ok) throw new Error("insert failed");
 
       await fetchList();
       changeView("home");
@@ -302,24 +265,17 @@ function App() {
   const updateCraftsman = async (data) => {
     setSaving(true);
     let uploadedUrls = editingCraftsman.galleryUrls || [];
-    
     try {
       if (data.files && data.files.length > 0) {
         setUploadingText(t.uploadingImages);
         for (const file of data.files) {
           const ext = file.name.split('.').pop();
           const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
-          
           const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/craftsmen-gallery/${fileName}`, {
             method: 'POST',
-            headers: {
-              apikey: SUPABASE_KEY,
-              Authorization: `Bearer ${SUPABASE_KEY}`,
-              'Content-Type': file.type
-            },
+            headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, 'Content-Type': file.type },
             body: file
           });
-          
           if (uploadRes.ok) {
             uploadedUrls.push(`${SUPABASE_URL}/storage/v1/object/public/craftsmen-gallery/${fileName}`);
           }
@@ -331,21 +287,12 @@ function App() {
         method: "PATCH",
         headers: { ...SB_HEADERS },
         body: JSON.stringify({
-          name: data.name,
-          cat: data.cat,
-          other_cat: data.otherCat || null,
-          hood: data.hood,
-          exp: Number(data.exp) || 0,
-          phone: data.phone,
-          bio: data.bio,
-          gallery_urls: uploadedUrls
+          name: data.name, cat: data.cat, other_cat: data.otherCat || null,
+          hood: data.hood, exp: Number(data.exp) || 0, phone: data.phone,
+          bio: data.bio, gallery_urls: uploadedUrls
         }),
       });
-      
-      if (!res.ok) {
-        const errJson = await res.json();
-        throw new Error(errJson.message || errJson.details || "update failed");
-      }
+      if (!res.ok) throw new Error("update failed");
 
       await fetchList();
       changeView("home");
@@ -366,8 +313,7 @@ function App() {
         headers: { ...SB_HEADERS },
         body: JSON.stringify({ email: newEmail }),
       });
-      if (!res.ok) throw new Error("Failed to update email");
-
+      if (!res.ok) throw new Error("Failed");
       await fetchList();
       changeView("home");
       setToast(t.toastUpdated);
@@ -394,18 +340,56 @@ function App() {
     } catch (e) { setToast(t.toastFailConnect); }
   };
 
-  const rateCraftsman = async (craftsman, value) => {
-    const newReviews = (craftsman.reviews || 0) + 1;
-    const newRating = (((craftsman.rating || 0) * (craftsman.reviews || 0)) + value) / newReviews;
+  // وظيفة إضافة تقييم مع تعليق نصي وتحديث السجل وحساب المتوسط في قاعدة البيانات
+  const submitReviewAndComment = async (e) => {
+    e.preventDefault();
+    if (!newReviewerName.trim() || !newCommentText.trim()) return;
+
+    setIsSubmittingReview(true);
+    const currentReviews = selected.reviews || 0;
+    const currentRating = selected.rating || 0;
+    const newTotalReviews = currentReviews + 1;
+    const newAvgRating = ((currentRating * currentReviews) + newRatingVal) / newTotalReviews;
+
+    const newReviewItem = {
+      name: newReviewerName.trim(),
+      rating: newRatingVal,
+      comment: newCommentText.trim(),
+      date: new Date().toISOString().split('T')[0]
+    };
+
+    const updatedReviewList = [newReviewItem, ...(selected.reviewList || [])];
+
     try {
-      await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${craftsman.id}`, {
-        method: "PATCH", headers: SB_HEADERS,
-        body: JSON.stringify({ rating: newRating, reviews: newReviews }),
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${selected.id}`, {
+        method: "PATCH",
+        headers: SB_HEADERS,
+        body: JSON.stringify({
+          rating: newAvgRating,
+          reviews: newTotalReviews,
+          review_list: updatedReviewList
+        }),
       });
+
+      if (!res.ok) throw new Error("Failed to submit review");
+
+      const updatedSelected = {
+        ...selected,
+        rating: newAvgRating,
+        reviews: newTotalReviews,
+        reviewList: updatedReviewList
+      };
+      setSelected(updatedSelected);
+      setNewCommentText("");
+      setNewReviewerName("");
+      setIsSubmittingReview(false);
       await fetchList();
       setToast(t.thanksRating);
       setTimeout(() => setToast(null), 2500);
-    } catch (e) { setToast(t.toastFailConnect); }
+    } catch (err) {
+      setIsSubmittingReview(false);
+      setToast(t.toastFailConnect);
+    }
   };
 
   const shareCraftsman = (c) => {
@@ -733,9 +717,70 @@ function App() {
               </div>
             )}
 
-            <div className="flex items-center justify-between mb-4 px-1">
-              <span className="text-xs font-bold text-stone-500">{t.rateThis}</span>
-              <RatingInput onRate={(v) => rateCraftsman(selected, v)} />
+            {/* قسم التعليقات والتقييمات المتكامل */}
+            <div className="mb-5 border-t pt-4" style={{ borderColor: "#E6E0D2" }}>
+              <h4 className="text-xs font-black text-[#123B3B] mb-3">{t.reviewsTitle} ({selected.reviewList ? selected.reviewList.length : 0})</h4>
+              
+              <div className="space-y-2 mb-4 max-h-48 overflow-y-auto hide-scrollbar">
+                {(!selected.reviewList || selected.reviewList.length === 0) ? (
+                  <p className="text-xs text-stone-400 text-center py-3">لا توجد تعليقات بعد، كن أول من يقيّم!</p>
+                ) : (
+                  selected.reviewList.map((rev, idx) => (
+                    <div key={idx} className="p-3 rounded-xl bg-[#F5F2EA] border border-stone-200 text-xs">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-bold text-[#123B3B]">{rev.name}</span>
+                        <div className="flex items-center gap-1">
+                          <Stars value={rev.rating} />
+                          <span className="text-[10px] text-stone-400">{rev.date}</span>
+                        </div>
+                      </div>
+                      <p className="text-stone-600 leading-relaxed">{rev.comment}</p>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* نموذج إضافة تقييم وتعليق جديد */}
+              <form onSubmit={submitReviewAndComment} className="p-3 rounded-2xl bg-white border" style={{ borderColor: "#DCD5C4" }}>
+                <p className="text-xs font-bold text-[#123B3B] mb-2">{t.addReviewBtn}</p>
+                <div className="flex items-center justify-center gap-1 mb-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      type="button"
+                      key={star}
+                      onClick={() => setNewRatingVal(star)}
+                      className="text-2xl focus:outline-none"
+                      style={{ color: star <= newRatingVal ? "#D9A441" : "#D6D0C2" }}>
+                      ★
+                    </button>
+                  ))}
+                </div>
+                <input
+                  type="text"
+                  placeholder={t.reviewerName}
+                  value={newReviewerName}
+                  onChange={(e) => setNewReviewerName(e.target.value)}
+                  className="w-full border rounded-xl px-3 py-2 text-xs mb-2 outline-none"
+                  style={{ borderColor: "#DCD5C4" }}
+                  required
+                />
+                <textarea
+                  placeholder={t.reviewComment}
+                  value={newCommentText}
+                  onChange={(e) => setNewCommentText(e.target.value)}
+                  className="w-full border rounded-xl px-3 py-2 text-xs mb-2 outline-none"
+                  style={{ borderColor: "#DCD5C4" }}
+                  rows="2"
+                  required
+                ></textarea>
+                <button
+                  type="submit"
+                  disabled={isSubmittingReview}
+                  className="w-full py-2.5 rounded-xl font-bold text-white text-xs"
+                  style={{ background: "#123B3B", opacity: isSubmittingReview ? 0.7 : 1 }}>
+                  {isSubmittingReview ? t.submitting : t.sendReview}
+                </button>
+              </form>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
