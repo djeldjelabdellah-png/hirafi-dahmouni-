@@ -71,22 +71,23 @@ const STRINGS = {
   ar: {
     title: "حِرَفِي", subtitle: "دليل الحرفيين والمهنيين لمدينة الدحموني",
     searchPlaceholder: "ابحث عن حرفة، اسم، أو خدمة...", chooseCategory: "اختر التصنيف",
-    registerCta: "سجّل كحرفي في المنصة", topRated: "الأعلى تقياً", viewAll: "عرض الكل ←",
+    registerCta: "سجّل كحرفي في المنصة", editProfileCta: "تعديل بياناتي", topRated: "الأعلى تقياً", viewAll: "عرض الكل ←",
     noCraftsmenYet: "لا يوجد حرفيون بعد — كن أول من يسجّل", allCrafts: "كل الحرف",
     noResults: "لا توجد نتائج مطابقة", tryOther: "جرّب تصنيفاً أو حياً آخر", loading: "جاري التحميل...",
     navHome: "الرئيسية", navSearch: "البحث", navRegister: "أنا حرفي", yearsExp: "سنوات خبرة",
     newLabel: "جديد", reviewsLabel: "تقييم", call: "اتصال", whatsapp: "واتساب",
-    registerTitle: "تسجيل حرفي جديد", fullName: "الاسم الكامل", email: "البريد الإلكتروني",
+    registerTitle: "تسجيل حرفي جديد", editTitle: "تعديل بيانات الحرفي", fullName: "الاسم الكامل", email: "البريد الإلكتروني",
     craft: "الحرفة / التخصص", otherCraft: "اكتب اسم الحرفة", neighborhood: "الحي / المنطقة",
     experience: "سنوات الخبرة", phone: "رقم الهاتف", bio: "نبذة عن الخدمات المقدمة", submitBtn: "إرسال رمز التحقق",
+    updateBtn: "حفظ التعديلات",
     verifyTitle: "التحقق من البريد الإلكتروني", verifySubtitle: "تم إرسال رمز التحقق (OTP) إلى بريدك الإلكتروني عبر EmailJS. أدخله أدناه:",
-    verifyCodePlaceholder: "أدخل الرمز المكون من 6 أرقام", confirmVerifyBtn: "تأكيد الرمز وإتمام التسجيل",
-    submitting: "جاري الإرسال...", uploadingImages: "جاري رفع الصور...", chooseImages: "صور الأعمال (اختياري)",
+    verifyCodePlaceholder: "أدخل الرمز المكون من 6 أرقام", confirmVerifyBtn: "تأكيد الرمز للمتابعة",
+    submitting: "جاري الإرسال...", uploadingImages: "جاري رفع الصور...", chooseImages: "صور الأعمال (اختياري الجديد)",
     galleryNote: "يمكنك تحديد أكثر من صورة معاً", galleryTitle: "معرض الأعمال",
     reviewNote: "سيُراجع طلبك من طرف الإدارة قبل ظهوره في المنصة، عادة خلال 24 ساعة",
     requiredError: "الرجاء تعبئة الاسم، البريد، رقم الهاتف والوصف", otherCraftError: "الرجاء كتابة اسم الحرفة",
     phoneError: "رقم الهاتف غير صحيح (مثال: 0550123456)", emailError: "الرجاء إدخال بريد إلكتروني صحيح",
-    toastSubmitted: "تم إرسال طلبك، سيُنشر بعد المراجعة", toastFailSubmit: "تعذّر إرسال الطلب، حاول مجدداً", toastFailConnect: "تعذّر الاتصال بالخادم",
+    toastSubmitted: "تم إرسال طلبك، سيُنشر بعد المراجعة", toastUpdated: "تم تحديث بياناتك بنجاح!", toastFailSubmit: "تعذّر إرسال الطلب، حاول مجدداً", toastFailConnect: "تعذّر الاتصال بالخادم",
     adminTitle: "لوحة المراجعة", adminPinPrompt: "أدخل رمز الإدارة للمتابعة", adminPinPlaceholder: "الرمز السري",
     adminPinWrong: "رمز خاطئ", adminLogin: "دخول", adminNoPending: "لا توجد طلبات بانتظار المراجعة",
     pendingLabel: "قيد المراجعة", approveBtn: "قبول ونشر", rejectBtn: "رفض", all: "الكل",
@@ -95,22 +96,24 @@ const STRINGS = {
   en: {
     title: "Hirafi", subtitle: "Craftsmen & Tradespeople Directory — Dahmouni",
     searchPlaceholder: "Search a trade, name, or service...", chooseCategory: "Choose a category",
-    registerCta: "Register as a craftsman", topRated: "Top Rated", viewAll: "View all →",
+    registerCta: "Register as a craftsman", editProfileCta: "Edit my profile", topRated: "Top Rated", viewAll: "View all →",
     noCraftsmenYet: "No craftsmen yet — be the first to register", allCrafts: "All trades",
     noResults: "No matching results", tryOther: "Try another category or neighborhood", loading: "Loading...",
     navHome: "Home", navSearch: "Search", navRegister: "I'm a craftsman", yearsExp: "years experience",
     newLabel: "New", reviewsLabel: "reviews", call: "Call", whatsapp: "WhatsApp",
-    registerTitle: "New Craftsman Registration", fullName: "Full name", email: "Email address",
+    registerTitle: "New Craftsman Registration", editTitle: "Edit Craftsman Profile", fullName: "Full name", email: "Email address",
     craft: "Trade / Specialty", otherCraft: "Type your trade", neighborhood: "Neighborhood", experience: "Years of experience",
     phone: "Phone number", bio: "Brief description of services", submitBtn: "Send verification code",
+    updateBtn: "Save changes",
     verifyTitle: "Email Verification", verifySubtitle: "Verification code (OTP) sent to your email via EmailJS. Enter it below:",
-    verifyCodePlaceholder: "Enter 6-digit code", confirmVerifyBtn: "Confirm code & complete",
+    verifyCodePlaceholder: "Enter 6-digit code", confirmVerifyBtn: "Confirm code & continue",
     submitting: "Submitting...", uploadingImages: "Uploading images...", chooseImages: "Portfolio images (Optional)",
     galleryNote: "You can select multiple images", galleryTitle: "Portfolio",
     reviewNote: "Your request will be reviewed by an admin before publishing, usually within 24 hours",
     requiredError: "Please fill in name, email, phone and description", otherCraftError: "Please type your trade name",
     phoneError: "Invalid phone number (e.g. 0550123456)", emailError: "Please enter a valid email",
     toastSubmitted: "Your request was submitted for review",
+    toastUpdated: "Your profile has been updated successfully!",
     toastFailSubmit: "Failed to submit, try again", toastFailConnect: "Could not connect to server",
     adminTitle: "Review Panel", adminPinPrompt: "Enter admin code to continue", adminPinPlaceholder: "Secret code",
     adminPinWrong: "Wrong code", adminLogin: "Enter", adminNoPending: "No pending requests",
@@ -174,13 +177,16 @@ function App() {
   const [activeCat, setActiveCat] = useState(null);
   const [activeHood, setActiveHood] = useState(t.all);
   const [selected, setSelected] = useState(null);
-  const [view, setView] = useState("home");
+  const [view, setView] = useState("home"); // home, list, register, edit_auth, edit_form, admin
   const [toast, setToast] = useState(null);
   const [saving, setSaving] = useState(false);
   const [uploadingText, setUploadingText] = useState("");
   const [adminUnlocked, setAdminUnlocked] = useState(false);
   const [pinInput, setPinInput] = useState("");
   const [pinError, setPinError] = useState(false);
+
+  // لحفظ بيانات الحرفي الذي يقوم بالتعديل
+  const [editingCraftsman, setEditingCraftsman] = useState(null);
 
   useEffect(() => { setActiveHood(t.all); }, [lang]);
   useEffect(() => { document.documentElement.setAttribute("dir", dir); document.documentElement.setAttribute("lang", lang); }, [dir, lang]);
@@ -263,6 +269,66 @@ function App() {
       setTimeout(() => setToast(null), 3500);
     } catch (e) {
       setToast("خطأ تقني: " + (e.message || "فشل الاتصال"));
+      setUploadingText("");
+    }
+    setSaving(false);
+  };
+
+  // دالة تحديث بيانات الحرفي الموجود مسبقاً
+  const updateCraftsman = async (data) => {
+    setSaving(true);
+    let uploadedUrls = editingCraftsman.galleryUrls || [];
+    
+    try {
+      if (data.files && data.files.length > 0) {
+        setUploadingText(t.uploadingImages);
+        for (const file of data.files) {
+          const ext = file.name.split('.').pop();
+          const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
+          
+          const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/craftsmen-gallery/${fileName}`, {
+            method: 'POST',
+            headers: {
+              apikey: SUPABASE_KEY,
+              Authorization: `Bearer ${SUPABASE_KEY}`,
+              'Content-Type': file.type
+            },
+            body: file
+          });
+          
+          if (uploadRes.ok) {
+            uploadedUrls.push(`${SUPABASE_URL}/storage/v1/object/public/craftsmen-gallery/${fileName}`);
+          }
+        }
+        setUploadingText("");
+      }
+
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${editingCraftsman.id}`, {
+        method: "PATCH",
+        headers: { ...SB_HEADERS },
+        body: JSON.stringify({
+          name: data.name,
+          cat: data.cat,
+          other_cat: data.otherCat || null,
+          hood: data.hood,
+          exp: Number(data.exp) || 0,
+          phone: data.phone,
+          bio: data.bio,
+          gallery_urls: uploadedUrls
+        }),
+      });
+      
+      if (!res.ok) {
+        const errJson = await res.json();
+        throw new Error(errJson.message || errJson.details || "update failed");
+      }
+
+      await fetchList();
+      setView("home");
+      setToast(t.toastUpdated);
+      setTimeout(() => setToast(null), 3500);
+    } catch (e) {
+      setToast("خطأ تقني: " + (e.message || "فشل التحديث"));
       setUploadingText("");
     }
     setSaving(false);
@@ -372,7 +438,7 @@ function App() {
               </div>
 
               <h2 className="font-black text-[#123B3B] text-sm mb-3 mt-2">{t.chooseCategory}</h2>
-              <div className="grid grid-cols-4 gap-3 mb-6">
+              <div className="grid grid-cols-4 gap-3 mb-4">
                 {CATEGORIES.map((c) => {
                   const count = approved.filter((x) => x.cat === c.id).length;
                   return (
@@ -387,9 +453,14 @@ function App() {
                 })}
               </div>
 
-              <button onClick={() => setView("register")} className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-white text-sm mb-6" style={{ background: "#D9A441" }}>
-                <span>+</span> {t.registerCta}
-              </button>
+              <div className="grid grid-cols-2 gap-2 mb-6">
+                <button onClick={() => setView("register")} className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-white text-xs" style={{ background: "#D9A441" }}>
+                  <span>+</span> {t.registerCta}
+                </button>
+                <button onClick={() => setView("edit_auth")} className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-white text-xs border" style={{ background: "#123B3B", borderColor: "#123B3B" }}>
+                  <span>✏️</span> {t.editProfileCta}
+                </button>
+              </div>
 
               <div className="flex items-center justify-between mb-3">
                 <h2 className="font-black text-[#123B3B] text-sm">{t.topRated}</h2>
@@ -446,6 +517,33 @@ function App() {
 
           {view === "register" && (
             <RegisterForm onBack={() => setView("home")} onSubmit={registerCraftsman} saving={saving} uploadingText={uploadingText} t={t} lang={lang} />
+          )}
+
+          {/* شاشة التحقق للتعديل */}
+          {view === "edit_auth" && (
+            <EditAuthView 
+              onBack={() => setView("home")} 
+              allCraftsmen={list} 
+              t={t} 
+              lang={lang} 
+              onVerified={(craftsman) => {
+                setEditingCraftsman(craftsman);
+                setView("edit_form");
+              }} 
+            />
+          )}
+
+          {/* شاشة تعديل البيانات الفعلية */}
+          {view === "edit_form" && editingCraftsman && (
+            <EditForm 
+              craftsman={editingCraftsman} 
+              onBack={() => setView("home")} 
+              onSubmit={updateCraftsman} 
+              saving={saving} 
+              uploadingText={uploadingText} 
+              t={t} 
+              lang={lang} 
+            />
           )}
 
           {view === "admin" && (
@@ -568,6 +666,159 @@ function App() {
   );
 }
 
+// مكون التحقق من البريد الإلكتروني لتعديل البيانات
+function EditAuthView({ onBack, allCraftsmen, t, lang, onVerified }) {
+  const [emailInput, setEmailInput] = useState("");
+  const [step, setStep] = useState(1);
+  const [generatedOtp, setGeneratedOtp] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [matchedCraftsman, setMatchedCraftsman] = useState(null);
+
+  const handleSendOtp = (e) => {
+    e.preventDefault();
+    if (!emailInput.trim()) {
+      setError(t.emailError);
+      return;
+    }
+    const found = allCraftsmen.find(c => c.email && c.email.toLowerCase() === emailInput.trim().toLowerCase());
+    if (!found) {
+      setError("البريد الإلكتروني غير مسجل في النظام!");
+      return;
+    }
+    setMatchedCraftsman(found);
+    setError("");
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    setGeneratedOtp(otp);
+
+    setLoading(true);
+    emailjs.send('service_in25o7y', 'template_o73g9ys', {
+        to_email: found.email,
+        otp_code: otp,
+        to_name: found.name
+    }).then(() => {
+       setLoading(false);
+       setStep(2);
+    }, () => {
+       setLoading(false);
+       setError('فشل إرسال رمز التحقق، يرجى المحاولة لاحقاً.');
+    });
+  };
+
+  const handleVerifyOtp = (e) => {
+    e.preventDefault();
+    if (verificationCode.trim() === generatedOtp) {
+      onVerified(matchedCraftsman);
+    } else {
+      setError('رمز التحقق غير صحيح.');
+    }
+  };
+
+  return (
+    <main className="px-4 pb-24 pt-4">
+      <div className="flex items-center gap-2 mb-5">
+        <button type="button" onClick={onBack} className="text-[#123B3B]">{lang === "ar" ? "←" : "→"}</button>
+        <h2 className="font-black text-[#123B3B] text-base">{t.editTitle}</h2>
+      </div>
+
+      {step === 1 ? (
+        <form onSubmit={handleSendOtp} className="space-y-4 bg-white p-5 rounded-2xl border" style={{ borderColor: "#E6E0D2" }}>
+          <p className="text-xs text-stone-600 font-bold leading-relaxed">أدخل بريدك الإلكتروني المسجل سابقاً للتحقق من هويتك وتعديل معلوماتك:</p>
+          <Field label={t.email}>
+            <input type="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} className="ipt" placeholder="name@example.com" dir="ltr" />
+          </Field>
+          {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
+          <button type="submit" disabled={loading} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2" style={{ background: "#123B3B" }}>
+            {loading ? t.submitting : t.submitBtn}
+          </button>
+        </form>
+      ) : (
+        <form onSubmit={handleVerifyOtp} className="space-y-4 bg-white p-5 rounded-2xl border" style={{ borderColor: "#E6E0D2" }}>
+          <p className="text-xs text-stone-600 font-bold leading-relaxed">{t.verifySubtitle}</p>
+          <Field label={t.verifyTitle}>
+            <input value={verificationCode} onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))} className="ipt text-center text-lg tracking-widest font-mono" placeholder={t.verifyCodePlaceholder} maxLength="6" dir="ltr" inputMode="numeric" />
+          </Field>
+          {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
+          <button type="submit" className="w-full py-3.5 rounded-2xl font-black text-white text-sm" style={{ background: "#3DAA5C" }}>
+            {t.confirmVerifyBtn}
+          </button>
+        </form>
+      )}
+      <style>{`.ipt { width: 100%; border: 1.5px solid #DCD5C4; border-radius: 14px; padding: 11px 14px; font-size: 14px; outline: none; background: white; font-family: inherit; } .ipt:focus { border-color: #123B3B; }`}</style>
+    </main>
+  );
+}
+
+// نموذج تعديل البيانات الفعلية
+function EditForm({ craftsman, onBack, onSubmit, saving, uploadingText, t, lang }) {
+  const [form, setForm] = useState({
+    name: craftsman.name || "",
+    cat: craftsman.cat || "plumb",
+    otherCat: craftsman.otherCat || "",
+    hood: craftsman.hood || NEIGHBORHOODS[0].ar,
+    exp: craftsman.exp || "",
+    phone: craftsman.phone || "",
+    bio: craftsman.bio || ""
+  });
+  const [files, setFiles] = useState([]);
+  const [error, setError] = useState("");
+
+  const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!form.name.trim() || !form.phone.trim() || !form.bio.trim()) { setError(t.requiredError); return; }
+    if (form.cat === "other" && !form.otherCat.trim()) { setError(t.otherCraftError); return; }
+    if (!/^0[5-7][0-9]{8}$/.test(form.phone.trim())) { setError(t.phoneError); return; }
+
+    setError("");
+    onSubmit({ ...form, files });
+  };
+
+  return (
+    <main className="px-4 pb-24 pt-4">
+      <div className="flex items-center gap-2 mb-5">
+        <button type="button" onClick={onBack} className="text-[#123B3B]">{lang === "ar" ? "←" : "→"}</button>
+        <h2 className="font-black text-[#123B3B] text-base">{t.editTitle}</h2>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Field label={t.fullName}><input value={form.name} onChange={(e) => update("name", e.target.value)} className="ipt" /></Field>
+        <Field label={t.craft}>
+          <select value={form.cat} onChange={(e) => update("cat", e.target.value)} className="ipt">
+            {CATEGORIES.map((c) => <option key={c.id} value={c.id}>{c.name[lang]}</option>)}
+          </select>
+        </Field>
+        {form.cat === "other" && (
+          <Field label={t.otherCraft}><input value={form.otherCat} onChange={(e) => update("otherCat", e.target.value)} className="ipt" /></Field>
+        )}
+        <Field label={t.neighborhood}>
+          <select value={form.hood} onChange={(e) => update("hood", e.target.value)} className="ipt">
+            {NEIGHBORHOODS.map((h) => <option key={h.ar} value={h.ar}>{h[lang]}</option>)}
+          </select>
+        </Field>
+        <Field label={t.experience}><input value={form.exp} onChange={(e) => update("exp", e.target.value.replace(/\D/g, ""))} className="ipt" inputMode="numeric" /></Field>
+        <Field label={t.phone}><input value={form.phone} onChange={(e) => update("phone", e.target.value.replace(/\D/g, ""))} className="ipt" placeholder="0550123456" dir="ltr" inputMode="numeric" /></Field>
+
+        <Field label={t.chooseImages}>
+          <input type="file" accept="image/*" multiple onChange={(e) => setFiles(Array.from(e.target.files))} className="ipt bg-white" style={{ padding: "8px 12px" }} />
+          <small className="text-[10px] text-stone-500 mt-1 block font-bold">{t.galleryNote}</small>
+        </Field>
+
+        <Field label={t.bio}><textarea value={form.bio} onChange={(e) => update("bio", e.target.value)} className="ipt" rows="3"></textarea></Field>
+        {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
+        
+        <button type="submit" disabled={saving} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 transition" style={{ background: "#D9A441", opacity: saving ? 0.7 : 1 }}>
+          {saving ? (uploadingText || t.submitting) : t.updateBtn}
+        </button>
+      </form>
+      <style>{`.ipt { width: 100%; border: 1.5px solid #DCD5C4; border-radius: 14px; padding: 11px 14px; font-size: 14px; outline: none; background: white; font-family: inherit; } .ipt:focus { border-color: #123B3B; }`}</style>
+    </main>
+  );
+}
+
 function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
   const [form, setForm] = useState({ name: "", email: "", cat: "plumb", otherCat: "", hood: NEIGHBORHOODS[0].ar, exp: "", phone: "", bio: "" });
   const [files, setFiles] = useState([]);
@@ -587,33 +838,26 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
     if (!/^0[5-7][0-9]{8}$/.test(form.phone.trim())) { setError(t.phoneError); return; }
     
     setError("");
-    
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(otp);
 
-    const templateParams = {
+    setIsSendingOtp(true);
+    emailjs.send('service_in25o7y', 'template_o73g9ys', {
         to_email: form.email.trim(),
         otp_code: otp,
         to_name: form.name.trim()
-    };
-
-    setIsSendingOtp(true);
-    emailjs.send('service_in25o7y', 'template_o73g9ys', templateParams)
-        .then(function(response) {
-           setIsSendingOtp(false);
-           setStep(2);
-        }, function(error) {
-           setIsSendingOtp(false);
-           setError('فشل إرسال رمز التحقق عبر البريد الإلكتروني، يرجى المحاولة لاحقاً.');
-        });
+    }).then(() => {
+       setIsSendingOtp(false);
+       setStep(2);
+    }, () => {
+       setIsSendingOtp(false);
+       setError('فشل إرسال رمز التحقق عبر البريد الإلكتروني، يرجى المحاولة لاحقاً.');
+    });
   };
 
   const handleVerifyAndComplete = (e) => {
     e.preventDefault();
-    if (!verificationCode.trim()) {
-      setError('الرجاء إدخال رمز التحقق');
-      return;
-    }
+    if (!verificationCode.trim()) { setError('الرجاء إدخال رمز التحقق'); return; }
     setError("");
 
     if (verificationCode.trim() === generatedOtp) {
@@ -651,14 +895,7 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
           <Field label={t.phone}><input value={form.phone} onChange={(e) => update("phone", e.target.value.replace(/\D/g, ""))} className="ipt" placeholder="0550123456" dir="ltr" inputMode="numeric" /></Field>
 
           <Field label={t.chooseImages}>
-            <input 
-              type="file" 
-              accept="image/*" 
-              multiple 
-              onChange={(e) => setFiles(Array.from(e.target.files))} 
-              className="ipt bg-white" 
-              style={{ padding: "8px 12px" }} 
-            />
+            <input type="file" accept="image/*" multiple onChange={(e) => setFiles(Array.from(e.target.files))} className="ipt bg-white" style={{ padding: "8px 12px" }} />
             <small className="text-[10px] text-stone-500 mt-1 block font-bold">{t.galleryNote}</small>
           </Field>
 
@@ -674,15 +911,7 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
         <form onSubmit={handleVerifyAndComplete} className="space-y-4 bg-white p-5 rounded-2xl border" style={{ borderColor: "#E6E0D2" }}>
           <p className="text-xs text-stone-600 font-bold leading-relaxed">{t.verifySubtitle}</p>
           <Field label={t.verifyTitle}>
-            <input 
-              value={verificationCode} 
-              onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))} 
-              className="ipt text-center text-lg tracking-widest font-mono" 
-              placeholder={t.verifyCodePlaceholder} 
-              maxLength="6"
-              dir="ltr"
-              inputMode="numeric"
-            />
+            <input value={verificationCode} onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))} className="ipt text-center text-lg tracking-widest font-mono" placeholder={t.verifyCodePlaceholder} maxLength="6" dir="ltr" inputMode="numeric" />
           </Field>
           {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
           <button type="submit" disabled={saving} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 transition" style={{ background: "#3DAA5C", opacity: saving ? 0.7 : 1 }}>
@@ -723,7 +952,7 @@ function CraftCard({ c, cat, lang, t, onClick }) {
 }
 
 const rootElement = document.getElementById("root");
-if (rootElement) {
+if, (rootElement) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(<App />);
 }
