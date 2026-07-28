@@ -9,6 +9,15 @@
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<!-- مكتبة EmailJS -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script type="text/javascript">
+   (function(){
+      emailjs.init({
+        publicKey: "1YVvuqYAcvu8EWWaS",
+      });
+   })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
@@ -67,14 +76,16 @@ const STRINGS = {
     noResults: "لا توجد نتائج مطابقة", tryOther: "جرّب تصنيفاً أو حياً آخر", loading: "جاري التحميل...",
     navHome: "الرئيسية", navSearch: "البحث", navRegister: "أنا حرفي", yearsExp: "سنوات خبرة",
     newLabel: "جديد", reviewsLabel: "تقييم", call: "اتصال", whatsapp: "واتساب",
-    registerTitle: "تسجيل حرفي جديد", fullName: "الاسم الكامل", craft: "الحرفة / التخصص",
-    otherCraft: "اكتب اسم الحرفة", neighborhood: "الحي / المنطقة", experience: "سنوات الخبرة",
-    phone: "رقم الهاتف", bio: "نبذة عن الخدمات المقدمة", submitBtn: "إرسال للمراجعة",
+    registerTitle: "تسجيل حرفي جديد", fullName: "الاسم الكامل", email: "البريد الإلكتروني",
+    craft: "الحرفة / التخصص", otherCraft: "اكتب اسم الحرفة", neighborhood: "الحي / المنطقة",
+    experience: "سنوات الخبرة", phone: "رقم الهاتف", bio: "نبذة عن الخدمات المقدمة", submitBtn: "إرسال رمز التحقق",
+    verifyTitle: "التحقق من البريد الإلكتروني", verifySubtitle: "تم إرسال رمز التحقق (OTP) إلى بريدك الإلكتروني عبر EmailJS. أدخله أدناه:",
+    verifyCodePlaceholder: "أدخل الرمز المكون من 6 أرقام", confirmVerifyBtn: "تأكيد الرمز وإتمام التسجيل",
     submitting: "جاري الإرسال...", uploadingImages: "جاري رفع الصور...", chooseImages: "صور الأعمال (اختياري)",
     galleryNote: "يمكنك تحديد أكثر من صورة معاً", galleryTitle: "معرض الأعمال",
     reviewNote: "سيُراجع طلبك من طرف الإدارة قبل ظهوره في المنصة، عادة خلال 24 ساعة",
-    requiredError: "الرجاء تعبئة الاسم ورقم الهاتف والوصف", otherCraftError: "الرجاء كتابة اسم الحرفة",
-    phoneError: "رقم الهاتف غير صحيح (مثال: 0550123456)",
+    requiredError: "الرجاء تعبئة الاسم، البريد، رقم الهاتف والوصف", otherCraftError: "الرجاء كتابة اسم الحرفة",
+    phoneError: "رقم الهاتف غير صحيح (مثال: 0550123456)", emailError: "الرجاء إدخال بريد إلكتروني صحيح",
     toastSubmitted: "تم إرسال طلبك، سيُنشر بعد المراجعة", toastFailSubmit: "تعذّر إرسال الطلب، حاول مجدداً", toastFailConnect: "تعذّر الاتصال بالخادم",
     adminTitle: "لوحة المراجعة", adminPinPrompt: "أدخل رمز الإدارة للمتابعة", adminPinPlaceholder: "الرمز السري",
     adminPinWrong: "رمز خاطئ", adminLogin: "دخول", adminNoPending: "لا توجد طلبات بانتظار المراجعة",
@@ -89,14 +100,16 @@ const STRINGS = {
     noResults: "No matching results", tryOther: "Try another category or neighborhood", loading: "Loading...",
     navHome: "Home", navSearch: "Search", navRegister: "I'm a craftsman", yearsExp: "years experience",
     newLabel: "New", reviewsLabel: "reviews", call: "Call", whatsapp: "WhatsApp",
-    registerTitle: "New Craftsman Registration", fullName: "Full name", craft: "Trade / Specialty",
-    otherCraft: "Type your trade", neighborhood: "Neighborhood", experience: "Years of experience",
-    phone: "Phone number", bio: "Brief description of services", submitBtn: "Submit for review",
+    registerTitle: "New Craftsman Registration", fullName: "Full name", email: "Email address",
+    craft: "Trade / Specialty", otherCraft: "Type your trade", neighborhood: "Neighborhood", experience: "Years of experience",
+    phone: "Phone number", bio: "Brief description of services", submitBtn: "Send verification code",
+    verifyTitle: "Email Verification", verifySubtitle: "Verification code (OTP) sent to your email via EmailJS. Enter it below:",
+    verifyCodePlaceholder: "Enter 6-digit code", confirmVerifyBtn: "Confirm code & complete",
     submitting: "Submitting...", uploadingImages: "Uploading images...", chooseImages: "Portfolio images (Optional)",
     galleryNote: "You can select multiple images", galleryTitle: "Portfolio",
     reviewNote: "Your request will be reviewed by an admin before publishing, usually within 24 hours",
-    requiredError: "Please fill in name, phone and description", otherCraftError: "Please type your trade name",
-    phoneError: "Invalid phone number (e.g. 0550123456)",
+    requiredError: "Please fill in name, email, phone and description", otherCraftError: "Please type your trade name",
+    phoneError: "Invalid phone number (e.g. 0550123456)", emailError: "Please enter a valid email",
     toastSubmitted: "Your request was submitted for review",
     toastFailSubmit: "Failed to submit, try again", toastFailConnect: "Could not connect to server",
     adminTitle: "Review Panel", adminPinPrompt: "Enter admin code to continue", adminPinPlaceholder: "Secret code",
@@ -114,12 +127,12 @@ const hoodName = (hoodAr, lang) => {
 };
 
 const toDb = (c) => ({
-  name: c.name, cat: c.cat, other_cat: c.otherCat || null, hood: c.hood,
+  name: c.name, email: c.email || null, cat: c.cat, other_cat: c.otherCat || null, hood: c.hood,
   exp: c.exp, phone: c.phone, bio: c.bio, status: c.status || "pending",
   rating: c.rating || 0, reviews: c.reviews || 0, gallery_urls: c.galleryUrls || []
 });
 const fromDb = (r) => ({
-  id: r.id, name: r.name, cat: r.cat, otherCat: r.other_cat, hood: r.hood,
+  id: r.id, name: r.name, email: r.email, cat: r.cat, otherCat: r.other_cat, hood: r.hood,
   exp: r.exp, phone: r.phone, bio: r.bio, status: r.status, rating: r.rating, 
   reviews: r.reviews, galleryUrls: r.gallery_urls || []
 });
@@ -226,6 +239,7 @@ function App() {
         const imagesNote = uploadedUrls.length > 0 ? `\n📸 **مرفق:** ${uploadedUrls.length} صور للأعمال` : "";
         const telegramMessage = `🛠 **تسجيل حرفي جديد على المنصة!**\n\n` +
                                 `👤 **الاسم الكامل:** ${data.name}\n` +
+                                `📧 **البريد الإلكتروني:** ${data.email || 'غير متوفر'}\n` +
                                 `📞 **رقم الهاتف:** ${data.phone}\n` +
                                 `🧰 **الحرفة:** ${craftTitle}\n` +
                                 `📍 **المنطقة/الحي:** ${data.hood}\n` +
@@ -454,6 +468,7 @@ function App() {
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "#D9A44122", color: "#B8842E" }}>🕐 {t.pendingLabel}</span>
                       </div>
                       <p className="text-[11px] text-stone-500 mb-1">{craftName(c, lang)} · {hoodName(c.hood, lang)} · {c.exp} {t.yearsExp}</p>
+                      {c.email && <p className="text-[11px] text-stone-500 mb-1">📧 {c.email}</p>}
                       <p className="text-xs text-stone-600 mb-1">{c.bio}</p>
                       <p className="text-[11px] font-mono text-stone-500 mb-3" dir="ltr">{c.phone}</p>
                       
@@ -550,67 +565,129 @@ function App() {
 }
 
 function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
-  const [form, setForm] = useState({ name: "", cat: "plumb", otherCat: "", hood: NEIGHBORHOODS[0].ar, exp: "", phone: "", bio: "" });
+  const [form, setForm] = useState({ name: "", email: "", cat: "plumb", otherCat: "", hood: NEIGHBORHOODS[0].ar, exp: "", phone: "", bio: "" });
   const [files, setFiles] = useState([]);
   const [error, setError] = useState("");
+  const [step, setStep] = useState(1); // الخطوة 1: النموذج، الخطوة 2: إدخال الكود
+  const [generatedOtp, setGeneratedOtp] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
 
   const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
-  const handleSubmit = (e) => {
+  const handleInitialSubmit = (e) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.phone.trim() || !form.bio.trim()) { setError(t.requiredError); return; }
+    if (!form.name.trim() || !form.email.trim() || !form.phone.trim() || !form.bio.trim()) { setError(t.requiredError); return; }
     if (form.cat === "other" && !form.otherCat.trim()) { setError(t.otherCraftError); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) { setError(t.emailError); return; }
     if (!/^0[5-7][0-9]{8}$/.test(form.phone.trim())) { setError(t.phoneError); return; }
     
     setError("");
-    onSubmit({ ...form, otherCat: form.otherCat.trim(), phone: form.phone.trim(), exp: Number(form.exp) || 0, files });
+    
+    // توليد رمز تحقق عشوائي من 6 أرقام
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    setGeneratedOtp(otp);
+
+    const templateParams = {
+        to_email: form.email.trim(),
+        otp_code: otp,
+        to_name: form.name.trim()
+    };
+
+    setSaving(true);
+    // إرسال البريد عبر EmailJS باستخدام المعرفات الخاصة بك
+    emailjs.send('service_in25o7y', 'template_o73g9ys', templateParams)
+        .then(function(response) {
+           setSaving(false);
+           setStep(2); // الانتقال لواجهة إدخال رمز التحقق
+        }, function(error) {
+           setSaving(false);
+           setError('فشل إرسال رمز التحقق عبر البريد الإلكتروني، يرجى المحاولة لاحقاً.');
+        });
+  };
+
+  const handleVerifyAndComplete = (e) => {
+    e.preventDefault();
+    if (!verificationCode.trim()) {
+      setError('الرجاء إدخال رمز التحقق');
+      return;
+    }
+    setError("");
+
+    if (verificationCode.trim() === generatedOtp) {
+      // مطابقة صحيحة، إرسال البيانات وإتمام التسجيل
+      onSubmit({ ...form, otherCat: form.otherCat.trim(), email: form.email.trim(), phone: form.phone.trim(), exp: Number(form.exp) || 0, files });
+    } else {
+      setError('رمز التحقق غير صحيح، يرجى إعادة المحاولة.');
+    }
   };
 
   return (
     <main className="px-4 pb-24 pt-4">
       <div className="flex items-center gap-2 mb-5">
         <button onClick={onBack} className="text-[#123B3B]">{lang === "ar" ? "←" : "→"}</button>
-        <h2 className="font-black text-[#123B3B] text-base">{t.registerTitle}</h2>
+        <h2 className="font-black text-[#123B3B] text-base">{step === 1 ? t.registerTitle : t.verifyTitle}</h2>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <Field label={t.fullName}><input value={form.name} onChange={(e) => update("name", e.target.value)} className="ipt" /></Field>
-        <Field label={t.craft}>
-          <select value={form.cat} onChange={(e) => update("cat", e.target.value)} className="ipt">
-            {CATEGORIES.map((c) => <option key={c.id} value={c.id}>{c.name[lang]}</option>)}
-          </select>
-        </Field>
-        {form.cat === "other" && (
-          <Field label={t.otherCraft}><input value={form.otherCat} onChange={(e) => update("otherCat", e.target.value)} className="ipt" /></Field>
-        )}
-        <Field label={t.neighborhood}>
-          <select value={form.hood} onChange={(e) => update("hood", e.target.value)} className="ipt">
-            {NEIGHBORHOODS.map((h) => <option key={h.ar} value={h.ar}>{h[lang]}</option>)}
-          </select>
-        </Field>
-        <Field label={t.experience}><input value={form.exp} onChange={(e) => update("exp", e.target.value.replace(/\D/g, ""))} className="ipt" inputMode="numeric" /></Field>
-        <Field label={t.phone}><input value={form.phone} onChange={(e) => update("phone", e.target.value.replace(/\D/g, ""))} className="ipt" placeholder="0550123456" dir="ltr" inputMode="numeric" /></Field>
+      {step === 1 ? (
+        <form onSubmit={handleInitialSubmit} className="space-y-4">
+          <Field label={t.fullName}><input value={form.name} onChange={(e) => update("name", e.target.value)} className="ipt" /></Field>
+          <Field label={t.email}><input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} className="ipt" placeholder="name@example.com" dir="ltr" /></Field>
+          <Field label={t.craft}>
+            <select value={form.cat} onChange={(e) => update("cat", e.target.value)} className="ipt">
+              {CATEGORIES.map((c) => <option key={c.id} value={c.id}>{c.name[lang]}</option>)}
+            </select>
+          </Field>
+          {form.cat === "other" && (
+            <Field label={t.otherCraft}><input value={form.otherCat} onChange={(e) => update("otherCat", e.target.value)} className="ipt" /></Field>
+          )}
+          <Field label={t.neighborhood}>
+            <select value={form.hood} onChange={(e) => update("hood", e.target.value)} className="ipt">
+              {NEIGHBORHOODS.map((h) => <option key={h.ar} value={h.ar}>{h[lang]}</option>)}
+            </select>
+          </Field>
+          <Field label={t.experience}><input value={form.exp} onChange={(e) => update("exp", e.target.value.replace(/\D/g, ""))} className="ipt" inputMode="numeric" /></Field>
+          <Field label={t.phone}><input value={form.phone} onChange={(e) => update("phone", e.target.value.replace(/\D/g, ""))} className="ipt" placeholder="0550123456" dir="ltr" inputMode="numeric" /></Field>
 
-        <Field label={t.chooseImages}>
-          <input 
-            type="file" 
-            accept="image/*" 
-            multiple 
-            onChange={(e) => setFiles(Array.from(e.target.files))} 
-            className="ipt bg-white" 
-            style={{ padding: "8px 12px" }} 
-          />
-          <small className="text-[10px] text-stone-500 mt-1 block font-bold">{t.galleryNote}</small>
-        </Field>
+          <Field label={t.chooseImages}>
+            <input 
+              type="file" 
+              accept="image/*" 
+              multiple 
+              onChange={(e) => setFiles(Array.from(e.target.files))} 
+              className="ipt bg-white" 
+              style={{ padding: "8px 12px" }} 
+            />
+            <small className="text-[10px] text-stone-500 mt-1 block font-bold">{t.galleryNote}</small>
+          </Field>
 
-        <Field label={t.bio}><textarea value={form.bio} onChange={(e) => update("bio", e.target.value)} className="ipt" rows="3"></textarea></Field>
-        {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
-        
-        <button type="submit" disabled={saving} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 transition" style={{ background: "#D9A441", opacity: saving ? 0.7 : 1 }}>
-          {saving ? (uploadingText || t.submitting) : t.submitBtn}
-        </button>
-        <p className="text-[11px] text-stone-400 text-center leading-relaxed">{t.reviewNote}</p>
-      </form>
+          <Field label={t.bio}><textarea value={form.bio} onChange={(e) => update("bio", e.target.value)} className="ipt" rows="3"></textarea></Field>
+          {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
+          
+          <button type="submit" disabled={saving} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 transition" style={{ background: "#D9A441", opacity: saving ? 0.7 : 1 }}>
+            {saving ? t.submitting : t.submitBtn}
+          </button>
+          <p className="text-[11px] text-stone-400 text-center leading-relaxed">{t.reviewNote}</p>
+        </form>
+      ) : (
+        <form onSubmit={handleVerifyAndComplete} className="space-y-4 bg-white p-5 rounded-2xl border" style={{ borderColor: "#E6E0D2" }}>
+          <p className="text-xs text-stone-600 font-bold leading-relaxed">{t.verifySubtitle}</p>
+          <Field label={t.verifyTitle}>
+            <input 
+              value={verificationCode} 
+              onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))} 
+              className="ipt text-center text-lg tracking-widest font-mono" 
+              placeholder={t.verifyCodePlaceholder} 
+              maxLength="6"
+              dir="ltr"
+              inputMode="numeric"
+            />
+          </Field>
+          {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
+          <button type="submit" disabled={saving} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 transition" style={{ background: "#3DAA5C", opacity: saving ? 0.7 : 1 }}>
+            {saving ? (uploadingText || t.submitting) : t.confirmVerifyBtn}
+          </button>
+        </form>
+      )}
 
       <style>{`.ipt { width: 100%; border: 1.5px solid #DCD5C4; border-radius: 14px; padding: 11px 14px; font-size: 14px; outline: none; background: white; font-family: inherit; } .ipt:focus { border-color: #123B3B; }`}</style>
     </main>
