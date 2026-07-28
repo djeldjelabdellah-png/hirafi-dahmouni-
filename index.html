@@ -192,6 +192,27 @@ function App() {
   const [editingCraftsman, setEditingCraftsman] = useState(null);
   const [completingCraftsman, setCompletingCraftsman] = useState(null);
 
+  // تفعيل زر الرجوع في الهاتف والتنقل الآمن بين الشاشات
+  const changeView = (newView, pushHistory = true) => {
+    if (pushHistory && newView !== view) {
+      window.history.pushState({ view: newView }, "");
+    }
+    setView(newView);
+  };
+
+  useEffect(() => {
+    const handlePopState = (event) => {
+      if (event.state && event.state.view) {
+        setView(event.state.view);
+      } else {
+        setView("home");
+      }
+    };
+    window.addEventListener("popstate", handlePopState);
+    window.history.replaceState({ view: "home" }, "");
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
   useEffect(() => { setActiveHood(t.all); }, [lang]);
   useEffect(() => { document.documentElement.setAttribute("dir", dir); document.documentElement.setAttribute("lang", lang); }, [dir, lang]);
 
@@ -268,7 +289,7 @@ function App() {
       } catch (tgError) { console.error("Telegram notification failed:", tgError); }
 
       await fetchList();
-      setView("home");
+      changeView("home");
       setToast(t.toastSubmitted);
       setTimeout(() => setToast(null), 3500);
     } catch (e) {
@@ -327,7 +348,7 @@ function App() {
       }
 
       await fetchList();
-      setView("home");
+      changeView("home");
       setToast(t.toastUpdated);
       setTimeout(() => setToast(null), 3500);
     } catch (e) {
@@ -337,7 +358,6 @@ function App() {
     setSaving(false);
   };
 
-  // إكمال تسجيل الحرفي الذي لا يملك إيميل مسبقاً
   const completeRegistrationEmail = async (craftsmanId, newEmail) => {
     setSaving(true);
     try {
@@ -349,7 +369,7 @@ function App() {
       if (!res.ok) throw new Error("Failed to update email");
 
       await fetchList();
-      setView("home");
+      changeView("home");
       setToast(t.toastUpdated);
       setTimeout(() => setToast(null), 3500);
     } catch (e) {
@@ -424,7 +444,7 @@ function App() {
               className="px-2.5 h-9 rounded-full flex items-center justify-center gap-1 text-white text-xs font-bold" style={{ background: "#1B4B4B" }}>
               🌐 {lang === "ar" ? "EN" : "AR"}
             </button>
-            <div onClick={() => setView("admin")} className="w-11 h-11 rounded-full flex items-center justify-center text-white text-lg" style={{ background: "#D9A441", cursor: "pointer" }}>⚙️</div>
+            <div onClick={() => changeView("admin")} className="w-11 h-11 rounded-full flex items-center justify-center text-white text-lg" style={{ background: "#D9A441", cursor: "pointer" }}>⚙️</div>
           </div>
         </div>
         {(view === "home" || view === "list") && (
@@ -432,7 +452,7 @@ function App() {
             <span style={{ opacity: 0.6 }}>🔍</span>
             <input
               value={query}
-              onChange={(e) => { setQuery(e.target.value); setView("list"); }}
+              onChange={(e) => { setQuery(e.target.value); changeView("list"); }}
               placeholder={t.searchPlaceholder}
               className="bg-transparent outline-none text-sm text-white placeholder-[#8FBFBF] flex-1"
             />
@@ -466,7 +486,7 @@ function App() {
                 {CATEGORIES.map((c) => {
                   const count = approved.filter((x) => x.cat === c.id).length;
                   return (
-                    <button key={c.id} onClick={() => { setActiveCat(c.id); setView("list"); }} className="flex flex-col items-center gap-1.5">
+                    <button key={c.id} onClick={() => { setActiveCat(c.id); changeView("list"); }} className="flex flex-col items-center gap-1.5">
                       <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm relative" style={{ background: c.color + "1A", border: `1.5px solid ${c.color}33` }}>
                         <span style={{ fontSize: 22 }}>{c.icon}</span>
                         {count > 0 && <span className="absolute -top-1.5 -left-1.5 text-[9px] font-black text-white rounded-full w-4 h-4 flex items-center justify-center" style={{ background: c.color }}>{count}</span>}
@@ -478,17 +498,17 @@ function App() {
               </div>
 
               <div className="grid grid-cols-2 gap-2 mb-6">
-                <button onClick={() => setView("register")} className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-white text-xs" style={{ background: "#D9A441" }}>
+                <button onClick={() => changeView("register")} className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-white text-xs" style={{ background: "#D9A441" }}>
                   <span>+</span> {t.registerCta}
                 </button>
-                <button onClick={() => setView("edit_auth")} className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-white text-xs border" style={{ background: "#123B3B", borderColor: "#123B3B" }}>
+                <button onClick={() => changeView("edit_auth")} className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-white text-xs border" style={{ background: "#123B3B", borderColor: "#123B3B" }}>
                   <span>✏️</span> {t.editProfileCta}
                 </button>
               </div>
 
               <div className="flex items-center justify-between mb-3">
                 <h2 className="font-black text-[#123B3B] text-sm">{t.topRated}</h2>
-                <button onClick={() => setView("list")} className="text-[11px] font-bold" style={{ color: "#D9A441" }}>{t.viewAll}</button>
+                <button onClick={() => changeView("list")} className="text-[11px] font-bold" style={{ color: "#D9A441" }}>{t.viewAll}</button>
               </div>
               <div className="space-y-3">
                 {approved.length === 0 ? (
@@ -502,10 +522,9 @@ function App() {
                       lang={lang} 
                       t={t} 
                       onClick={() => {
-                        // إذا لم يمتلك إيميل، نوجهه مباشرة لشاشة إكمال التسجيل بدلاً من تفاصيل العرض العادية
                         if (!c.email) {
                           setCompletingCraftsman(c);
-                          setView("complete_reg");
+                          changeView("complete_reg");
                         } else {
                           setSelected(c);
                         }
@@ -520,7 +539,7 @@ function App() {
           {view === "list" && (
             <main className="px-4 pb-24 pt-4">
               <div className="flex items-center gap-2 mb-4">
-                <button onClick={() => { setView("home"); setActiveCat(null); setQuery(""); }} className="text-[#123B3B]">{dir === "rtl" ? "←" : "→"}</button>
+                <button onClick={() => { changeView("home"); setActiveCat(null); setQuery(""); }} className="text-[#123B3B]">{dir === "rtl" ? "←" : "→"}</button>
                 <h2 className="font-black text-[#123B3B] text-base flex-1">
                   {activeCat ? catInfo(activeCat).name[lang] : t.navSearch}
                   <span className="text-xs font-normal text-stone-500"> ({filtered.length})</span>
@@ -558,7 +577,7 @@ function App() {
                       onClick={() => {
                         if (!c.email) {
                           setCompletingCraftsman(c);
-                          setView("complete_reg");
+                          changeView("complete_reg");
                         } else {
                           setSelected(c);
                         }
@@ -571,13 +590,13 @@ function App() {
           )}
 
           {view === "register" && (
-            <RegisterForm onBack={() => setView("home")} onSubmit={registerCraftsman} saving={saving} uploadingText={uploadingText} t={t} lang={lang} />
+            <RegisterForm onBack={() => changeView("home")} onSubmit={registerCraftsman} saving={saving} uploadingText={uploadingText} t={t} lang={lang} />
           )}
 
           {view === "complete_reg" && completingCraftsman && (
             <CompleteRegistrationView 
               craftsman={completingCraftsman} 
-              onBack={() => setView("home")} 
+              onBack={() => changeView("home")} 
               onComplete={completeRegistrationEmail} 
               saving={saving} 
               t={t} 
@@ -587,13 +606,13 @@ function App() {
 
           {view === "edit_auth" && (
             <EditAuthView 
-              onBack={() => setView("home")} 
+              onBack={() => changeView("home")} 
               allCraftsmen={list} 
               t={t} 
               lang={lang} 
               onVerified={(craftsman) => {
                 setEditingCraftsman(craftsman);
-                setView("edit_form");
+                changeView("edit_form");
               }} 
             />
           )}
@@ -601,7 +620,7 @@ function App() {
           {view === "edit_form" && editingCraftsman && (
             <EditForm 
               craftsman={editingCraftsman} 
-              onBack={() => setView("home")} 
+              onBack={() => changeView("home")} 
               onSubmit={updateCraftsman} 
               saving={saving} 
               uploadingText={uploadingText} 
@@ -662,15 +681,15 @@ function App() {
       )}
 
       <nav className="fixed bottom-0 inset-x-0 bg-white border-t flex justify-around py-2.5" style={{ borderColor: "#E6E0D2" }}>
-        <button onClick={() => setView("home")} className="flex flex-col items-center gap-0.5">
+        <button onClick={() => changeView("home")} className="flex flex-col items-center gap-0.5">
           <span style={{ fontSize: 18, opacity: view === "home" ? 1 : 0.4 }}>🏠</span>
           <span className="text-[10px] font-bold" style={{ color: view === "home" ? "#123B3B" : "#B0A996" }}>{t.navHome}</span>
         </button>
-        <button onClick={() => setView("list")} className="flex flex-col items-center gap-0.5">
+        <button onClick={() => changeView("list")} className="flex flex-col items-center gap-0.5">
           <span style={{ fontSize: 18, opacity: view === "list" ? 1 : 0.4 }}>🔍</span>
           <span className="text-[10px] font-bold" style={{ color: view === "list" ? "#123B3B" : "#B0A996" }}>{t.navSearch}</span>
         </button>
-        <button onClick={() => setView("register")} className="flex flex-col items-center gap-0.5">
+        <button onClick={() => changeView("register")} className="flex flex-col items-center gap-0.5">
           <span style={{ fontSize: 18, opacity: view === "register" ? 1 : 0.4 }}>➕</span>
           <span className="text-[10px] font-bold" style={{ color: view === "register" ? "#123B3B" : "#B0A996" }}>{t.navRegister}</span>
         </button>
@@ -721,7 +740,7 @@ function App() {
 
             <div className="grid grid-cols-2 gap-3">
               <a href={`tel:${selected.phone}`} className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-white text-sm" style={{ background: "#123B3B" }}>📞 {t.call}</a>
-              <a href={`https://wa.me/213${selected.phone.slice(1)}`} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-white text-sm" style={{ background: "#3DAA5C" }}>💬 {t.whatsapp}</a>
+              <a href={`https://wa.me/213${selected.phone.slice(1)}`} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-white" style={{ background: "#3DAA5C" }}>💬 {t.whatsapp}</a>
             </div>
           </div>
         </div>
@@ -730,7 +749,6 @@ function App() {
   );
 }
 
-// مكون خاص لإكمال تسجيل الحرفي القديم الذي لا يملك إيميل
 function CompleteRegistrationView({ craftsman, onBack, onComplete, saving, t, lang }) {
   const [emailInput, setEmailInput] = useState("");
   const [step, setStep] = useState(1);
