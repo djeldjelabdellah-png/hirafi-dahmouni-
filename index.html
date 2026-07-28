@@ -648,19 +648,6 @@ if (rootElement) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(<App />);
 }
-      const rootElement = document.getElementById('root');
-    if (rootElement) {
-      const root = ReactDOM.createRoot(rootElement);
-      root.render(<App />);
-    }
-
-    // --- ضع كود حماية سهم الرجوع هنا ---
-    history.pushState(null, null, location.href);
-    window.addEventListener('popstate', function () {
-        window.location.href = 'index.html'; 
-    });
-    // ----------------------------------
-
   </script>
 </body>
 </html>
