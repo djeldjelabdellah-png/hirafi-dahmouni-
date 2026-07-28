@@ -143,6 +143,191 @@ function Stars({ value }) {
   );
 }
 
+// مكون بطاقة الحرفي
+function CraftCard({ c, cat, lang, t, onClick }) {
+  return (
+    <div onClick={onClick} className="bg-white rounded-2xl p-4 border shadow-sm transition hover:shadow-md cursor-pointer flex items-center gap-3.5" style={{ borderColor: "#E6E0D2" }}>
+      <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0" style={{ background: cat.color + "1A", border: `1.5px solid ${cat.color}33` }}>
+        <span style={{ fontSize: 24 }}>{cat.icon}</span>
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between mb-1">
+          <h3 className="font-black text-[#123B3B] text-sm truncate">{c.name}</h3>
+          <div className="flex items-center gap-1 shrink-0">
+            <span style={{ color: "#D9A441", fontSize: 12 }}>★</span>
+            <span className="text-xs font-bold text-stone-700">{c.rating ? c.rating.toFixed(1) : t.newLabel}</span>
+          </div>
+        </div>
+        <p className="text-[11px] text-stone-500 font-bold mb-1 truncate">
+          {craftName(c, lang)} · {hoodName(c.hood, lang)}
+        </p>
+        <p className="text-xs text-stone-600 truncate">{c.bio}</p>
+      </div>
+    </div>
+  );
+}
+
+// نموذج التسجيل مع خيار التحقق والكود المدمج
+function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
+  const [step, setStep] = useState(1); // 1: ملء البيانات، 2: إدخال كود التحقق OTP
+  const [formData, setFormData] = useState({
+    name: "", cat: CATEGORIES[0].id, otherCat: "", hood: NEIGHBORHOODS[0].ar,
+    exp: 1, phone: "", bio: "", files: [], email: "", password: ""
+  });
+  const [verificationCode, setVerificationCode] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleFileChange = (e) => {
+    setFormData({ ...formData, files: Array.from(e.target.files) });
+  };
+
+  const handleInitialSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.name.trim() || !formData.phone.trim() || !formData.bio.trim() || !formData.email.trim() || !formData.password.trim()) {
+      setErrorMsg(t.requiredError);
+      return;
+    }
+    if (formData.cat === "other" && !formData.otherCat.trim()) {
+      setErrorMsg(t.otherCraftError);
+      return;
+    }
+    setErrorMsg("");
+
+    // إرسال طلب إنشاء الحساب الأولي مع إرسال الكود للإيميل عبر Supabase Auth
+    const { error } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+      options: { data: { full_name: formData.name } }
+    });
+
+    if (error) {
+      setErrorMsg('خطأ في التسجيل: ' + error.message);
+    } else {
+      setStep(2); // الانتقال لخطوة إدخال كود التحقق
+    }
+  };
+
+  const handleVerifyAndComplete = async (e) => {
+    e.preventDefault();
+    if (!verificationCode) {
+      setErrorMsg('الرجاء إدخال رمز التحقق');
+      return;
+    }
+    setErrorMsg("");
+
+    const { error } = await supabase.auth.verifyOtp({
+      email: formData.email,
+      token: verificationCode,
+      type: 'signup'
+    });
+
+    if (error) {
+      setErrorMsg('الرمز غير صحيح أو انتهت صلاحيته: ' + error.message);
+    } else {
+      // بعد نجاح التحقق، يتم إرسال البيانات النهائية للمنصة وقاعدة البيانات الرئيسية
+      onSubmit(formData);
+    }
+  };
+
+  return (
+    <main className="px-4 pb-24 pt-4">
+      <div className="flex items-center gap-2 mb-4">
+        <button onClick={onBack} className="text-[#123B3B]">{lang === "ar" ? "←" : "→"}</button>
+        <h2 className="font-black text-[#123B3B] text-base">{t.registerTitle}</h2>
+      </div>
+
+      {errorMsg && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-4 text-xs font-bold">
+          {errorMsg}
+        </div>
+      )}
+
+      {step === 1 ? (
+        <form onSubmit={handleInitialSubmit} className="bg-white rounded-2xl p-5 border shadow-sm space-y-4" style={{ borderColor: "#E6E0D2" }}>
+          <div>
+            <label className="block text-xs font-bold text-stone-700 mb-1">{t.fullName}</label>
+            <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full border rounded-xl px-3 py-2.5 text-sm outline-none" style={{ borderColor: "#DCD5C4" }} required />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-stone-700 mb-1">البريد الإلكتروني (لتأكيد الحساب)</label>
+            <input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full border rounded-xl px-3 py-2.5 text-sm outline-none" style={{ borderColor: "#DCD5C4" }} required />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-stone-700 mb-1">كلمة المرور</label>
+            <input type="password" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} className="w-full border rounded-xl px-3 py-2.5 text-sm outline-none" style={{ borderColor: "#DCD5C4" }} required />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-stone-700 mb-1">{t.craft}</label>
+            <select value={formData.cat} onChange={(e) => setFormData({...formData, cat: e.target.value})} className="w-full border rounded-xl px-3 py-2.5 text-sm outline-none bg-white" style={{ borderColor: "#DCD5C4" }}>
+              {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name[lang]}</option>)}
+            </select>
+          </div>
+
+          {formData.cat === "other" && (
+            <div>
+              <label className="block text-xs font-bold text-stone-700 mb-1">{t.otherCraft}</label>
+              <input type="text" value={formData.otherCat} onChange={(e) => setFormData({...formData, otherCat: e.target.value})} className="w-full border rounded-xl px-3 py-2.5 text-sm outline-none" style={{ borderColor: "#DCD5C4" }} />
+            </div>
+          )}
+
+          <div>
+            <label className="block text-xs font-bold text-stone-700 mb-1">{t.neighborhood}</label>
+            <select value={formData.hood} onChange={(e) => setFormData({...formData, hood: e.target.value})} className="w-full border rounded-xl px-3 py-2.5 text-sm outline-none bg-white" style={{ borderColor: "#DCD5C4" }}>
+              {NEIGHBORHOODS.map(n => <option key={n.ar} value={n.ar}>{n[lang]}</option>)}
+            </select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-bold text-stone-700 mb-1">{t.experience} (سنوات)</label>
+              <input type="number" min="1" max="50" value={formData.exp} onChange={(e) => setFormData({...formData, exp: Number(e.target.value)})} className="w-full border rounded-xl px-3 py-2.5 text-sm outline-none" style={{ borderColor: "#DCD5C4" }} />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-stone-700 mb-1">{t.phone}</label>
+              <input type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full border rounded-xl px-3 py-2.5 text-sm outline-none" style={{ borderColor: "#DCD5C4" }} placeholder="0550123456" required />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-stone-700 mb-1">{t.bio}</label>
+            <textarea value={formData.bio} onChange={(e) => setFormData({...formData, bio: e.target.value})} rows="3" className="w-full border rounded-xl px-3 py-2.5 text-sm outline-none" style={{ borderColor: "#DCD5C4" }} required></textarea>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-stone-700 mb-1">{t.chooseImages}</label>
+            <input type="file" multiple accept="image/*" onChange={handleFileChange} className="w-full text-xs text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#123B3B] file:text-white hover:file:bg-[#1B4B4B]" />
+            <p className="text-[10px] text-stone-400 mt-1">{t.galleryNote}</p>
+          </div>
+
+          <p className="text-[11px] text-stone-500 bg-[#F9F8F6] p-3 rounded-xl">{t.reviewNote}</p>
+
+          <button type="submit" disabled={saving} className="w-full py-3 rounded-xl font-black text-white text-sm transition" style={{ background: "#D9A441" }}>
+            {saving ? (uploadingText || t.submitting) : "متابعة وإرسال كود التحقق"}
+          </button>
+        </form>
+      ) : (
+        <form onSubmit={handleVerifyAndComplete} className="bg-white rounded-2xl p-5 border shadow-sm space-y-4" style={{ borderColor: "#E6E0D2" }}>
+          <div className="text-center">
+            <h3 className="font-black text-[#123B3B] text-base mb-1">التحقق من البريد الإلكتروني</h3>
+            <p className="text-xs text-stone-500">تم إرسال رمز التحقق إلى بريدك ({formData.email}). أدخله أدناه:</p>
+          </div>
+
+          <div>
+            <input type="text" value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)} className="w-full border rounded-xl px-3 py-3 text-center text-lg tracking-widest font-mono outline-none" style={{ borderColor: "#DCD5C4" }} placeholder="123456" required />
+          </div>
+
+          <button type="submit" disabled={saving} className="w-full py-3 rounded-xl font-black text-white text-sm transition" style={{ background: "#28a745" }}>
+            {saving ? (uploadingText || t.submitting) : "تأكيد الرمز وإتمام التسجيل"}
+          </button>
+        </form>
+      )}
+    </main>
+  );
+}
+
 function App() {
   const [lang, setLang] = useState("ar");
   const t = STRINGS[lang];
@@ -180,7 +365,6 @@ function App() {
 
   useEffect(() => { fetchList(); }, []);
 
-  // جلب التعليقات عند فتح تفاصيل حرفي معين
   useEffect(() => {
     if (selected) {
       fetchComments(selected.id);
@@ -208,7 +392,6 @@ function App() {
     }
 
     try {
-      // 1. إضافة التعليق لقاعدة البيانات
       const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsman_comments`, {
         method: "POST",
         headers: { ...SB_HEADERS, Prefer: "return=representation" },
@@ -222,7 +405,6 @@ function App() {
 
       if (!res.ok) throw new Error("Failed to add comment");
 
-      // 2. إعادة حساب التقييم المتوسط للحرفي وتحديثه
       const updatedReviewsCount = (selected.reviews || 0) + 1;
       const updatedRating = (((selected.rating || 0) * (selected.reviews || 0)) + Number(newComment.rating)) / updatedReviewsCount;
 
@@ -232,7 +414,6 @@ function App() {
         body: JSON.stringify({ rating: updatedRating, reviews: updatedReviewsCount })
       });
 
-      // تحديث الحالة المحلية
       const updatedCraftsman = { ...selected, rating: updatedRating, reviews: updatedReviewsCount };
       setSelected(updatedCraftsman);
       setNewComment({ name: "", text: "", rating: 5 });
@@ -275,6 +456,7 @@ function App() {
         setUploadingText("");
       }
 
+      // إضافة الحرفي بقيمته المعلقة is_approved أو status pending
       const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen`, {
         method: "POST",
         headers: { ...SB_HEADERS, Prefer: "return=representation" },
@@ -287,12 +469,12 @@ function App() {
         const craftTitle = data.cat === "other" ? data.otherCat : (selectedCat ? selectedCat.name.ar : data.cat);
         const imagesNote = uploadedUrls.length > 0 ? `\n📸 **مرفق:** ${uploadedUrls.length} صور للأعمال` : "";
         const telegramMessage = `🛠 **تسجيل حرفي جديد على المنصة!**\n\n` +
-                                `👤 **الاسم الكامل:** ${data.name}\n` +
-                                `📞 **رقم الهاتف:** ${data.phone}\n` +
-                                `🧰 **الحرفة:** ${craftTitle}\n` +
-                                `📍 **المنطقة/الحي:** ${data.hood}\n` +
-                                `⭐ **خبرة:** ${data.exp} سنوات\n` +
-                                `📝 **الوصف:** ${data.bio}` + imagesNote;
+                            `👤 **الاسم الكامل:** ${data.name}\n` +
+                            `📞 **رقم الهاتف:** ${data.phone}\n` +
+                            `🧰 **الحرفة:** ${craftTitle}\n` +
+                            `📍 **المنطقة/الحي:** ${data.hood}\n` +
+                            `⭐ **خبرة:** ${data.exp} سنوات\n` +
+                            `📝 **الوصف:** ${data.bio}` + imagesNote;
 
         fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
           method: "POST",
@@ -581,6 +763,16 @@ function App() {
               </div>
             )}
 
+            {/* أزرار الاتصال السريع */}
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              <a href={`tel:${selected.phone}`} className="flex items-center justify-center gap-2 py-3 rounded-2xl font-black text-white text-xs shadow-sm" style={{ background: "#2C6E6E" }}>
+                <span>📞</span> {t.call}
+              </a>
+              <a href={`https://wa.me/27${selected.phone.replace(/^0/, '')}`} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 py-3 rounded-2xl font-black text-white text-xs shadow-sm" style={{ background: "#25D366" }}>
+                <span>💬</span> {t.whatsapp}
+              </a>
+            </div>
+
             {/* قسم التعليقات والتقييمات */}
             <div className="border-t pt-4 mt-4" style={{ borderColor: "#E6E0D2" }}>
               <h4 className="text-xs font-black text-[#123B3B] mb-3">{t.commentsTitle}</h4>
@@ -594,51 +786,32 @@ function App() {
                   {comments.map((cm) => (
                     <div key={cm.id} className="p-3 rounded-xl border" style={{ background: "#F9F8F6", borderColor: "#E6E0D2" }}>
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-bold text-[#123B3B]">{cm.author_name}</span>
+                        <span className="font-bold text-xs text-[#123B3B]">{cm.author_name}</span>
                         <Stars value={cm.rating} />
                       </div>
-                      <p className="text-xs text-stone-600 leading-normal">{cm.comment}</p>
+                      <p className="text-xs text-stone-600">{cm.comment}</p>
                     </div>
                   ))}
                 </div>
               )}
 
-              {/* نموذج إضافة تعليق وتقييم */}
-              <form onSubmit={submitComment} className="p-3.5 rounded-2xl border mb-5" style={{ background: "#F5F2EA", borderColor: "#DCD5C4" }}>
-                <h5 className="text-xs font-bold text-[#123B3B] mb-2.5">{t.addCommentTitle}</h5>
-                <div className="mb-2.5 flex items-center gap-2">
-                  <span className="text-xs text-stone-500 font-bold">{t.reviewsLabel}:</span>
-                  <div className="flex gap-1">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <span key={star} onClick={() => setNewComment({ ...newComment, rating: star })} style={{ cursor: "pointer", fontSize: 20, color: star <= newComment.rating ? "#D9A441" : "#D6D0C2" }}>★</span>
-                    ))}
-                  </div>
+              {/* إضافة تعليق وتقييم */}
+              <form onSubmit={submitComment} className="bg-[#F5F2EA] p-3.5 rounded-2xl border" style={{ borderColor: "#E6E0D2" }}>
+                <h5 className="font-bold text-xs text-[#123B3B] mb-2">{t.addCommentTitle}</h5>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xs text-stone-600">التقييم:</span>
+                  <select value={newComment.rating} onChange={(e) => setNewComment({...newComment, rating: Number(e.target.value)})} className="border rounded-lg px-2 py-1 text-xs outline-none bg-white" style={{ borderColor: "#DCD5C4" }}>
+                    <option value="5">⭐⭐⭐⭐⭐ (5)</option>
+                    <option value="4">⭐⭐⭐⭐ (4)</option>
+                    <option value="3">⭐⭐⭐ (3)</option>
+                    <option value="2">⭐⭐ (2)</option>
+                    <option value="1">⭐ (1)</option>
+                  </select>
                 </div>
-                <input 
-                  type="text" 
-                  placeholder={t.commenterName} 
-                  value={newComment.name} 
-                  onChange={(e) => setNewComment({ ...newComment, name: e.target.value })} 
-                  className="w-full border rounded-xl px-3 py-2 text-xs mb-2 outline-none bg-white" 
-                  style={{ borderColor: "#DCD5C4" }} 
-                />
-                <textarea 
-                  placeholder={t.commentText} 
-                  value={newComment.text} 
-                  onChange={(e) => setNewComment({ ...newComment, text: e.target.value })} 
-                  className="w-full border rounded-xl px-3 py-2 text-xs mb-2.5 outline-none bg-white" 
-                  style={{ borderColor: "#DCD5C4" }} 
-                  rows="2" 
-                />
-                <button type="submit" className="w-full py-2 rounded-xl font-bold text-white text-xs" style={{ background: "#123B3B" }}>
-                  {t.sendComment}
-                </button>
+                <input type="text" placeholder={t.commenterName} value={newComment.name} onChange={(e) => setNewComment({...newComment, name: e.target.value})} className="w-full border rounded-xl px-3 py-2 text-xs mb-2 outline-none bg-white" style={{ borderColor: "#DCD5C4" }} />
+                <textarea placeholder={t.commentText} value={newComment.text} onChange={(e) => setNewComment({...newComment, text: e.target.value})} rows="2" className="w-full border rounded-xl px-3 py-2 text-xs mb-2 outline-none bg-white" style={{ borderColor: "#DCD5C4" }}></textarea>
+                <button type="submit" className="w-full py-2 rounded-xl font-bold text-white text-xs" style={{ background: "#123B3B" }}>{t.sendComment}</button>
               </form>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3 pt-2">
-              <a href={`tel:${selected.phone}`} className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-white text-sm" style={{ background: "#123B3B" }}>📞 {t.call}</a>
-              <a href={`https://wa.me/213${selected.phone.slice(1)}`} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm" style={{ background: "#3DAA5C", color: "white" }}>💬 {t.whatsapp}</a>
             </div>
           </div>
         </div>
@@ -647,111 +820,7 @@ function App() {
   );
 }
 
-function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
-  const [form, setForm] = useState({ name: "", cat: "plumb", otherCat: "", hood: NEIGHBORHOODS[0].ar, exp: "", phone: "", bio: "" });
-  const [files, setFiles] = useState([]);
-  const [error, setError] = useState("");
-
-  const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!form.name.trim() || !form.phone.trim() || !form.bio.trim()) { setError(t.requiredError); return; }
-    if (form.cat === "other" && !form.otherCat.trim()) { setError(t.otherCraftError); return; }
-    if (!/^0[5-7][0-9]{8}$/.test(form.phone.trim())) { setError(t.phoneError); return; }
-    
-    setError("");
-    onSubmit({ ...form, otherCat: form.otherCat.trim(), phone: form.phone.trim(), exp: Number(form.exp) || 0, files });
-  };
-
-  return (
-    <main className="px-4 pb-24 pt-4">
-      <div className="flex items-center gap-2 mb-5">
-        <button onClick={onBack} className="text-[#123B3B]">{lang === "ar" ? "←" : "→"}</button>
-        <h2 className="font-black text-[#123B3B] text-base">{t.registerTitle}</h2>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <Field label={t.fullName}><input value={form.name} onChange={(e) => update("name", e.target.value)} className="ipt" /></Field>
-        <Field label={t.craft}>
-          <select value={form.cat} onChange={(e) => update("cat", e.target.value)} className="ipt">
-            {CATEGORIES.map((c) => <option key={c.id} value={c.id}>{c.name[lang]}</option>)}
-          </select>
-        </Field>
-        {form.cat === "other" && (
-          <Field label={t.otherCraft}><input value={form.otherCat} onChange={(e) => update("otherCat", e.target.value)} className="ipt" /></Field>
-        )}
-        <Field label={t.neighborhood}>
-          <select value={form.hood} onChange={(e) => update("hood", e.target.value)} className="ipt">
-            {NEIGHBORHOODS.map((h) => <option key={h.ar} value={h.ar}>{h[lang]}</option>)}
-          </select>
-        </Field>
-        <Field label={t.experience}><input value={form.exp} onChange={(e) => update("exp", e.target.value.replace(/\D/g, ""))} className="ipt" inputMode="numeric" /></Field>
-        <Field label={t.phone}><input value={form.phone} onChange={(e) => update("phone", e.target.value.replace(/\D/g, ""))} className="ipt" placeholder="0550123456" dir="ltr" inputMode="numeric" /></Field>
-
-        <Field label={t.chooseImages}>
-          <input 
-            type="file" 
-            accept="image/*" 
-            multiple 
-            onChange={(e) => setFiles(Array.from(e.target.files))} 
-            className="ipt bg-white" 
-            style={{ padding: "8px 12px" }} 
-          />
-          <small className="text-[10px] text-stone-500 mt-1 block font-bold">{t.galleryNote}</small>
-        </Field>
-
-        <Field label={t.bio}><textarea value={form.bio} onChange={(e) => update("bio", e.target.value)} className="ipt" rows="3"></textarea></Field>
-        {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
-        
-        <button type="submit" disabled={saving} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 transition" style={{ background: "#D9A441", opacity: saving ? 0.7 : 1 }}>
-          {saving ? (uploadingText || t.submitting) : t.submitBtn}
-        </button>
-        <p className="text-[11px] text-stone-400 text-center leading-relaxed">{t.reviewNote}</p>
-      </form>
-
-      <style>{`.ipt { width: 100%; border: 1.5px solid #DCD5C4; border-radius: 14px; padding: 11px 14px; font-size: 14px; outline: none; background: white; font-family: inherit; } .ipt:focus { border-color: #123B3B; }`}</style>
-    </main>
-  );
-}
-
-function Field({ label, children }) {
-  return (<div><label className="text-xs font-bold text-[#123B3B] mb-1.5 block">{label}</label>{children}</div>);
-}
-
-function CraftCard({ c, cat, lang, t, onClick }) {
-  return (
-    <button onClick={onClick} className="w-full bg-white rounded-2xl p-3.5 flex items-center gap-3 text-start shadow-sm border" style={{ borderColor: "#E6E0D2" }}>
-      <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: cat.color + "1A" }}>
-        <span style={{ fontSize: 20 }}>{cat.icon}</span>
-      </div>
-      <div className="flex-1 min-w-0">
-        <span className="font-black text-[#123B3B] text-sm truncate block">{c.name}</span>
-        <p className="text-[11px] text-stone-500 truncate">{craftName(c, lang)} · {hoodName(c.hood, lang)}</p>
-        <div className="flex items-center gap-1 mt-0.5">
-          <Stars value={c.rating} />
-          <span className="text-[10px] text-stone-400">{c.reviews ? `(${c.reviews})` : t.newLabel}</span>
-          {c.galleryUrls && c.galleryUrls.length > 0 && (
-            <span className="text-[10px] text-stone-400 border-r border-stone-300 pr-1 mr-1">📸 {c.galleryUrls.length}</span>
-          )}
-        </div>
-      </div>
-      <span className="text-stone-300">‹</span>
-    </button>
-  );
-}
-
-const rootElement = document.getElementById("root");
-if (rootElement) {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(<App />);
-}
-
-history.pushState(null, null, location.href);
-window.addEventListener('popstate', function () {
-    history.pushState(null, null, location.href);
-    window.location.reload();
-});
-  </script>
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
 </body>
 </html>
