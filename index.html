@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>حِرَفِي - دليل الحرفيين والمهنيين لمدينة الدحموني</title>
+<meta property="og:image" content="https://epslzxcwurnueboeujbt.supabase.co/storage/v1/object/public/craftsmen-gallery/og-image.png" />
   <script defer src="/_vercel/insights/script.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -79,7 +80,11 @@ const STRINGS = {
     adminTitle: "لوحة المراجعة", adminPinPrompt: "أدخل رمز الإدارة للمتابعة", adminPinPlaceholder: "الرمز السري",
     adminPinWrong: "رمز خاطئ", adminLogin: "دخول", adminNoPending: "لا توجد طلبات بانتظار المراجعة",
     pendingLabel: "قيد المراجعة", approveBtn: "قبول ونشر", rejectBtn: "رفض", all: "الكل",
-    rateThis: "قيّم هذا الحرفي", thanksRating: "شكراً لتقييمك!", shareBtn: "مشاركة", shareCopied: "تم نسخ الرابط",
+    commentsTitle: "آراء وتقييمات الزبائن", addCommentTitle: "أضف تقييمك ورأيك",
+    commenterName: "اسمك الكريم", commentText: "رأيك أو تعليقك على الخدمة...", sendComment: "إرسال التقييم",
+    commentSuccess: "تم إضافة تعليقك وتقييمك بنجاح!", commentError: "الرجاء كتابة الاسم والتعليق واختيار التقييم",
+    noComments: "لا توجد تعليقات بعد، كن أول من يقيّم هذا الحرفي!",
+    shareBtn: "مشاركة", shareCopied: "تم نسخ الرابط",
   },
   en: {
     title: "Hirafi", subtitle: "Craftsmen & Tradespeople Directory — Dahmouni",
@@ -102,7 +107,11 @@ const STRINGS = {
     adminTitle: "Review Panel", adminPinPrompt: "Enter admin code to continue", adminPinPlaceholder: "Secret code",
     adminPinWrong: "Wrong code", adminLogin: "Enter", adminNoPending: "No pending requests",
     pendingLabel: "Pending review", approveBtn: "Approve & publish", rejectBtn: "Reject", all: "All",
-    rateThis: "Rate this craftsman", thanksRating: "Thanks for rating!", shareBtn: "Share", shareCopied: "Link copied",
+    commentsTitle: "Customer Reviews & Feedback", addCommentTitle: "Add your review",
+    commenterName: "Your Name", commentText: "Your comment about the service...", sendComment: "Submit Review",
+    commentSuccess: "Review added successfully!", commentError: "Please fill name, comment and select stars",
+    noComments: "No reviews yet, be the first to review!",
+    shareBtn: "Share", shareCopied: "Link copied",
   },
 };
 
@@ -134,23 +143,6 @@ function Stars({ value }) {
   );
 }
 
-function RatingInput({ onRate }) {
-  const [hover, setHover] = useState(0);
-  const [done, setDone] = useState(false);
-  if (done) return null;
-  return (
-    <span style={{ letterSpacing: "2px", fontSize: 22, cursor: "pointer" }}>
-      {[1, 2, 3, 4, 5].map((i) => (
-        <span key={i}
-          onMouseEnter={() => setHover(i)}
-          onMouseLeave={() => setHover(0)}
-          onClick={() => { onRate(i); setDone(true); }}
-          style={{ color: i <= hover ? "#D9A441" : "#D6D0C2" }}>★</span>
-      ))}
-    </span>
-  );
-}
-
 function App() {
   const [lang, setLang] = useState("ar");
   const t = STRINGS[lang];
@@ -161,6 +153,9 @@ function App() {
   const [activeCat, setActiveCat] = useState(null);
   const [activeHood, setActiveHood] = useState(t.all);
   const [selected, setSelected] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [loadingComments, setLoadingComments] = useState(false);
+  const [newComment, setNewComment] = useState({ name: "", text: "", rating: 5 });
   const [view, setView] = useState("home");
   const [toast, setToast] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -184,6 +179,73 @@ function App() {
   };
 
   useEffect(() => { fetchList(); }, []);
+
+  // جلب التعليقات عند فتح تفاصيل حرفي معين
+  useEffect(() => {
+    if (selected) {
+      fetchComments(selected.id);
+    }
+  }, [selected]);
+
+  const fetchComments = async (craftsmanId) => {
+    setLoadingComments(true);
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsman_comments?craftsman_id=eq.${craftsmanId}&order=created_at.desc`, { headers: SB_HEADERS });
+      const data = await res.json();
+      setComments(Array.isArray(data) ? data : []);
+    } catch (e) {
+      setComments([]);
+    }
+    setLoadingComments(false);
+  };
+
+  const submitComment = async (e) => {
+    e.preventDefault();
+    if (!newComment.name.trim() || !newComment.text.trim() || !newComment.rating) {
+      setToast(t.commentError);
+      setTimeout(() => setToast(null), 2500);
+      return;
+    }
+
+    try {
+      // 1. إضافة التعليق لقاعدة البيانات
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsman_comments`, {
+        method: "POST",
+        headers: { ...SB_HEADERS, Prefer: "return=representation" },
+        body: JSON.stringify({
+          craftsman_id: selected.id,
+          author_name: newComment.name.trim(),
+          comment: newComment.text.trim(),
+          rating: Number(newComment.rating)
+        })
+      });
+
+      if (!res.ok) throw new Error("Failed to add comment");
+
+      // 2. إعادة حساب التقييم المتوسط للحرفي وتحديثه
+      const updatedReviewsCount = (selected.reviews || 0) + 1;
+      const updatedRating = (((selected.rating || 0) * (selected.reviews || 0)) + Number(newComment.rating)) / updatedReviewsCount;
+
+      await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${selected.id}`, {
+        method: "PATCH",
+        headers: SB_HEADERS,
+        body: JSON.stringify({ rating: updatedRating, reviews: updatedReviewsCount })
+      });
+
+      // تحديث الحالة المحلية
+      const updatedCraftsman = { ...selected, rating: updatedRating, reviews: updatedReviewsCount };
+      setSelected(updatedCraftsman);
+      setNewComment({ name: "", text: "", rating: 5 });
+      fetchComments(selected.id);
+      fetchList();
+
+      setToast(t.commentSuccess);
+      setTimeout(() => setToast(null), 2500);
+    } catch (err) {
+      setToast(t.toastFailSubmit);
+      setTimeout(() => setToast(null), 2500);
+    }
+  };
 
   const registerCraftsman = async (data) => {
     setSaving(true);
@@ -263,20 +325,6 @@ function App() {
     try {
       await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${id}`, { method: "DELETE", headers: SB_HEADERS });
       await fetchList();
-    } catch (e) { setToast(t.toastFailConnect); }
-  };
-
-  const rateCraftsman = async (craftsman, value) => {
-    const newReviews = (craftsman.reviews || 0) + 1;
-    const newRating = (((craftsman.rating || 0) * (craftsman.reviews || 0)) + value) / newReviews;
-    try {
-      await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${craftsman.id}`, {
-        method: "PATCH", headers: SB_HEADERS,
-        body: JSON.stringify({ rating: newRating, reviews: newReviews }),
-      });
-      await fetchList();
-      setToast(t.thanksRating);
-      setTimeout(() => setToast(null), 2500);
     } catch (e) { setToast(t.toastFailConnect); }
   };
 
@@ -533,14 +581,64 @@ function App() {
               </div>
             )}
 
-            <div className="flex items-center justify-between mb-4 px-1">
-              <span className="text-xs font-bold text-stone-500">{t.rateThis}</span>
-              <RatingInput onRate={(v) => rateCraftsman(selected, v)} />
+            {/* قسم التعليقات والتقييمات */}
+            <div className="border-t pt-4 mt-4" style={{ borderColor: "#E6E0D2" }}>
+              <h4 className="text-xs font-black text-[#123B3B] mb-3">{t.commentsTitle}</h4>
+
+              {loadingComments ? (
+                <div className="flex justify-center py-4"><div className="spinner" style={{ width: 20, height: 20 }}></div></div>
+              ) : comments.length === 0 ? (
+                <p className="text-xs text-stone-400 mb-4">{t.noComments}</p>
+              ) : (
+                <div className="space-y-2.5 mb-5 max-h-48 overflow-y-auto hide-scrollbar">
+                  {comments.map((cm) => (
+                    <div key={cm.id} className="p-3 rounded-xl border" style={{ background: "#F9F8F6", borderColor: "#E6E0D2" }}>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-bold text-[#123B3B]">{cm.author_name}</span>
+                        <Stars value={cm.rating} />
+                      </div>
+                      <p className="text-xs text-stone-600 leading-normal">{cm.comment}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* نموذج إضافة تعليق وتقييم */}
+              <form onSubmit={submitComment} className="p-3.5 rounded-2xl border mb-5" style={{ background: "#F5F2EA", borderColor: "#DCD5C4" }}>
+                <h5 className="text-xs font-bold text-[#123B3B] mb-2.5">{t.addCommentTitle}</h5>
+                <div className="mb-2.5 flex items-center gap-2">
+                  <span className="text-xs text-stone-500 font-bold">{t.reviewsLabel}:</span>
+                  <div className="flex gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <span key={star} onClick={() => setNewComment({ ...newComment, rating: star })} style={{ cursor: "pointer", fontSize: 20, color: star <= newComment.rating ? "#D9A441" : "#D6D0C2" }}>★</span>
+                    ))}
+                  </div>
+                </div>
+                <input 
+                  type="text" 
+                  placeholder={t.commenterName} 
+                  value={newComment.name} 
+                  onChange={(e) => setNewComment({ ...newComment, name: e.target.value })} 
+                  className="w-full border rounded-xl px-3 py-2 text-xs mb-2 outline-none bg-white" 
+                  style={{ borderColor: "#DCD5C4" }} 
+                />
+                <textarea 
+                  placeholder={t.commentText} 
+                  value={newComment.text} 
+                  onChange={(e) => setNewComment({ ...newComment, text: e.target.value })} 
+                  className="w-full border rounded-xl px-3 py-2 text-xs mb-2.5 outline-none bg-white" 
+                  style={{ borderColor: "#DCD5C4" }} 
+                  rows="2" 
+                />
+                <button type="submit" className="w-full py-2 rounded-xl font-bold text-white text-xs" style={{ background: "#123B3B" }}>
+                  {t.sendComment}
+                </button>
+              </form>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 pt-2">
               <a href={`tel:${selected.phone}`} className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-white text-sm" style={{ background: "#123B3B" }}>📞 {t.call}</a>
-              <a href={`https://wa.me/213${selected.phone.slice(1)}`} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-white text-sm" style={{ background: "#3DAA5C" }}>💬 {t.whatsapp}</a>
+              <a href={`https://wa.me/213${selected.phone.slice(1)}`} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm" style={{ background: "#3DAA5C", color: "white" }}>💬 {t.whatsapp}</a>
             </div>
           </div>
         </div>
@@ -649,13 +747,11 @@ if (rootElement) {
   root.render(<App />);
 }
 
-// --- كود حماية سهم الرجوع لمنع إغلاق التطبيق نهائياً ---
 history.pushState(null, null, location.href);
 window.addEventListener('popstate', function () {
-    window.location.href = 'index.html'; 
+    history.pushState(null, null, location.href);
+    window.location.reload();
 });
-// --------------------------------------------------
-
   </script>
 </body>
 </html>
