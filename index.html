@@ -92,6 +92,8 @@ const STRINGS = {
     adminPinWrong: "رمز خاطئ", adminLogin: "دخول", adminNoPending: "لا توجد طلبات بانتظار المراجعة",
     pendingLabel: "قيد المراجعة", approveBtn: "قبول ونشر", rejectBtn: "رفض", all: "الكل",
     rateThis: "قيّم هذا الحرفي", thanksRating: "شكراً لتقييمك!", shareBtn: "مشاركة", shareCopied: "تم نسخ الرابط",
+    completeRegistrationBanner: "أنت مسجل مسبقاً بدون بريد إلكتروني. انقر هنا لإكمال تسجيلك وتأكيد بريدك!",
+    completeRegTitle: "إكمال التسجيل وتأكيد البريد",
   },
   en: {
     title: "Hirafi", subtitle: "Craftsmen & Tradespeople Directory — Dahmouni",
@@ -119,6 +121,8 @@ const STRINGS = {
     adminPinWrong: "Wrong code", adminLogin: "Enter", adminNoPending: "No pending requests",
     pendingLabel: "Pending review", approveBtn: "Approve & publish", rejectBtn: "Reject", all: "All",
     rateThis: "Rate this craftsman", thanksRating: "Thanks for rating!", shareBtn: "Share", shareCopied: "Link copied",
+    completeRegistrationBanner: "You registered previously without an email. Click here to complete your registration!",
+    completeRegTitle: "Complete Registration & Verify Email",
   },
 };
 
@@ -186,6 +190,7 @@ function App() {
   const [pinError, setPinError] = useState(false);
 
   const [editingCraftsman, setEditingCraftsman] = useState(null);
+  const [completingCraftsman, setCompletingCraftsman] = useState(null);
 
   useEffect(() => { setActiveHood(t.all); }, [lang]);
   useEffect(() => { document.documentElement.setAttribute("dir", dir); document.documentElement.setAttribute("lang", lang); }, [dir, lang]);
@@ -332,6 +337,27 @@ function App() {
     setSaving(false);
   };
 
+  // إكمال تسجيل الحرفي الذي لا يملك إيميل مسبقاً
+  const completeRegistrationEmail = async (craftsmanId, newEmail) => {
+    setSaving(true);
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${craftsmanId}`, {
+        method: "PATCH",
+        headers: { ...SB_HEADERS },
+        body: JSON.stringify({ email: newEmail }),
+      });
+      if (!res.ok) throw new Error("Failed to update email");
+
+      await fetchList();
+      setView("home");
+      setToast(t.toastUpdated);
+      setTimeout(() => setToast(null), 3500);
+    } catch (e) {
+      setToast(t.toastFailSubmit);
+    }
+    setSaving(false);
+  };
+
   const approveCraftsman = async (id) => {
     try {
       await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${id}`, {
@@ -469,7 +495,22 @@ function App() {
                   <p className="text-center text-xs text-stone-400 py-6">{t.noCraftsmenYet}</p>
                 ) : (
                   [...approved].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 3).map((c) => (
-                    <CraftCard key={c.id} c={c} cat={catInfo(c.cat)} lang={lang} t={t} onClick={() => setSelected(c)} />
+                    <CraftCard 
+                      key={c.id} 
+                      c={c} 
+                      cat={catInfo(c.cat)} 
+                      lang={lang} 
+                      t={t} 
+                      onClick={() => {
+                        // إذا لم يمتلك إيميل، نوجهه مباشرة لشاشة إكمال التسجيل بدلاً من تفاصيل العرض العادية
+                        if (!c.email) {
+                          setCompletingCraftsman(c);
+                          setView("complete_reg");
+                        } else {
+                          setSelected(c);
+                        }
+                      }} 
+                    />
                   ))
                 )}
               </div>
@@ -507,7 +548,23 @@ function App() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {filtered.map((c) => <CraftCard key={c.id} c={c} cat={catInfo(c.cat)} lang={lang} t={t} onClick={() => setSelected(c)} />)}
+                  {filtered.map((c) => (
+                    <CraftCard 
+                      key={c.id} 
+                      c={c} 
+                      cat={catInfo(c.cat)} 
+                      lang={lang} 
+                      t={t} 
+                      onClick={() => {
+                        if (!c.email) {
+                          setCompletingCraftsman(c);
+                          setView("complete_reg");
+                        } else {
+                          setSelected(c);
+                        }
+                      }} 
+                    />
+                  ))}
                 </div>
               )}
             </main>
@@ -515,6 +572,17 @@ function App() {
 
           {view === "register" && (
             <RegisterForm onBack={() => setView("home")} onSubmit={registerCraftsman} saving={saving} uploadingText={uploadingText} t={t} lang={lang} />
+          )}
+
+          {view === "complete_reg" && completingCraftsman && (
+            <CompleteRegistrationView 
+              craftsman={completingCraftsman} 
+              onBack={() => setView("home")} 
+              onComplete={completeRegistrationEmail} 
+              saving={saving} 
+              t={t} 
+              lang={lang} 
+            />
           )}
 
           {view === "edit_auth" && (
@@ -659,6 +727,87 @@ function App() {
         </div>
       )}
     </div>
+  );
+}
+
+// مكون خاص لإكمال تسجيل الحرفي القديم الذي لا يملك إيميل
+function CompleteRegistrationView({ craftsman, onBack, onComplete, saving, t, lang }) {
+  const [emailInput, setEmailInput] = useState("");
+  const [step, setStep] = useState(1);
+  const [generatedOtp, setGeneratedOtp] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSendOtp = (e) => {
+    e.preventDefault();
+    if (!emailInput.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.trim())) {
+      setError(t.emailError);
+      return;
+    }
+    setError("");
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    setGeneratedOtp(otp);
+
+    setLoading(true);
+    emailjs.send('service_in25o7y', 'template_o73g9ys', {
+        to_email: emailInput.trim(),
+        otp_code: otp,
+        to_name: craftsman.name
+    }).then(() => {
+       setLoading(false);
+       setStep(2);
+    }, () => {
+       setLoading(false);
+       setError('فشل إرسال رمز التحقق، يرجى المحاولة لاحقاً.');
+    });
+  };
+
+  const handleVerifyOtp = (e) => {
+    e.preventDefault();
+    if (verificationCode.trim() === generatedOtp) {
+      onComplete(craftsman.id, emailInput.trim());
+    } else {
+      setError('رمز التحقق غير صحيح.');
+    }
+  };
+
+  return (
+    <main className="px-4 pb-24 pt-4">
+      <div className="flex items-center gap-2 mb-5">
+        <button type="button" onClick={onBack} className="text-[#123B3B]">{lang === "ar" ? "←" : "→"}</button>
+        <h2 className="font-black text-[#123B3B] text-base">{t.completeRegTitle}</h2>
+      </div>
+
+      <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-4">
+        <p className="text-xs font-bold text-amber-800">أهلاً بك يا <span className="underline">{craftsman.name}</span>!</p>
+        <p className="text-[11px] text-amber-700 mt-1">حسابك مسجل مسبقاً. يرجى إدخال بريدك الإلكتروني لتأكيده والاحتفاظ بجميع بياناتك وملفك الشخصي الحالي دون الحاجة لإعادة التسجيل.</p>
+      </div>
+
+      {step === 1 ? (
+        <form onSubmit={handleSendOtp} className="space-y-4 bg-white p-5 rounded-2xl border" style={{ borderColor: "#E6E0D2" }}>
+          <Field label={t.email}>
+            <input type="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} className="ipt" placeholder="name@example.com" dir="ltr" />
+          </Field>
+          {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
+          <button type="submit" disabled={loading} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2" style={{ background: "#D9A441" }}>
+            {loading ? t.submitting : t.submitBtn}
+          </button>
+        </form>
+      ) : (
+        <form onSubmit={handleVerifyOtp} className="space-y-4 bg-white p-5 rounded-2xl border" style={{ borderColor: "#E6E0D2" }}>
+          <p className="text-xs text-stone-600 font-bold leading-relaxed">{t.verifySubtitle}</p>
+          <Field label={t.verifyTitle}>
+            <input value={verificationCode} onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))} className="ipt text-center text-lg tracking-widest font-mono" placeholder={t.verifyCodePlaceholder} maxLength="6" dir="ltr" inputMode="numeric" />
+          </Field>
+          {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
+          <button type="submit" disabled={saving} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2" style={{ background: "#3DAA5C", opacity: saving ? 0.7 : 1 }}>
+            {saving ? t.submitting : t.confirmVerifyBtn}
+          </button>
+        </form>
+      )}
+      <style>{`.ipt { width: 100%; border: 1.5px solid #DCD5C4; border-radius: 14px; padding: 11px 14px; font-size: 14px; outline: none; background: white; font-family: inherit; } .ipt:focus { border-color: #123B3B; }`}</style>
+    </main>
   );
 }
 
@@ -924,13 +1073,20 @@ function Field({ label, children }) {
 }
 
 function CraftCard({ c, cat, lang, t, onClick }) {
+  const isMissingEmail = !c.email;
+
   return (
-    <button onClick={onClick} className="w-full bg-white rounded-2xl p-3.5 flex items-center gap-3 text-start shadow-sm border" style={{ borderColor: "#E6E0D2" }}>
+    <button onClick={onClick} className="w-full bg-white rounded-2xl p-3.5 flex items-center gap-3 text-start shadow-sm border relative overflow-hidden" style={{ borderColor: isMissingEmail ? "#D9A441" : "#E6E0D2" }}>
       <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: cat.color + "1A" }}>
         <span style={{ fontSize: 20 }}>{cat.icon}</span>
       </div>
       <div className="flex-1 min-w-0">
-        <span className="font-black text-[#123B3B] text-sm truncate block">{c.name}</span>
+        <div className="flex items-center gap-2">
+          <span className="font-black text-[#123B3B] text-sm truncate block">{c.name}</span>
+          {isMissingEmail && (
+            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full text-white bg-amber-600 animate-pulse">تثبيت البريد</span>
+          )}
+        </div>
         <p className="text-[11px] text-stone-500 truncate">{craftName(c, lang)} · {hoodName(c.hood, lang)}</p>
         <div className="flex items-center gap-1 mt-0.5">
           <Stars value={c.rating} />
