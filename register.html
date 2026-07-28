@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل حرفي جديد - منصة حرفي</title>
+    <!-- مكتبة Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        h2 { text-align: center; color: #333; margin-bottom: 20px; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background-color: #28a745; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; margin-top: 10px; }
+        button:hover { background-color: #218838; }
+        .hidden { display: none; }
+        .msg { text-align: center; margin-top: 15px; color: #666; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- قسم التسجيل الأساسي -->
+    <div id="signup-section">
+        <h2>إنشاء حساب حرفي</h2>
+        <input type="text" id="craftsman-name" placeholder="الاسم الكامل أو اسم الورشة" required>
+        <input type="email" id="signup-email" placeholder="البريد الإلكتروني" required>
+        <input type="password" id="signup-password" placeholder="كلمة المرور" required>
+        <button onclick="registerCraftsman()">تسجيل وإرسال رمز التحقق</button>
+    </div>
+
+    <!-- قسم إدخال رمز التحقق (يختفي حتى يتم التسجيل) -->
+    <div id="verify-section" class="hidden">
+        <h2>التحقق من البريد الإلكتروني</h2>
+        <p class="msg">تم إرسال رمز التحقق (OTP) إلى بريدك الإلكتروني. أدخله أدناه:</p>
+        <input type="text" id="verification-code" placeholder="أدخل الرمز المكون من أرقام">
+        <button onclick="verifyEmailCode()">تأكيد الرمز</button>
+    </div>
+</div>
+
+<script>
+    // ضع مفاتيح Supabase الخاصة بك هنا
+    const SUPABASE_URL = 'ضع_رابط_مروعك_هنا';
+    const SUPABASE_ANON_KEY = 'ضع_مفتاح_anon_هنا';
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let userEmail = '';
+
+    // الخطوة 1: تسجيل الحرفي في نظام المصادقة
+    async function registerCraftsman() {
+        const name = document.getElementById('craftsman-name').value;
+        userEmail = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
+
+        if (!name || !userEmail || !password) {
+            alert('الرجاء ملء جميع الحقول المطلوبة');
+            return;
+        }
+
+        // إنشاء المستخدم في Supabase Auth مع حفظ اسمه في الـ metadata
+        const { data, error } = await supabase.auth.signUp({
+            email: userEmail,
+            password: password,
+            options: {
+                data: { full_name: name }
+            }
+        });
+
+        if (error) {
+            alert('خطأ في التسجيل: ' + error.message);
+        } else {
+            alert('تم إرسال رمز التحقق إلى بريدك الإلكتروني بنجاح.');
+            document.getElementById('signup-section').classList.add('hidden');
+            document.getElementById('verify-section').classList.remove('hidden');
+        }
+    }
+
+    // الخطوة 2: التحقق من الرمز وإضافة السجل إلى جدول الحرفيين بوضع معلق (is_approved = false)
+    async function verifyEmailCode() {
+        const token = document.getElementById('verification-code').value;
+
+        if (!token) {
+            alert('الرجاء إدخال رمز التحقق');
+            return;
+        }
+
+        const { data, error } = await supabase.auth.verifyOtp({
+            email: userEmail,
+            token: token,
+            type: 'signup'
+        });
+
+        if (error) {
+            alert('الرمز غير صحيح أو انتهت صلاحيته: ' + error.message);
+        } else {
+            // الحصول على الـ user_id الجديد
+            const { data: { user } } = await supabase.auth.getUser();
+            
+            if (user) {
+                // إدراج الحرفي في الجدول الخاص بك مع ضبط is_approved على false (بانتظار موافقتك)
+                const { error: insertError } = await supabase
+                    .from('craftsmen')
+                    .insert([
+                        { 
+                            user_id: user.id, 
+                            name: user.user_metadata.full_name || 'حرفي جديد', 
+                            is_approved: false 
+                        }
+                    ]);
+
+                if (insertError) {
+                    console.error(insertError);
+                }
+            }
+
+            alert('تم تأكيد بريدك الإلكتروني بنجاح! حسابك الآن بانتظار مراجعة وموافقة الإدارة لكي يظهر في المنصة.');
+            window.location.href = 'index.html'; // العودة للرئيسية أو صفحة انتظار
+        }
+    }
+</script>
+
+</body>
+</html>
