@@ -8,12 +8,12 @@
   "theme_color": "#4f46e5",
   "icons": [
     {
-      "src": "https://epslzxcwurnueboeujbt.supabase.co/storage/v1/object/public/craftsmen-gallery/og-image.png",
+      "src": "https://epslzxcwurnueboeujbt.supabase.co/storage/v1/object/public/craftsmen-gallery/file_00000000ccc8824394ec55bb3e33f0db.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://epslzxcwurnueboeujbt.supabase.co/storage/v1/object/public/craftsmen-gallery/og-image.png",
+      "src": "https://epslzxcwurnueboeujbt.supabase.co/storage/v1/object/public/craftsmen-gallery/file_00000000a75881f4b3c31f8894b218e7.png",
       "sizes": "512x512",
       "type": "image/png"
     }
