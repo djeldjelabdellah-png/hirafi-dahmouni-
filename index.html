@@ -1,55 +1,37 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>حِرَفِي - دليل الحرفيين والمهنيين لمدينة الدحموني</title>
-
-<!-- PWA & Mobile Web App Meta -->
-<meta name="theme-color" content="#123B3B" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-
+<script defer src="/_vercel/insights/script.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<!-- مكتبة EmailJS -->
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script type="text/javascript">
    (function(){
-      if (typeof emailjs !== 'undefined') {
-        emailjs.init({ publicKey: "1YVvuqYAcvu8EWWaS" });
-      }
+      emailjs.init({
+        publicKey: "1YVvuqYAcvu8EWWaS",
+      });
    })();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
-  body { 
-    font-family: 'Tajawal', sans-serif; 
-    background: #EFECE6; 
-    margin: 0; 
-    padding: 0;
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-  }
-  .spinner { 
-    border: 3px solid #DCD5C4; 
-    border-top-color: #123B3B; 
-    border-radius: 50%; 
-    width: 24px; 
-    height: 24px; 
-    animation: spin 0.8s linear infinite; 
-  }
+  body { font-family: 'Tajawal', sans-serif; background:#F5F2EA; margin:0; }
+  .spinner { border: 3px solid #DCD5C4; border-top-color: #123B3B; border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .hide-scrollbar::-webkit-scrollbar { display: none; }
   .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  .safe-pb { padding-bottom: calc(4.5rem + env(safe-area-inset-bottom)); }
+  .ipt { width: 100%; border: 1.5px solid #DCD5C4; border-radius: 14px; padding: 11px 14px; font-size: 14px; outline: none; background: white; font-family: inherit; }
+  .ipt:focus { border-color: #123B3B; }
 </style>
 </head>
 <body>
 <div id="root"></div>
-
 <script type="text/babel">
 const { useState, useEffect, useMemo } = React;
 
@@ -87,48 +69,63 @@ const NEIGHBORHOODS = [
 const STRINGS = {
   ar: {
     title: "حِرَفِي", subtitle: "دليل الحرفيين والمهنيين لمدينة الدحموني",
-    searchPlaceholder: "ابحث عن حرفة، اسم، أو خدمة...", chooseCategory: "التصنيفات المتاحة",
-    registerCta: "سجّل كحرفي", editProfileCta: "تعديل بياناتي", topRated: "الأعلى تقييماً", viewAll: "عرض الكل ←",
+    searchPlaceholder: "ابحث عن حرفة، اسم، أو خدمة...", chooseCategory: "اختر التصنيف",
+    registerCta: "سجّل كحرفي في المنصة", editProfileCta: "تعديل بياناتي", topRated: "الأعلى تقييماً", viewAll: "عرض الكل ←",
     noCraftsmenYet: "لا يوجد حرفيون بعد — كن أول من يسجّل", allCrafts: "كل الحرف",
     noResults: "لا توجد نتائج مطابقة", tryOther: "جرّب تصنيفاً أو حياً آخر", loading: "جاري التحميل...",
-    navHome: "الرئيسية", navSearch: "البحث", navRegister: "أنا حرفي", navAdmin: "الإدارة", yearsExp: "سنوات خبرة",
+    navHome: "الرئيسية", navSearch: "البحث", navRegister: "أنا حرفي", yearsExp: "سنوات خبرة",
     newLabel: "جديد", reviewsLabel: "تقييم", call: "اتصال", whatsapp: "واتساب",
     registerTitle: "تسجيل حرفي جديد", editTitle: "تعديل بيانات الحرفي", fullName: "الاسم الكامل", email: "البريد الإلكتروني",
     craft: "الحرفة / التخصص", otherCraft: "اكتب اسم الحرفة", neighborhood: "الحي / المنطقة",
-    experience: "سنوات الخبرة", phone: "رقم الهاتف", bio: "نبذة عن الخدمات المقدمة", submitBtn: "إرسال طلب التسجيل",
-    updateBtn: "حفظ التعديلات", deleteAccountBtn: "حذف ملفي نهائياً", deleteConfirmMsg: "هل أنت متأكد من رغبتك في حذف ملفك نهائياً؟",
+    experience: "سنوات الخبرة", phone: "رقم الهاتف", bio: "نبذة عن الخدمات المقدمة", submitBtn: "إرسال رمز التحقق",
+    updateBtn: "حفظ التعديلات", deleteAccountBtn: "حذف ملفي نهائياً", deleteConfirmMsg: "هل أنت متأكد من رغبتك في حذف ملفك نهائياً من المنصة؟ لا يمكن التراجع عن هذا الإجراء.",
+    verifyTitle: "التحقق من البريد الإلكتروني", verifySubtitle: "تم إرسال رمز التحقق (OTP مكون من 4 أرقام) إلى بريدك الإلكتروني. أدخله أدناه:",
+    verifyCodePlaceholder: "أدخل الرمز المكون من 4 أرقام", confirmVerifyBtn: "تأكيد الرمز للمتابعة",
     submitting: "جاري الإرسال...", uploadingImages: "جاري رفع الصور...", chooseImages: "صور الأعمال (اختياري)",
-    galleryTitle: "معرض الأعمال", requiredError: "الرجاء تعبئة كل الحقول الأساسية",
+    galleryNote: "يمكنك تحديد أكثر من صورة معاً", galleryTitle: "معرض الأعمال",
+    reviewNote: "سيُراجع طلبك من طرف الإدارة قبل ظهوره في المنصة، عادة خلال 24 ساعة",
+    requiredError: "الرجاء تعبئة الاسم، البريد، رقم الهاتف والوصف", otherCraftError: "الرجاء كتابة اسم الحرفة",
     phoneError: "رقم الهاتف غير صحيح (مثال: 0550123456)", emailError: "الرجاء إدخال بريد إلكتروني صحيح",
-    toastSubmitted: "تم إرسال طلبك، سيُنشر بعد المراجعة", toastUpdated: "تم تحديث بياناتك بنجاح!", toastDeleted: "تم حذف ملفك نهائياً", 
-    toastFailConnect: "تعذّر الاتصال بالخادم", adminTitle: "لوحة مراجعة الطلبات", adminPinPrompt: "أدخل رمز الإدارة للمتابعة", 
-    adminPinPlaceholder: "الرمز السري", adminPinWrong: "رمز خاطئ", adminLogin: "دخول", adminNoPending: "لا توجد طلبات بانتظار المراجعة",
+    toastSubmitted: "تم إرسال طلبك، سيُنشر بعد المراجعة", toastUpdated: "تم تحديث بياناتك بنجاح!", toastDeleted: "تم حذف ملفك نهائياً من المنصة", toastFailSubmit: "تعذّر إرسال الطلب، حاول مجدداً", toastFailConnect: "تعذّر الاتصال بالخادم",
+    adminTitle: "لوحة المراجعة", adminPinPrompt: "أدخل رمز الإدارة للمتابعة", adminPinPlaceholder: "الرمز السري",
+    adminPinWrong: "رمز خاطئ", adminLogin: "دخول", adminNoPending: "لا توجد طلبات بانتظار المراجعة",
     pendingLabel: "قيد المراجعة", approveBtn: "قبول ونشر", rejectBtn: "رفض", all: "الكل",
-    rateThis: "قيّم هذا الحرفي", thanksRating: "شكراً لتقييمك!", shareBtn: "مشاركة", shareCopied: "تم نسخ الرابط",
-    reviewsTitle: "آراء والتقييمات", addReviewBtn: "إضافة تقييم", reviewerName: "اسمك الكريم", reviewComment: "اكتب تجربتك مع الحرفي...", sendReview: "إرسال التقييم",
+    rateThis: "قيّم هذا الحرفي", thanksRating: "شكراً لتقييمك وتعليقك!", shareBtn: "مشاركة", shareCopied: "تم نسخ الرابط",
+    completeRegistrationBanner: "أنت مسجل مسبقاً بدون بريد إلكتروني. انقر هنا لإكمال تسجيلك وتأكيد بريدك!",
+    completeRegTitle: "إكمال التسجيل وتأكيد البريد",
+    reviewsTitle: "الآراء والتقييمات", addReviewBtn: "إضافة تقييم وتعليق", reviewerName: "اسمك الكريم", reviewComment: "اكتب رأيك أو تجربتك مع الحرفي...", sendReview: "إرسال التقييم",
   },
   en: {
-    title: "Hirafi", subtitle: "Tradespeople Directory — Dahmouni",
-    searchPlaceholder: "Search a trade, name, or service...", chooseCategory: "Categories",
-    registerCta: "Register", editProfileCta: "Edit Profile", topRated: "Top Rated", viewAll: "View all →",
-    noCraftsmenYet: "No craftsmen yet", allCrafts: "All trades",
-    noResults: "No matching results", tryOther: "Try another category", loading: "Loading...",
-    navHome: "Home", navSearch: "Search", navRegister: "Join Us", navAdmin: "Admin", yearsExp: "yrs exp",
+    title: "Hirafi", subtitle: "Craftsmen & Tradespeople Directory — Dahmouni",
+    searchPlaceholder: "Search a trade, name, or service...", chooseCategory: "Choose a category",
+    registerCta: "Register as a craftsman", editProfileCta: "Edit my profile", topRated: "Top Rated", viewAll: "View all →",
+    noCraftsmenYet: "No craftsmen yet — be the first to register", allCrafts: "All trades",
+    noResults: "No matching results", tryOther: "Try another category or neighborhood", loading: "Loading...",
+    navHome: "Home", navSearch: "Search", navRegister: "I'm a craftsman", yearsExp: "years experience",
     newLabel: "New", reviewsLabel: "reviews", call: "Call", whatsapp: "WhatsApp",
-    registerTitle: "New Registration", editTitle: "Edit Profile", fullName: "Full name", email: "Email",
-    craft: "Trade", otherCraft: "Custom Trade", neighborhood: "Neighborhood", experience: "Years of experience",
-    phone: "Phone", bio: "Description", submitBtn: "Submit",
-    updateBtn: "Save Changes", deleteAccountBtn: "Delete Account", deleteConfirmMsg: "Permanently delete profile?",
-    submitting: "Submitting...", uploadingImages: "Uploading...", chooseImages: "Portfolio Images",
-    galleryTitle: "Portfolio", requiredError: "Please fill required fields",
-    phoneError: "Invalid phone number", emailError: "Invalid email",
-    toastSubmitted: "Submitted for review", toastUpdated: "Updated successfully", toastDeleted: "Deleted successfully",
-    toastFailConnect: "Connection error", adminTitle: "Review Panel", adminPinPrompt: "Enter Admin PIN",
-    adminPinPlaceholder: "PIN", adminPinWrong: "Wrong PIN", adminLogin: "Login", adminNoPending: "No pending requests",
-    pendingLabel: "Pending", approveBtn: "Approve", rejectBtn: "Reject", all: "All",
-    rateThis: "Rate Craftsman", thanksRating: "Thanks for feedback!", shareBtn: "Share", shareCopied: "Copied!",
-    reviewsTitle: "Reviews", addReviewBtn: "Add Review", reviewerName: "Your name", reviewComment: "Your review...", sendReview: "Submit",
-  }
+    registerTitle: "New Craftsman Registration", editTitle: "Edit Craftsman Profile", fullName: "Full name", email: "Email address",
+    craft: "Trade / Specialty", otherCraft: "Type your trade", neighborhood: "Neighborhood", experience: "Years of experience",
+    phone: "Phone number", bio: "Brief description of services", submitBtn: "Send verification code",
+    updateBtn: "Save changes", deleteAccountBtn: "Delete my profile permanently", deleteConfirmMsg: "Are you sure you want to permanently delete your profile? This action cannot be undone.",
+    verifyTitle: "Email Verification", verifySubtitle: "Verification code (4-digit OTP) sent to your email. Enter it below:",
+    verifyCodePlaceholder: "Enter 4-digit code", confirmVerifyBtn: "Confirm code & continue",
+    submitting: "Submitting...", uploadingImages: "Uploading images...", chooseImages: "Portfolio images (Optional)",
+    galleryNote: "You can select multiple images", galleryTitle: "Portfolio",
+    reviewNote: "Your request will be reviewed by an admin before publishing, usually within 24 hours",
+    requiredError: "Please fill in name, email, phone and description", otherCraftError: "Please type your trade name",
+    phoneError: "Invalid phone number (e.g. 0550123456)", emailError: "Please enter a valid email",
+    toastSubmitted: "Your request was submitted for review",
+    toastUpdated: "Your profile has been updated successfully!",
+    toastDeleted: "Your profile has been permanently deleted",
+    toastFailSubmit: "Failed to submit, try again", toastFailConnect: "Could not connect to server",
+    adminTitle: "Review Panel", adminPinPrompt: "Enter admin code to continue", adminPinPlaceholder: "Secret code",
+    adminPinWrong: "Wrong code", adminLogin: "Enter", adminNoPending: "No pending requests",
+    pendingLabel: "Pending review", approveBtn: "Approve & publish", rejectBtn: "Reject", all: "All",
+    rateThis: "Rate this craftsman", thanksRating: "Thanks for your rating & review!", shareBtn: "Share", shareCopied: "Link copied",
+    completeRegistrationBanner: "You registered previously without an email. Click here to complete your registration!",
+    completeRegTitle: "Complete Registration & Verify Email",
+    reviewsTitle: "Reviews & Comments", addReviewBtn: "Add rating & comment", reviewerName: "Your name", reviewComment: "Write your review about this craftsman...", sendReview: "Submit Review",
+  },
 };
 
 const catInfo = (id) => CATEGORIES.find((c) => c.id === id) || CATEGORIES[0];
@@ -140,11 +137,10 @@ const hoodName = (hoodAr, lang) => {
 
 const toDb = (c) => ({
   name: c.name, email: c.email || null, cat: c.cat, other_cat: c.otherCat || null, hood: c.hood,
-  exp: Number(c.exp) || 0, phone: c.phone, bio: c.bio, status: c.status || "pending",
+  exp: c.exp, phone: c.phone, bio: c.bio, status: c.status || "pending",
   rating: c.rating || 0, reviews: c.reviews || 0, gallery_urls: c.galleryUrls || [],
   review_list: c.reviewList || []
 });
-
 const fromDb = (r) => ({
   id: r.id, name: r.name, email: r.email, cat: r.cat, otherCat: r.other_cat, hood: r.hood,
   exp: r.exp, phone: r.phone, bio: r.bio, status: r.status, rating: r.rating, 
@@ -153,108 +149,11 @@ const fromDb = (r) => ({
 
 function Stars({ value }) {
   return (
-    <span className="flex items-center gap-0.5">
+    <span style={{ letterSpacing: "1px" }}>
       {[1, 2, 3, 4, 5].map((i) => (
-        <span key={i} style={{ color: i <= Math.round(value || 0) ? "#D9A441" : "#D6D0C2" }} className="text-xs">★</span>
+        <span key={i} style={{ color: i <= Math.round(value || 0) ? "#D9A441" : "#D6D0C2", fontSize: 13 }}>★</span>
       ))}
     </span>
-  );
-}
-
-function CraftCard({ c, cat, lang, t, onClick }) {
-  const formattedPhone = c.phone ? c.phone.replace(/\s+/g, '') : '';
-  const waPhone = formattedPhone.startsWith('0') ? '213' + formattedPhone.slice(1) : formattedPhone;
-
-  return (
-    <div className="bg-white rounded-2xl p-4 shadow-sm border border-[#E8E3D5] flex flex-col justify-between transition-transform active:scale-[0.99] cursor-pointer" onClick={onClick}>
-      <div>
-        <div className="flex items-start justify-between mb-2">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl shadow-inner" style={{ background: cat.color + "1A", border: `1.5px solid ${cat.color}33` }}>
-              {cat.icon}
-            </div>
-            <div>
-              <h3 className="font-bold text-[#123B3B] text-base leading-snug">{c.name}</h3>
-              <p className="text-xs font-medium text-stone-500">{craftName(c, lang)} · <span className="text-[#D9A441] font-bold">{hoodName(c.hood, lang)}</span></p>
-            </div>
-          </div>
-          <div className="flex flex-col items-end">
-            <div className="flex items-center gap-1 bg-[#F5F2EA] px-2 py-0.5 rounded-full border border-[#E6E0D2]">
-              <Stars value={c.rating} />
-              <span className="text-[11px] font-black text-[#123B3B]">{c.rating ? c.rating.toFixed(1) : "جديد"}</span>
-            </div>
-          </div>
-        </div>
-        <p className="text-xs text-stone-600 line-clamp-2 my-2 leading-relaxed bg-[#FAF8F5] p-2.5 rounded-xl">{c.bio}</p>
-      </div>
-
-      <div className="flex items-center justify-between pt-2 border-t border-stone-100 mt-2" onClick={(e) => e.stopPropagation()}>
-        <span className="text-[11px] text-stone-400 font-bold">خبرة: {c.exp} سنوات</span>
-        <div className="flex items-center gap-2">
-          <a href={`tel:${formattedPhone}`} className="bg-[#123B3B] text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 shadow-sm active:bg-[#1B4B4B]">
-            📞 {t.call}
-          </a>
-          <a href={`https://wa.me/${waPhone}`} target="_blank" rel="noopener noreferrer" className="bg-[#25D366] text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 shadow-sm active:opacity-90">
-            💬 {t.whatsapp}
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
-  const [form, setForm] = useState({ name: "", cat: CATEGORIES[0].id, otherCat: "", hood: NEIGHBORHOODS[0].ar, exp: 1, phone: "", bio: "", files: [] });
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!form.name || !form.phone || !form.bio) return alert(t.requiredError);
-    onSubmit(form);
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-3 py-2">
-      <h2 className="font-black text-[#123B3B] text-base mb-2">{t.registerTitle}</h2>
-      
-      <div>
-        <label className="text-xs font-bold text-stone-600">{t.fullName}</label>
-        <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full bg-white border border-stone-200 rounded-xl p-2.5 text-xs outline-none mt-1" required />
-      </div>
-
-      <div className="grid grid-cols-2 gap-2">
-        <div>
-          <label className="text-xs font-bold text-stone-600">{t.craft}</label>
-          <select value={form.cat} onChange={(e) => setForm({ ...form, cat: e.target.value })} className="w-full bg-white border border-stone-200 rounded-xl p-2.5 text-xs outline-none mt-1">
-            {CATEGORIES.map((c) => <option key={c.id} value={c.id}>{c.name[lang]}</option>)}
-          </select>
-        </div>
-        <div>
-          <label className="text-xs font-bold text-stone-600">{t.neighborhood}</label>
-          <select value={form.hood} onChange={(e) => setForm({ ...form, hood: e.target.value })} className="w-full bg-white border border-stone-200 rounded-xl p-2.5 text-xs outline-none mt-1">
-            {NEIGHBORHOODS.map((n) => <option key={n.ar} value={n.ar}>{n[lang]}</option>)}
-          </select>
-        </div>
-      </div>
-
-      <div>
-        <label className="text-xs font-bold text-stone-600">{t.phone}</label>
-        <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="0550123456" className="w-full bg-white border border-stone-200 rounded-xl p-2.5 text-xs outline-none mt-1" required />
-      </div>
-
-      <div>
-        <label className="text-xs font-bold text-stone-600">{t.bio}</label>
-        <textarea value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} rows="3" className="w-full bg-white border border-stone-200 rounded-xl p-2.5 text-xs outline-none mt-1" required />
-      </div>
-
-      <div>
-        <label className="text-xs font-bold text-stone-600">{t.chooseImages}</label>
-        <input type="file" multiple accept="image/*" onChange={(e) => setForm({ ...form, files: Array.from(e.target.files) })} className="w-full bg-white border border-stone-200 rounded-xl p-2 text-xs mt-1" />
-      </div>
-
-      <button type="submit" disabled={saving} className="w-full py-3 bg-[#D9A441] text-white rounded-xl text-xs font-bold shadow-md active:opacity-90 mt-2">
-        {saving ? (uploadingText || t.submitting) : t.submitBtn}
-      </button>
-    </form>
   );
 }
 
@@ -276,12 +175,43 @@ function App() {
   const [pinInput, setPinInput] = useState("");
   const [pinError, setPinError] = useState(false);
 
+  const [editingCraftsman, setEditingCraftsman] = useState(null);
+  const [completingCraftsman, setCompletingCraftsman] = useState(null);
+
+  const [newRatingVal, setNewRatingVal] = useState(5);
+  const [newReviewerName, setNewReviewerName] = useState("");
+  const [newCommentText, setNewCommentText] = useState("");
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+
+  const changeView = (newView) => {
+    if (newView !== view) {
+      window.history.pushState({ view: newView }, "");
+      setView(newView);
+      window.scrollTo(0, 0);
+    }
+  };
+
+  useEffect(() => {
+    if (!window.history.state) {
+      window.history.replaceState({ view: "home" }, "");
+    }
+    const handlePopState = (event) => {
+      if (event.state && event.state.view) {
+        setView(event.state.view);
+      } else {
+        setView("home");
+      }
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
   useEffect(() => { setActiveHood(t.all); }, [lang]);
+  useEffect(() => { document.documentElement.setAttribute("dir", dir); document.documentElement.setAttribute("lang", lang); }, [dir, lang]);
 
   const fetchList = async () => {
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?select=*&order=created_at.desc`, { headers: SB_HEADERS });
-      if (!res.ok) throw new Error("Fetch failed");
       const data = await res.json();
       setList(Array.isArray(data) ? data.map(fromDb) : []);
     } catch (e) {
@@ -318,15 +248,97 @@ function App() {
         headers: { ...SB_HEADERS, Prefer: "return=representation" },
         body: JSON.stringify(toDb({ ...data, galleryUrls: uploadedUrls, status: "pending", rating: 0, reviews: 0, reviewList: [] })),
       });
-      if (!res.ok) throw new Error("Insert failed");
+      if (!res.ok) throw new Error("insert failed");
 
       await fetchList();
-      setView("home");
+      changeView("home");
       setToast(t.toastSubmitted);
       setTimeout(() => setToast(null), 3500);
     } catch (e) {
-      setToast("خطأ: " + (e.message || "فشل التسجيل"));
+      setToast("خطأ تقني: " + (e.message || "فشل الاتصال"));
       setUploadingText("");
+    }
+    setSaving(false);
+  };
+
+  const updateCraftsman = async (data) => {
+    setSaving(true);
+    let uploadedUrls = editingCraftsman.galleryUrls || [];
+    try {
+      if (data.files && data.files.length > 0) {
+        setUploadingText(t.uploadingImages);
+        for (const file of data.files) {
+          const ext = file.name.split('.').pop();
+          const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
+          const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/craftsmen-gallery/${fileName}`, {
+            method: 'POST',
+            headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, 'Content-Type': file.type },
+            body: file
+          });
+          if (uploadRes.ok) {
+            uploadedUrls.push(`${SUPABASE_URL}/storage/v1/object/public/craftsmen-gallery/${fileName}`);
+          }
+        }
+        setUploadingText("");
+      }
+
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${editingCraftsman.id}`, {
+        method: "PATCH",
+        headers: { ...SB_HEADERS },
+        body: JSON.stringify({
+          name: data.name, cat: data.cat, other_cat: data.otherCat || null,
+          hood: data.hood, exp: Number(data.exp) || 0, phone: data.phone,
+          bio: data.bio, gallery_urls: uploadedUrls
+        }),
+      });
+      if (!res.ok) throw new Error("update failed");
+
+      await fetchList();
+      changeView("home");
+      setToast(t.toastUpdated);
+      setTimeout(() => setToast(null), 3500);
+    } catch (e) {
+      setToast("خطأ تقني: " + (e.message || "فشل التحديث"));
+      setUploadingText("");
+    }
+    setSaving(false);
+  };
+
+  const deleteCraftsmanAccount = async (id) => {
+    if (!window.confirm(t.deleteConfirmMsg)) return;
+    setSaving(true);
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${id}`, {
+        method: "DELETE",
+        headers: SB_HEADERS,
+      });
+      if (!res.ok) throw new Error("delete failed");
+
+      await fetchList();
+      changeView("home");
+      setToast(t.toastDeleted);
+      setTimeout(() => setToast(null), 3500);
+    } catch (e) {
+      setToast(t.toastFailSubmit);
+    }
+    setSaving(false);
+  };
+
+  const completeRegistrationEmail = async (craftsmanId, newEmail) => {
+    setSaving(true);
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${craftsmanId}`, {
+        method: "PATCH",
+        headers: SB_HEADERS,
+        body: JSON.stringify({ email: newEmail }),
+      });
+      if (!res.ok) throw new Error("Failed");
+      await fetchList();
+      changeView("home");
+      setToast(t.toastUpdated);
+      setTimeout(() => setToast(null), 3500);
+    } catch (e) {
+      setToast(t.toastFailSubmit);
     }
     setSaving(false);
   };
@@ -347,6 +359,68 @@ function App() {
     } catch (e) { setToast(t.toastFailConnect); }
   };
 
+  const submitReviewAndComment = async (e) => {
+    e.preventDefault();
+    if (!newReviewerName.trim() || !newCommentText.trim()) return;
+
+    setIsSubmittingReview(true);
+    const currentReviews = selected.reviews || 0;
+    const currentRating = selected.rating || 0;
+    const newTotalReviews = currentReviews + 1;
+    const newAvgRating = ((currentRating * currentReviews) + newRatingVal) / newTotalReviews;
+
+    const newReviewItem = {
+      name: newReviewerName.trim(),
+      rating: newRatingVal,
+      comment: newCommentText.trim(),
+      date: new Date().toISOString().split('T')[0]
+    };
+
+    const updatedReviewList = [newReviewItem, ...(selected.reviewList || [])];
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${selected.id}`, {
+        method: "PATCH",
+        headers: SB_HEADERS,
+        body: JSON.stringify({
+          rating: newAvgRating,
+          reviews: newTotalReviews,
+          review_list: updatedReviewList
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to submit review");
+
+      const updatedSelected = {
+        ...selected,
+        rating: newAvgRating,
+        reviews: newTotalReviews,
+        reviewList: updatedReviewList
+      };
+      setSelected(updatedSelected);
+      setNewCommentText("");
+      setNewReviewerName("");
+      setIsSubmittingReview(false);
+      await fetchList();
+      setToast(t.thanksRating);
+      setTimeout(() => setToast(null), 2500);
+    } catch (err) {
+      setIsSubmittingReview(false);
+      setToast(t.toastFailConnect);
+    }
+  };
+
+  const shareCraftsman = (c) => {
+    const url = `${window.location.href.split("?")[0]}?craftsman=${c.id}`;
+    if (navigator.share) {
+      navigator.share({ title: c.name, text: craftName(c, lang), url });
+    } else {
+      navigator.clipboard.writeText(url);
+      setToast(t.shareCopied);
+      setTimeout(() => setToast(null), 2000);
+    }
+  };
+
   const approved = useMemo(() => (list || []).filter((c) => c.status === "approved"), [list]);
   const pending = useMemo(() => (list || []).filter((c) => c.status === "pending"), [list]);
 
@@ -360,235 +434,763 @@ function App() {
   }, [approved, query, activeCat, activeHood, lang]);
 
   return (
-    <div className="max-w-md mx-auto min-h-screen bg-[#F5F2EA] flex flex-col relative shadow-2xl overflow-hidden" dir={dir}>
-      
-      {/* Header */}
-      <header className="sticky top-0 z-30 px-4 pt-4 pb-3 shadow-md" style={{ background: "#123B3B" }}>
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#D9A441] flex items-center justify-center font-black text-white text-base">ح</div>
-            <div>
-              <h1 className="text-white font-black text-lg leading-none">{t.title}</h1>
-              <p className="text-[10px] text-[#8FBFBF] mt-0.5">{t.subtitle}</p>
-            </div>
+    <div style={{ minHeight: "100vh" }} dir={dir}>
+      <header className="sticky top-0 z-20 px-4 pt-5 pb-4" style={{ background: "#123B3B" }}>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-white font-black text-xl leading-tight">{t.title}</h1>
+            <p className="text-[11px]" style={{ color: "#8FBFBF" }}>{t.subtitle}</p>
           </div>
-          <button onClick={() => setLang(lang === "ar" ? "en" : "ar")}
-            className="px-3 py-1 rounded-full bg-[#1B4B4B] text-white text-xs font-bold border border-[#2C6E6E]">
-            🌐 {lang === "ar" ? "EN" : "عربي"}
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={() => setLang(lang === "ar" ? "en" : "ar")}
+              className="px-2.5 h-9 rounded-full flex items-center justify-center gap-1 text-white text-xs font-bold" style={{ background: "#1B4B4B" }}>
+              🌐 {lang === "ar" ? "EN" : "AR"}
+            </button>
+            <div onClick={() => changeView("admin")} className="w-11 h-11 rounded-full flex items-center justify-center text-white text-lg cursor-pointer" style={{ background: "#D9A441" }}>⚙️</div>
+          </div>
         </div>
-
         {(view === "home" || view === "list") && (
-          <div className="flex items-center gap-2 rounded-xl px-3 py-2 bg-[#1B4B4B] border border-[#2C6E6E]">
-            <span>🔍</span>
+          <div className="flex items-center gap-2 rounded-2xl px-3 py-2.5" style={{ background: "#1B4B4B" }}>
+            <span style={{ opacity: 0.6 }}>🔍</span>
             <input
               value={query}
-              onChange={(e) => { setQuery(e.target.value); setView("list"); }}
+              onChange={(e) => { setQuery(e.target.value); changeView("list"); }}
               placeholder={t.searchPlaceholder}
-              className="bg-transparent outline-none text-xs text-white placeholder-[#8FBFBF] w-full"
+              className="bg-transparent outline-none text-sm text-white placeholder-[#8FBFBF] flex-1"
             />
           </div>
         )}
       </header>
 
-      {/* Toast Notification */}
-      {toast && (
-        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-[#123B3B] text-white text-xs px-4 py-2.5 rounded-full shadow-lg border border-[#D9A441] animate-bounce">
-          {toast}
+      {list === null ? (
+        <div className="flex flex-col items-center justify-center py-24 text-stone-400 gap-2">
+          <div className="spinner"></div>
+          <span className="text-xs font-bold">{t.loading}</span>
         </div>
-      )}
-
-      {/* Main Content Area */}
-      <main className="flex-1 px-4 safe-pb pt-3">
-        {list === null ? (
-          <div className="flex flex-col items-center justify-center py-20 text-stone-400 gap-2">
-            <div className="spinner"></div>
-            <span className="text-xs font-bold">{t.loading}</span>
-          </div>
-        ) : (
-          <>
-            {view === "home" && (
-              <div>
-                {/* Neighborhood Bar */}
-                <div className="flex gap-1.5 overflow-x-auto py-2 hide-scrollbar">
-                  {[t.all, ...NEIGHBORHOODS.map((h) => h[lang])].map((h, idx) => {
-                    const hoodValue = idx === 0 ? t.all : NEIGHBORHOODS[idx - 1].ar;
-                    const isActive = activeHood === hoodValue;
-                    return (
-                      <button key={h} onClick={() => setActiveHood(hoodValue)} 
-                        className={`whitespace-nowrap text-xs font-bold px-3 py-1.5 rounded-full border transition-all ${isActive ? 'bg-[#123B3B] text-white border-[#123B3B]' : 'bg-white text-[#123B3B] border-[#DCD5C4]'}`}>
-                        {h}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Categories Grid */}
-                <h2 className="font-black text-[#123B3B] text-xs mb-3 mt-3 uppercase tracking-wider">{t.chooseCategory}</h2>
-                <div className="grid grid-cols-4 gap-2.5 mb-5">
-                  {CATEGORIES.map((c) => {
-                    const count = approved.filter((x) => x.cat === c.id).length;
-                    return (
-                      <button key={c.id} onClick={() => { setActiveCat(c.id); setView("list"); }} className="flex flex-col items-center gap-1 active:scale-95 transition-transform">
-                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm relative" style={{ background: c.color + "15", border: `1.5px solid ${c.color}33` }}>
-                          <span className="text-2xl">{c.icon}</span>
-                          {count > 0 && <span className="absolute -top-1 -left-1 text-[9px] font-black text-white rounded-full w-4 h-4 flex items-center justify-center" style={{ background: c.color }}>{count}</span>}
-                        </div>
-                        <span className="text-[11px] font-bold text-stone-700">{c.name[lang]}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Top Rated Craftsmen */}
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="font-black text-[#123B3B] text-sm">{t.topRated}</h2>
-                  <button onClick={() => setView("list")} className="text-xs font-bold text-[#D9A441]">{t.viewAll}</button>
-                </div>
-
-                <div className="space-y-3">
-                  {approved.length === 0 ? (
-                    <p className="text-center text-xs text-stone-400 py-6 bg-white rounded-2xl border border-dashed border-stone-300">{t.noCraftsmenYet}</p>
-                  ) : (
-                    [...approved].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 4).map((c) => (
-                      <CraftCard key={c.id} c={c} cat={catInfo(c.cat)} lang={lang} t={t} onClick={() => setSelected(c)} />
-                    ))
-                  )}
-                </div>
+      ) : (
+        <>
+          {view === "home" && (
+            <main className="px-4 pb-24">
+              <div className="flex gap-2 overflow-x-auto py-4 hide-scrollbar">
+                {[t.all, ...NEIGHBORHOODS.map((h) => h[lang])].map((h, idx) => {
+                  const hoodValue = idx === 0 ? t.all : NEIGHBORHOODS[idx - 1].ar;
+                  return (
+                    <button key={h} onClick={() => setActiveHood(hoodValue)} className="whitespace-nowrap text-xs font-bold px-3.5 py-2 rounded-full border transition"
+                      style={activeHood === hoodValue ? { background: "#123B3B", color: "white", borderColor: "#123B3B" } : { background: "white", color: "#123B3B", borderColor: "#DCD5C4" }}>
+                      {h}
+                    </button>
+                  );
+                })}
               </div>
-            )}
 
-            {view === "list" && (
-              <div className="py-2">
-                <div className="flex items-center gap-2 mb-3">
-                  <button onClick={() => { setView("home"); setActiveCat(null); setQuery(""); }} className="w-8 h-8 rounded-full bg-white flex items-center justify-center font-bold text-[#123B3B] border border-stone-200">
-                    {dir === "rtl" ? "➔" : "⬅"}
-                  </button>
-                  <h2 className="font-black text-[#123B3B] text-base flex-1">
-                    {activeCat ? catInfo(activeCat).name[lang] : t.allCrafts}
-                    <span className="text-xs font-normal text-stone-500"> ({filtered.length})</span>
-                  </h2>
-                </div>
-
-                <div className="space-y-3">
-                  {filtered.length === 0 ? (
-                    <div className="text-center py-12 text-stone-400 bg-white rounded-2xl border border-stone-200">
-                      <div className="text-3xl mb-2">🗂️</div>
-                      <p className="text-xs font-bold">{t.noResults}</p>
-                    </div>
-                  ) : (
-                    filtered.map((c) => (
-                      <CraftCard key={c.id} c={c} cat={catInfo(c.cat)} lang={lang} t={t} onClick={() => setSelected(c)} />
-                    ))
-                  )}
-                </div>
-              </div>
-            )}
-
-            {view === "register" && (
-              <RegisterForm onBack={() => setView("home")} onSubmit={registerCraftsman} saving={saving} uploadingText={uploadingText} t={t} lang={lang} />
-            )}
-
-            {view === "admin" && (
-              <div className="py-2">
-                <h2 className="font-black text-[#123B3B] text-base mb-4">{t.adminTitle}</h2>
-                {!adminUnlocked ? (
-                  <div className="bg-white rounded-2xl p-5 border border-stone-200 shadow-sm">
-                    <p className="text-xs text-stone-600 font-bold mb-3">{t.adminPinPrompt}</p>
-                    <input value={pinInput} onChange={(e) => { setPinInput(e.target.value); setPinError(false); }} type="password"
-                      className="w-full border rounded-xl px-3 py-2.5 text-sm mb-3 outline-none"
-                      style={{ borderColor: pinError ? "#C0392B" : "#DCD5C4" }} placeholder={t.adminPinPlaceholder} />
-                    {pinError && <p className="text-[11px] text-red-600 font-bold mb-2">{t.adminPinWrong}</p>}
-                    <button onClick={() => pinInput === ADMIN_PIN ? setAdminUnlocked(true) : setPinError(true)}
-                      className="w-full py-3 rounded-xl font-bold text-white text-sm bg-[#123B3B] active:bg-[#1B4B4B]">{t.adminLogin}</button>
-                  </div>
-                ) : pending.length === 0 ? (
-                  <div className="text-center py-12 text-stone-400 bg-white rounded-2xl">{t.adminNoPending}</div>
-                ) : (
-                  <div className="space-y-3">
-                    {pending.map((c) => (
-                      <div key={c.id} className="bg-white rounded-2xl p-4 border border-stone-200 shadow-sm">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="font-bold text-[#123B3B] text-sm">{c.name}</span>
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">قيد المراجعة</span>
-                        </div>
-                        <p className="text-xs text-stone-500 mb-1">{craftName(c, lang)} · {hoodName(c.hood, lang)} · {c.exp} {t.yearsExp}</p>
-                        <p className="text-xs text-stone-700 bg-stone-50 p-2 rounded-xl mb-3">{c.bio}</p>
-                        <div className="flex gap-2">
-                          <button onClick={() => approveCraftsman(c.id)} className="flex-1 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold">{t.approveBtn}</button>
-                          <button onClick={() => rejectCraftsman(c.id)} className="flex-1 py-2 bg-rose-600 text-white rounded-xl text-xs font-bold">{t.rejectBtn}</button>
-                        </div>
+              <h2 className="font-black text-[#123B3B] text-sm mb-3 mt-2">{t.chooseCategory}</h2>
+              <div className="grid grid-cols-4 gap-3 mb-4">
+                {CATEGORIES.map((c) => {
+                  const count = approved.filter((x) => x.cat === c.id).length;
+                  return (
+                    <button key={c.id} onClick={() => { setActiveCat(c.id); changeView("list"); }} className="flex flex-col items-center gap-1.5">
+                      <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm relative" style={{ background: c.color + "1A", border: `1.5px solid ${c.color}33` }}>
+                        <span style={{ fontSize: 22 }}>{c.icon}</span>
+                        {count > 0 && <span className="absolute -top-1.5 -left-1.5 text-[9px] font-black text-white rounded-full w-4 h-4 flex items-center justify-center" style={{ background: c.color }}>{count}</span>}
                       </div>
-                    ))}
-                  </div>
+                      <span className="text-[11px] font-bold text-[#3A3A3A]">{c.name[lang]}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 mb-6">
+                <button onClick={() => changeView("register")} className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-white text-xs" style={{ background: "#D9A441" }}>
+                  <span>+</span> {t.registerCta}
+                </button>
+                <button onClick={() => changeView("edit_auth")} className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-white text-xs border" style={{ background: "#123B3B", borderColor: "#123B3B" }}>
+                  <span>✏️</span> {t.editProfileCta}
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="font-black text-[#123B3B] text-sm">{t.topRated}</h2>
+                <button onClick={() => changeView("list")} className="text-[11px] font-bold" style={{ color: "#D9A441" }}>{t.viewAll}</button>
+              </div>
+              <div className="space-y-3">
+                {approved.length === 0 ? (
+                  <p className="text-center text-xs text-stone-400 py-6">{t.noCraftsmenYet}</p>
+                ) : (
+                  [...approved].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 3).map((c) => (
+                    <CraftCard 
+                      key={c.id} 
+                      c={c} 
+                      cat={catInfo(c.cat)} 
+                      lang={lang} 
+                      t={t} 
+                      onClick={() => {
+                        if (!c.email) {
+                          setCompletingCraftsman(c);
+                          changeView("complete_reg");
+                        } else {
+                          setSelected(c);
+                        }
+                      }} 
+                    />
+                  ))
                 )}
               </div>
-            )}
-          </>
-        )}
-      </main>
+            </main>
+          )}
 
-      {/* Bottom Navigation Bar */}
-      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white border-t border-stone-200 flex items-center justify-around py-2 z-40 shadow-lg">
-        <button onClick={() => setView("home")} className={`flex flex-col items-center gap-0.5 ${view === "home" ? "text-[#123B3B]" : "text-stone-400"}`}>
-          <span className="text-xl">🏠</span>
-          <span className="text-[10px] font-bold">{t.navHome}</span>
+          {view === "list" && (
+            <main className="px-4 pb-24 pt-4">
+              <div className="flex items-center gap-2 mb-4">
+                <button onClick={() => { changeView("home"); setActiveCat(null); setQuery(""); }} className="text-[#123B3B] font-bold text-lg">{dir === "rtl" ? "➔" : "⬅"}</button>
+                <h2 className="font-black text-[#123B3B] text-base flex-1">
+                  {activeCat ? catInfo(activeCat).name[lang] : t.navSearch}
+                  <span className="text-xs font-normal text-stone-500"> ({filtered.length})</span>
+                </h2>
+              </div>
+
+              <div className="flex gap-2 overflow-x-auto pb-3 hide-scrollbar">
+                <button onClick={() => setActiveCat(null)} className="whitespace-nowrap text-[11px] font-bold px-3 py-1.5 rounded-full border"
+                  style={!activeCat ? { background: "#123B3B", color: "white", borderColor: "#123B3B" } : { background: "white", color: "#123B3B", borderColor: "#DCD5C4" }}>
+                  {t.allCrafts}
+                </button>
+                {CATEGORIES.map((c) => (
+                  <button key={c.id} onClick={() => setActiveCat(c.id)} className="whitespace-nowrap text-[11px] font-bold px-3 py-1.5 rounded-full border"
+                    style={activeCat === c.id ? { background: c.color, color: "white", borderColor: c.color } : { background: "white", color: "#123B3B", borderColor: "#DCD5C4" }}>
+                    {c.name[lang]}
+                  </button>
+                ))}
+              </div>
+
+              {filtered.length === 0 ? (
+                <div className="text-center py-16 text-stone-400">
+                  <div style={{ fontSize: 32 }} className="mb-3">🗂️</div>
+                  <p className="text-sm font-bold">{t.noResults}</p>
+                  <p className="text-xs mt-1">{t.tryOther}</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {filtered.map((c) => (
+                    <CraftCard 
+                      key={c.id} 
+                      c={c} 
+                      cat={catInfo(c.cat)} 
+                      lang={lang} 
+                      t={t} 
+                      onClick={() => {
+                        if (!c.email) {
+                          setCompletingCraftsman(c);
+                          changeView("complete_reg");
+                        } else {
+                          setSelected(c);
+                        }
+                      }} 
+                    />
+                  ))}
+                </div>
+              )}
+            </main>
+          )}
+
+          {view === "register" && (
+            <RegisterForm onBack={() => changeView("home")} onSubmit={registerCraftsman} saving={saving} uploadingText={uploadingText} t={t} lang={lang} />
+          )}
+
+          {view === "complete_reg" && completingCraftsman && (
+            <CompleteRegistrationView 
+              craftsman={completingCraftsman} 
+              onBack={() => changeView("home")} 
+              onComplete={completeRegistrationEmail} 
+              saving={saving} 
+              t={t} 
+              lang={lang} 
+            />
+          )}
+
+          {view === "edit_auth" && (
+            <EditAuthView 
+              onBack={() => changeView("home")} 
+              allCraftsmen={list} 
+              t={t} 
+              lang={lang} 
+              onVerified={(craftsman) => {
+                setEditingCraftsman(craftsman);
+                changeView("edit_form");
+              }} 
+            />
+          )}
+
+          {view === "edit_form" && editingCraftsman && (
+            <EditForm 
+              craftsman={editingCraftsman} 
+              onBack={() => changeView("home")} 
+              onSubmit={updateCraftsman} 
+              onDelete={deleteCraftsmanAccount}
+              saving={saving} 
+              uploadingText={uploadingText} 
+              t={t} 
+              lang={lang} 
+            />
+          )}
+
+          {view === "admin" && (
+            <main className="px-4 pb-24 pt-4">
+              <h2 className="font-black text-[#123B3B] text-base mb-4">{t.adminTitle}</h2>
+              {!adminUnlocked ? (
+                <div className="bg-white rounded-2xl p-5 border" style={{ borderColor: "#E6E0D2" }}>
+                  <p className="text-xs text-stone-500 font-bold mb-3">{t.adminPinPrompt}</p>
+                  <input value={pinInput} onChange={(e) => { setPinInput(e.target.value); setPinError(false); }} type="password"
+                    className="w-full border rounded-xl px-3 py-2.5 text-sm mb-2 outline-none"
+                    style={{ borderColor: pinError ? "#C0392B" : "#DCD5C4" }} placeholder={t.adminPinPlaceholder} />
+                  {pinError && <p className="text-[11px] text-red-600 font-bold mb-2">{t.adminPinWrong}</p>}
+                  <button onClick={() => pinInput === ADMIN_PIN ? setAdminUnlocked(true) : setPinError(true)}
+                    className="w-full py-2.5 rounded-xl font-bold text-white text-sm" style={{ background: "#123B3B" }}>{t.adminLogin}</button>
+                </div>
+              ) : pending.length === 0 ? (
+                <p className="text-center text-xs text-stone-400 py-10">{t.adminNoPending}</p>
+              ) : (
+                <div className="space-y-3">
+                  {pending.map((c) => (
+                    <div key={c.id} className="bg-white rounded-2xl p-4 border" style={{ borderColor: "#E6E0D2" }}>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-black text-[#123B3B] text-sm">{c.name}</span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "#D9A44122", color: "#B8842E" }}>🕐 {t.pendingLabel}</span>
+                      </div>
+                      <p className="text-[11px] text-stone-500 mb-1">{craftName(c, lang)} · {hoodName(c.hood, lang)} · {c.exp} {t.yearsExp}</p>
+                      {c.email && <p className="text-[11px] text-stone-500 mb-1">📧 {c.email}</p>}
+                      <p className="text-xs text-stone-600 mb-1">{c.bio}</p>
+                      <p className="text-[11px] font-mono text-stone-500 mb-3" dir="ltr">{c.phone}</p>
+                      
+                      {c.galleryUrls && c.galleryUrls.length > 0 && (
+                        <div className="flex gap-2 overflow-x-auto pb-2 mb-3 hide-scrollbar">
+                          {c.galleryUrls.map((url, i) => (
+                            <a key={i} href={url} target="_blank" rel="noreferrer">
+                              <img src={url} className="w-12 h-12 rounded object-cover border border-stone-200 shrink-0" alt="عمل" />
+                            </a>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <button onClick={() => approveCraftsman(c.id)} className="py-2 rounded-xl font-bold text-white text-xs" style={{ background: "#3DAA5C" }}>✅ {t.approveBtn}</button>
+                        <button onClick={() => rejectCraftsman(c.id)} className="py-2 rounded-xl font-bold text-xs border" style={{ borderColor: "#DCD5C4", color: "#8A8375" }}>{t.rejectBtn}</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </main>
+          )}
+        </>
+      )}
+
+      <nav className="fixed bottom-0 inset-x-0 bg-white border-t flex justify-around py-2.5" style={{ borderColor: "#E6E0D2" }}>
+        <button onClick={() => changeView("home")} className="flex flex-col items-center gap-0.5">
+          <span style={{ fontSize: 18, opacity: view === "home" ? 1 : 0.4 }}>🏠</span>
+          <span className="text-[10px] font-bold" style={{ color: view === "home" ? "#123B3B" : "#B0A996" }}>{t.navHome}</span>
         </button>
-        <button onClick={() => setView("list")} className={`flex flex-col items-center gap-0.5 ${view === "list" ? "text-[#123B3B]" : "text-stone-400"}`}>
-          <span className="text-xl">🔍</span>
-          <span className="text-[10px] font-bold">{t.navSearch}</span>
+        <button onClick={() => changeView("list")} className="flex flex-col items-center gap-0.5">
+          <span style={{ fontSize: 18, opacity: view === "list" ? 1 : 0.4 }}>🔍</span>
+          <span className="text-[10px] font-bold" style={{ color: view === "list" ? "#123B3B" : "#B0A996" }}>{t.navSearch}</span>
         </button>
-        <button onClick={() => setView("register")} className={`flex flex-col items-center gap-0.5 ${view === "register" ? "text-[#D9A441]" : "text-stone-400"}`}>
-          <span className="text-xl">➕</span>
-          <span className="text-[10px] font-bold">{t.navRegister}</span>
-        </button>
-        <button onClick={() => setView("admin")} className={`flex flex-col items-center gap-0.5 ${view === "admin" ? "text-[#123B3B]" : "text-stone-400"}`}>
-          <span className="text-xl">⚙️</span>
-          <span className="text-[10px] font-bold">{t.navAdmin}</span>
+        <button onClick={() => changeView("register")} className="flex flex-col items-center gap-0.5">
+          <span style={{ fontSize: 18, opacity: view === "register" ? 1 : 0.4 }}>➕</span>
+          <span className="text-[10px] font-bold" style={{ color: view === "register" ? "#123B3B" : "#B0A996" }}>{t.navRegister}</span>
         </button>
       </nav>
 
-      {/* Detail Modal */}
-      {selected && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={() => setSelected(null)}>
-          <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="w-12 h-1.5 bg-stone-300 rounded-full mx-auto mb-4"></div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-14 h-14 rounded-2xl bg-[#123B3B]/10 flex items-center justify-center text-2xl">
-                {catInfo(selected.cat).icon}
-              </div>
-              <div>
-                <h2 className="font-black text-[#123B3B] text-lg">{selected.name}</h2>
-                <p className="text-xs text-stone-500">{craftName(selected, lang)} · {hoodName(selected.hood, lang)}</p>
-              </div>
-            </div>
+      {toast && (
+        <div className="fixed bottom-20 inset-x-4 z-40 bg-[#123B3B] text-white text-xs font-bold rounded-xl px-4 py-3 text-center shadow-lg">{toast}</div>
+      )}
 
-            <p className="text-xs text-stone-700 bg-[#F5F2EA] p-3 rounded-2xl mb-4 leading-relaxed">{selected.bio}</p>
+      {selected && (
+        <div className="fixed inset-0 z-30 flex items-end justify-center" style={{ background: "rgba(18,30,30,0.5)" }} onClick={() => setSelected(null)}>
+          <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-t-3xl w-full max-w-md p-5 relative max-h-[90vh] overflow-y-auto hide-scrollbar">
+            <button onClick={() => setSelected(null)} className="absolute left-4 top-4 text-stone-400 text-lg">✕</button>
+            <div className="flex items-start gap-3 mb-4">
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0" style={{ background: catInfo(selected.cat).color + "1A" }}>
+                <span style={{ fontSize: 28 }}>{catInfo(selected.cat).icon}</span>
+              </div>
+              <div className="flex-1">
+                <h3 className="font-black text-[#123B3B] text-base">{selected.name}</h3>
+                <p className="text-xs text-stone-500 font-bold">{craftName(selected, lang)} · {selected.exp} {t.yearsExp}</p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <Stars value={selected.rating} />
+                  <span className="text-xs font-bold text-stone-600">{selected.rating ? selected.rating.toFixed(1) : t.newLabel} {selected.reviews ? `(${selected.reviews} ${t.reviewsLabel})` : ""}</span>
+                </div>
+              </div>
+              <button onClick={() => shareCraftsman(selected)} className="text-lg" title={t.shareBtn}>🔗</button>
+            </div>
+            <div className="flex items-center gap-1.5 text-xs text-stone-500 mb-3"><span>📍</span><span>{hoodName(selected.hood, lang)}</span></div>
+            <p className="text-sm text-stone-700 leading-relaxed mb-4" style={{ background: "#F5F2EA", padding: "10px 12px", borderRadius: 12 }}>{selected.bio}</p>
 
             {selected.galleryUrls && selected.galleryUrls.length > 0 && (
-              <div className="mb-4">
-                <h4 className="text-xs font-bold text-[#123B3B] mb-2">{t.galleryTitle}</h4>
+              <div className="mb-5">
+                <h4 className="text-xs font-bold text-stone-500 mb-2">{t.galleryTitle}</h4>
                 <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
                   {selected.galleryUrls.map((url, i) => (
-                    <img key={i} src={url} alt="" className="w-24 h-24 object-cover rounded-xl border border-stone-200" />
+                    <a key={i} href={url} target="_blank" rel="noreferrer" className="shrink-0">
+                      <img src={url} alt={`عمل ${i + 1}`} className="w-24 h-24 object-cover rounded-xl border border-stone-200" />
+                    </a>
                   ))}
                 </div>
               </div>
             )}
 
-            <div className="flex gap-2 pt-2 border-t border-stone-100">
-              <a href={`tel:${selected.phone}`} className="flex-1 py-3 bg-[#123B3B] text-white text-center rounded-xl text-xs font-bold">{t.call}</a>
-              <button onClick={() => setSelected(null)} className="px-4 py-3 bg-stone-100 text-stone-600 rounded-xl text-xs font-bold">إغلاق</button>
+            <div className="mb-5 border-t pt-4" style={{ borderColor: "#E6E0D2" }}>
+              <h4 className="text-xs font-black text-[#123B3B] mb-3">{t.reviewsTitle} ({selected.reviewList ? selected.reviewList.length : 0})</h4>
+              
+              <div className="space-y-2 mb-4 max-h-48 overflow-y-auto hide-scrollbar">
+                {(!selected.reviewList || selected.reviewList.length === 0) ? (
+                  <p className="text-xs text-stone-400 text-center py-3">لا توجد تعليقات بعد، كن أول من يقيّم!</p>
+                ) : (
+                  selected.reviewList.map((rev, idx) => (
+                    <div key={idx} className="p-3 rounded-xl bg-[#F5F2EA] border border-stone-200 text-xs">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-bold text-[#123B3B]">{rev.name}</span>
+                        <div className="flex items-center gap-1">
+                          <Stars value={rev.rating} />
+                          <span className="text-[10px] text-stone-400">{rev.date}</span>
+                        </div>
+                      </div>
+                      <p className="text-stone-600 leading-relaxed">{rev.comment}</p>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <form onSubmit={submitReviewAndComment} className="p-3 rounded-2xl bg-white border" style={{ borderColor: "#DCD5C4" }}>
+                <p className="text-xs font-bold text-[#123B3B] mb-2">{t.addReviewBtn}</p>
+                <div className="flex items-center justify-center gap-1 mb-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      type="button"
+                      key={star}
+                      onClick={() => setNewRatingVal(star)}
+                      className="text-2xl focus:outline-none"
+                      style={{ color: star <= newRatingVal ? "#D9A441" : "#D6D0C2" }}>
+                      ★
+                    </button>
+                  ))}
+                </div>
+                <input
+                  type="text"
+                  placeholder={t.reviewerName}
+                  value={newReviewerName}
+                  onChange={(e) => setNewReviewerName(e.target.value)}
+                  className="w-full border rounded-xl px-3 py-2 text-xs mb-2 outline-none"
+                  style={{ borderColor: "#DCD5C4" }}
+                  required
+                />
+                <textarea
+                  placeholder={t.reviewComment}
+                  value={newCommentText}
+                  onChange={(e) => setNewCommentText(e.target.value)}
+                  className="w-full border rounded-xl px-3 py-2 text-xs mb-2 outline-none"
+                  style={{ borderColor: "#DCD5C4" }}
+                  rows="2"
+                  required
+                ></textarea>
+                <button
+                  type="submit"
+                  disabled={isSubmittingReview}
+                  className="w-full py-2.5 rounded-xl font-bold text-white text-xs"
+                  style={{ background: "#123B3B", opacity: isSubmittingReview ? 0.7 : 1 }}>
+                  {isSubmittingReview ? t.submitting : t.sendReview}
+                </button>
+              </form>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <a href={`tel:${selected.phone}`} className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-white text-sm" style={{ background: "#123B3B" }}>📞 {t.call}</a>
+              <a href={`https://wa.me/213${selected.phone.slice(1)}`} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-white" style={{ background: "#3DAA5C" }}>💬 {t.whatsapp}</a>
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+function CompleteRegistrationView({ craftsman, onBack, onComplete, saving, t, lang }) {
+  const [emailInput, setEmailInput] = useState("");
+  const [step, setStep] = useState(1);
+  const [generatedOtp, setGeneratedOtp] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSendOtp = async (e) => {
+    e.preventDefault();
+    if (!emailInput.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.trim())) {
+      setError(t.emailError);
+      return;
+    }
+    setError("");
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    setGeneratedOtp(otp);
+
+    setLoading(true);
+    try {
+      await emailjs.send('service_in25o7y', 'template_o73g9ys', {
+          to_email: emailInput.trim(),
+          otp_code: otp,
+          to_name: craftsman.name
+      });
+      setLoading(false);
+      setStep(2);
+    } catch (err) {
+      setLoading(false);
+      setError('فشل إرسال رمز التحقق، يرجى المحاولة لاحقاً.');
+    }
+  };
+
+  const handleVerifyOtp = (e) => {
+    e.preventDefault();
+    if (verificationCode.trim() === generatedOtp) {
+      onComplete(craftsman.id, emailInput.trim());
+    } else {
+      setError('رمز التحقق غير صحيح.');
+    }
+  };
+
+  return (
+    <main className="px-4 pb-24 pt-4">
+      <div className="flex items-center gap-2 mb-5">
+        <button type="button" onClick={onBack} className="text-[#123B3B] font-bold text-lg">{lang === "ar" ? "➔" : "⬅"}</button>
+        <h2 className="font-black text-[#123B3B] text-base">{t.completeRegTitle}</h2>
+      </div>
+
+      <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-4">
+        <p className="text-xs font-bold text-amber-800">أهلاً بك يا <span className="underline">{craftsman.name}</span>!</p>
+        <p className="text-[11px] text-amber-700 mt-1">حسابك مسجل مسبقاً. يرجى إدخال بريدك الإلكتروني لتأكيده والاحتفاظ بجميع بياناتك وملفك الشخصي الحالي دون الحاجة لإعادة التسجيل.</p>
+      </div>
+
+      {step === 1 ? (
+        <form onSubmit={handleSendOtp} className="space-y-4 bg-white p-5 rounded-2xl border" style={{ borderColor: "#E6E0D2" }}>
+          <Field label={t.email}>
+            <input type="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} className="ipt" placeholder="name@example.com" dir="ltr" />
+          </Field>
+          {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
+          <button type="submit" disabled={loading} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2" style={{ background: "#D9A441" }}>
+            {loading ? t.submitting : t.submitBtn}
+          </button>
+        </form>
+      ) : (
+        <form onSubmit={handleVerifyOtp} className="space-y-4 bg-white p-5 rounded-2xl border" style={{ borderColor: "#E6E0D2" }}>
+          <p className="text-xs text-stone-600 font-bold leading-relaxed">{t.verifySubtitle}</p>
+          <Field label={t.verifyTitle}>
+            <input value={verificationCode} onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))} className="ipt text-center text-lg tracking-widest font-mono" placeholder={t.verifyCodePlaceholder} maxLength="4" dir="ltr" inputMode="numeric" />
+          </Field>
+          {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
+          <button type="submit" disabled={saving} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2" style={{ background: "#3DAA5C", opacity: saving ? 0.7 : 1 }}>
+            {saving ? t.submitting : t.confirmVerifyBtn}
+          </button>
+          <button type="button" onClick={() => setStep(1)} className="w-full py-2 text-xs text-stone-500 font-bold text-center">تغيير البريد الإلكتروني</button>
+        </form>
+      )}
+    </main>
+  );
+}
+
+function EditAuthView({ onBack, allCraftsmen, t, lang, onVerified }) {
+  const [emailInput, setEmailInput] = useState("");
+  const [step, setStep] = useState(1);
+  const [generatedOtp, setGeneratedOtp] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [matchedCraftsman, setMatchedCraftsman] = useState(null);
+
+  const handleSendOtp = async (e) => {
+    e.preventDefault();
+    if (!emailInput.trim()) {
+      setError(t.emailError);
+      return;
+    }
+    const found = allCraftsmen.find(c => c.email && c.email.toLowerCase() === emailInput.trim().toLowerCase());
+    if (!found) {
+      setError("البريد الإلكتروني غير مسجل في النظام!");
+      return;
+    }
+    setMatchedCraftsman(found);
+    setError("");
+
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    setGeneratedOtp(otp);
+
+    setLoading(true);
+    try {
+      await emailjs.send('service_in25o7y', 'template_o73g9ys', {
+          to_email: found.email,
+          otp_code: otp,
+          to_name: found.name
+      });
+      setLoading(false);
+      setStep(2);
+    } catch (err) {
+      setLoading(false);
+      setError('فشل إرسال رمز التحقق، يرجى المحاولة لاحقاً.');
+    }
+  };
+
+  const handleVerifyOtp = (e) => {
+    e.preventDefault();
+    if (verificationCode.trim() === generatedOtp) {
+      onVerified(matchedCraftsman);
+    } else {
+      setError('رمز التحقق غير صحيح.');
+    }
+  };
+
+  return (
+    <main className="px-4 pb-24 pt-4">
+      <div className="flex items-center gap-2 mb-5">
+        <button type="button" onClick={onBack} className="text-[#123B3B] font-bold text-lg">{lang === "ar" ? "➔" : "⬅"}</button>
+        <h2 className="font-black text-[#123B3B] text-base">{t.editTitle}</h2>
+      </div>
+
+      {step === 1 ? (
+        <form onSubmit={handleSendOtp} className="space-y-4 bg-white p-5 rounded-2xl border" style={{ borderColor: "#E6E0D2" }}>
+          <p className="text-xs text-stone-600 font-bold leading-relaxed">أدخل بريدك الإلكتروني المسجل سابقاً للتحقق من هويتك وتعديل معلوماتك:</p>
+          <Field label={t.email}>
+            <input type="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} className="ipt" placeholder="name@example.com" dir="ltr" />
+          </Field>
+          {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
+          <button type="submit" disabled={loading} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2" style={{ background: "#123B3B" }}>
+            {loading ? t.submitting : t.submitBtn}
+          </button>
+        </form>
+      ) : (
+        <form onSubmit={handleVerifyOtp} className="space-y-4 bg-white p-5 rounded-2xl border" style={{ borderColor: "#E6E0D2" }}>
+          <p className="text-xs text-stone-600 font-bold leading-relaxed">{t.verifySubtitle}</p>
+          <Field label={t.verifyTitle}>
+            <input value={verificationCode} onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))} className="ipt text-center text-lg tracking-widest font-mono" placeholder={t.verifyCodePlaceholder} maxLength="4" dir="ltr" inputMode="numeric" />
+          </Field>
+          {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
+          <button type="submit" className="w-full py-3.5 rounded-2xl font-black text-white text-sm" style={{ background: "#3DAA5C" }}>
+            {t.confirmVerifyBtn}
+          </button>
+          <button type="button" onClick={() => setStep(1)} className="w-full py-2 text-xs text-stone-500 font-bold text-center">تغيير البريد الإلكتروني</button>
+        </form>
+      )}
+    </main>
+  );
+}
+
+function EditForm({ craftsman, onBack, onSubmit, onDelete, saving, uploadingText, t, lang }) {
+  const [form, setForm] = useState({
+    name: craftsman.name || "",
+    cat: craftsman.cat || "plumb",
+    otherCat: craftsman.otherCat || "",
+    hood: craftsman.hood || NEIGHBORHOODS[0].ar,
+    exp: craftsman.exp || "",
+    phone: craftsman.phone || "",
+    bio: craftsman.bio || ""
+  });
+  const [files, setFiles] = useState([]);
+  const [error, setError] = useState("");
+
+  const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!form.name.trim() || !form.phone.trim() || !form.bio.trim()) { setError(t.requiredError); return; }
+    if (form.cat === "other" && !form.otherCat.trim()) { setError(t.otherCraftError); return; }
+    if (!/^0[5-7][0-9]{8}$/.test(form.phone.trim())) { setError(t.phoneError); return; }
+
+    setError("");
+    onSubmit({ ...form, files });
+  };
+
+  return (
+    <main className="px-4 pb-24 pt-4">
+      <div className="flex items-center gap-2 mb-5">
+        <button type="button" onClick={onBack} className="text-[#123B3B] font-bold text-lg">{lang === "ar" ? "➔" : "⬅"}</button>
+        <h2 className="font-black text-[#123B3B] text-base">{t.editTitle}</h2>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Field label={t.fullName}><input value={form.name} onChange={(e) => update("name", e.target.value)} className="ipt" /></Field>
+        <Field label={t.craft}>
+          <select value={form.cat} onChange={(e) => update("cat", e.target.value)} className="ipt">
+            {CATEGORIES.map((c) => <option key={c.id} value={c.id}>{c.name[lang]}</option>)}
+          </select>
+        </Field>
+        {form.cat === "other" && (
+          <Field label={t.otherCraft}><input value={form.otherCat} onChange={(e) => update("otherCat", e.target.value)} className="ipt" /></Field>
+        )}
+        <Field label={t.neighborhood}>
+          <select value={form.hood} onChange={(e) => update("hood", e.target.value)} className="ipt">
+            {NEIGHBORHOODS.map((h) => <option key={h.ar} value={h.ar}>{h[lang]}</option>)}
+          </select>
+        </Field>
+        <Field label={t.experience}><input value={form.exp} onChange={(e) => update("exp", e.target.value.replace(/\D/g, ""))} className="ipt" inputMode="numeric" /></Field>
+        <Field label={t.phone}><input value={form.phone} onChange={(e) => update("phone", e.target.value.replace(/\D/g, ""))} className="ipt" placeholder="0550123456" dir="ltr" inputMode="numeric" /></Field>
+
+        <Field label={t.chooseImages}>
+          <input type="file" accept="image/*" multiple onChange={(e) => setFiles(Array.from(e.target.files))} className="ipt bg-white" style={{ padding: "8px 12px" }} />
+          <small className="text-[10px] text-stone-500 mt-1 block font-bold">{t.galleryNote}</small>
+        </Field>
+
+        <Field label={t.bio}><textarea value={form.bio} onChange={(e) => update("bio", e.target.value)} className="ipt" rows="3"></textarea></Field>
+        {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
+        
+        <button type="submit" disabled={saving} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 transition" style={{ background: "#D9A441", opacity: saving ? 0.7 : 1 }}>
+          {saving ? (uploadingText || t.submitting) : t.updateBtn}
+        </button>
+
+        <button type="button" onClick={() => onDelete(craftsman.id)} disabled={saving} className="w-full py-3 rounded-2xl font-black text-xs text-red-600 border border-red-200 bg-red-50 mt-2 transition">
+          🗑️ {t.deleteAccountBtn}
+        </button>
+      </form>
+    </main>
+  );
+}
+
+function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
+  const [form, setForm] = useState({ name: "", email: "", cat: "plumb", otherCat: "", hood: NEIGHBORHOODS[0].ar, exp: "", phone: "", bio: "" });
+  const [files, setFiles] = useState([]);
+  const [error, setError] = useState("");
+  const [step, setStep] = useState(1);
+  const [generatedOtp, setGeneratedOtp] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+
+  const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+
+  const handleInitialSubmit = async (e) => {
+    e.preventDefault();
+    if (!form.name.trim() || !form.email.trim() || !form.phone.trim() || !form.bio.trim()) { setError(t.requiredError); return; }
+    if (form.cat === "other" && !form.otherCat.trim()) { setError(t.otherCraftError); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) { setError(t.emailError); return; }
+    if (!/^0[5-7][0-9]{8}$/.test(form.phone.trim())) { setError(t.phoneError); return; }
+    
+    setError("");
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    setGeneratedOtp(otp);
+
+    setIsSendingOtp(true);
+    try {
+      await emailjs.send('service_in25o7y', 'template_o73g9ys', {
+          to_email: form.email.trim(),
+          otp_code: otp,
+          to_name: form.name.trim()
+      });
+      setIsSendingOtp(false);
+      setStep(2);
+    } catch (err) {
+      setIsSendingOtp(false);
+      setError('فشل إرسال رمز التحقق عبر البريد الإلكتروني، يرجى المحاولة لاحقاً.');
+    }
+  };
+
+  const handleVerifyAndComplete = (e) => {
+    e.preventDefault();
+    if (!verificationCode.trim()) { setError('الرجاء إدخال رمز التحقق'); return; }
+    setError("");
+
+    if (verificationCode.trim() === generatedOtp) {
+      onSubmit({ ...form, otherCat: form.otherCat.trim(), email: form.email.trim(), phone: form.phone.trim(), exp: Number(form.exp) || 0, files });
+    } else {
+      setError('رمز التحقق غير صحيح، يرجى إعادة المحاولة.');
+    }
+  };
+
+  return (
+    <main className="px-4 pb-24 pt-4">
+      <div className="flex items-center gap-2 mb-5">
+        <button type="button" onClick={onBack} className="text-[#123B3B] font-bold text-lg">{lang === "ar" ? "➔" : "⬅"}</button>
+        <h2 className="font-black text-[#123B3B] text-base">{step === 1 ? t.registerTitle : t.verifyTitle}</h2>
+      </div>
+
+      {step === 1 ? (
+        <form onSubmit={handleInitialSubmit} className="space-y-4">
+          <Field label={t.fullName}><input value={form.name} onChange={(e) => update("name", e.target.value)} className="ipt" /></Field>
+          <Field label={t.email}><input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} className="ipt" placeholder="name@example.com" dir="ltr" /></Field>
+          <Field label={t.craft}>
+            <select value={form.cat} onChange={(e) => update("cat", e.target.value)} className="ipt">
+              {CATEGORIES.map((c) => <option key={c.id} value={c.id}>{c.name[lang]}</option>)}
+            </select>
+          </Field>
+          {form.cat === "other" && (
+            <Field label={t.otherCraft}><input value={form.otherCat} onChange={(e) => update("otherCat", e.target.value)} className="ipt" /></Field>
+          )}
+          <Field label={t.neighborhood}>
+            <select value={form.hood} onChange={(e) => update("hood", e.target.value)} className="ipt">
+              {NEIGHBORHOODS.map((h) => <option key={h.ar} value={h.ar}>{h[lang]}</option>)}
+            </select>
+          </Field>
+          <Field label={t.experience}><input value={form.exp} onChange={(e) => update("exp", e.target.value.replace(/\D/g, ""))} className="ipt" inputMode="numeric" /></Field>
+          <Field label={t.phone}><input value={form.phone} onChange={(e) => update("phone", e.target.value.replace(/\D/g, ""))} className="ipt" placeholder="0550123456" dir="ltr" inputMode="numeric" /></Field>
+
+          <Field label={t.chooseImages}>
+            <input type="file" accept="image/*" multiple onChange={(e) => setFiles(Array.from(e.target.files))} className="ipt bg-white" style={{ padding: "8px 12px" }} />
+            <small className="text-[10px] text-stone-500 mt-1 block font-bold">{t.galleryNote}</small>
+          </Field>
+
+          <Field label={t.bio}><textarea value={form.bio} onChange={(e) => update("bio", e.target.value)} className="ipt" rows="3"></textarea></Field>
+          {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
+          
+          <button type="submit" disabled={isSendingOtp} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 transition" style={{ background: "#D9A441", opacity: isSendingOtp ? 0.7 : 1 }}>
+            {isSendingOtp ? t.submitting : t.submitBtn}
+          </button>
+          <p className="text-[11px] text-stone-400 text-center leading-relaxed">{t.reviewNote}</p>
+        </form>
+      ) : (
+        <form onSubmit={handleVerifyAndComplete} className="space-y-4 bg-white p-5 rounded-2xl border" style={{ borderColor: "#E6E0D2" }}>
+          <p className="text-xs text-stone-600 font-bold leading-relaxed">{t.verifySubtitle}</p>
+          <Field label={t.verifyTitle}>
+            <input value={verificationCode} onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))} className="ipt text-center text-lg tracking-widest font-mono" placeholder={t.verifyCodePlaceholder} maxLength="4" dir="ltr" inputMode="numeric" />
+          </Field>
+          {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
+          <button type="submit" disabled={saving} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2 transition" style={{ background: "#3DAA5C", opacity: saving ? 0.7 : 1 }}>
+            {saving ? (uploadingText || t.submitting) : t.confirmVerifyBtn}
+          </button>
+          <button type="button" onClick={() => setStep(1)} className="w-full py-2 text-xs text-stone-500 font-bold text-center">العودة لتعديل البيانات</button>
+        </form>
+      )}
+    </main>
+  );
+}
+
+function Field({ label, children }) {
+  return (<div><label className="text-xs font-bold text-[#123B3B] mb-1.5 block">{label}</label>{children}</div>);
+}
+
+function CraftCard({ c, cat, lang, t, onClick }) {
+  const isMissingEmail = !c.email;
+
+  return (
+    <button onClick={onClick} className="w-full bg-white rounded-2xl p-3.5 flex items-center gap-3 text-start shadow-sm border relative overflow-hidden" style={{ borderColor: isMissingEmail ? "#D9A441" : "#E6E0D2" }}>
+      <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: cat.color + "1A" }}>
+        <span style={{ fontSize: 20 }}>{cat.icon}</span>
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="font-black text-[#123B3B] text-sm truncate block">{c.name}</span>
+          {isMissingEmail && (
+            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full text-white bg-amber-600 animate-pulse">تثبيت البريد</span>
+          )}
+        </div>
+        <p className="text-[11px] text-stone-500 truncate">{craftName(c, lang)} · {hoodName(c.hood, lang)}</p>
+        <div className="flex items-center gap-1 mt-0.5">
+          <Stars value={c.rating} />
+          <span className="text-[10px] text-stone-400">{c.reviews ? `(${c.reviews})` : t.newLabel}</span>
+          {c.galleryUrls && c.galleryUrls.length > 0 && (
+            <span className="text-[10px] text-stone-400 border-r border-stone-300 pr-1 mr-1">📸 {c.galleryUrls.length}</span>
+          )}
+        </div>
+      </div>
+      <span className="text-stone-300 font-bold text-lg">{lang === "ar" ? "‹" : "›"}</span>
+    </button>
+  );
+}
+
+const rootElement = document.getElementById("root");
+if (rootElement) {
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(<App />);
+}
 </script>
 </body>
 </html>
