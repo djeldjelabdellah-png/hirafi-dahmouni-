@@ -13,12 +13,6 @@
 <meta property="og:image" content="https://epslzxcwurnueboeujbt.supabase.co/storage/v1/object/public/craftsmen-gallery/og-image.png" />
 <meta property="og:url" content="https://your-domain.vercel.app" />
 
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="حِرَفِي - دليل الحرفيين والمهنيين لمدينة الدحموني" />
-<meta name="twitter:description" content="منصة محلية تربط بين الحرفيين والمهنيين والزبائن في مدينة الدحموني." />
-<meta name="twitter:image" content="https://epslzxcwurnueboeujbt.supabase.co/storage/v1/object/public/craftsmen-gallery/og-image.png" />
-
 <!-- PWA & Manifest Links -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#123B3B">
@@ -92,57 +86,30 @@ const STRINGS = {
     noResults: "لا توجد نتائج مطابقة", tryOther: "جرّب تصنيفاً أو حياً آخر", loading: "جاري التحميل...",
     navHome: "الرئيسية", navSearch: "البحث", navRegister: "أنا حرفي", yearsExp: "سنوات خبرة",
     newLabel: "جديد", reviewsLabel: "تقييم", call: "اتصال", whatsapp: "واتساب",
-    registerTitle: "تسجيل حرفي جديد", editTitle: "تعديل بيانات الحرفي", fullName: "الاسم الكامل", email: "البريد الإلكتروني",
+    registerTitle: "تسجيل حرفي جديد", fullName: "الاسم الكامل", email: "البريد الإلكتروني",
     craft: "الحرفة / التخصص", otherCraft: "اكتب اسم الحرفة", neighborhood: "الحي / المنطقة",
     experience: "سنوات الخبرة", phone: "رقم الهاتف", bio: "نبذة عن الخدمات المقدمة", submitBtn: "إرسال رمز التحقق",
-    updateBtn: "حفظ التعديلات", deleteAccountBtn: "حذف ملفي نهائياً", deleteConfirmMsg: "هل أنت متأكد من رغبتك في حذف ملفك نهائياً من المنصة؟ لا يمكن التراجع عن هذا الإجراء.",
-    verifyTitle: "التحقق من البريد الإلكتروني", verifySubtitle: "تم إرسال رمز التحقق (OTP مكون من 4 أرقام) إلى بريدك الإلكتروني. أدخله أدناه:",
-    verifyCodePlaceholder: "أدخل الرمز المكون من 4 أرقام", confirmVerifyBtn: "تأكيد الرمز للمتابعة",
     submitting: "جاري الإرسال...", uploadingImages: "جاري رفع الصور...", chooseImages: "صور الأعمال (اختياري)",
-    galleryNote: "يمكنك تحديد أكثر من صورة معاً", galleryTitle: "معرض الأعمال",
-    reviewNote: "سيُراجع طلبك من طرف الإدارة قبل ظهوره في المنصة، عادة خلال 24 ساعة",
-    requiredError: "الرجاء تعبئة الاسم، البريد، رقم الهاتف والوصف", otherCraftError: "الرجاء كتابة اسم الحرفة",
-    phoneError: "رقم الهاتف غير صحيح (مثال: 0550123456)", emailError: "الرجاء إدخال بريد إلكتروني صحيح",
-    toastSubmitted: "تم إرسال طلبك، سيُنشر بعد المراجعة", toastUpdated: "تم تحديث بياناتك بنجاح!", toastDeleted: "تم حذف ملفك نهائياً من المنصة", toastFailSubmit: "تعذّر إرسال الطلب، حاول مجدداً", toastFailConnect: "تعذّر الاتصال بالخادم",
+    galleryTitle: "معرض الأعمال", reviewNote: "سيُراجع طلبك من طرف الإدارة قبل ظهوره في المنصة، عادة خلال 24 ساعة",
     adminTitle: "لوحة المراجعة", adminPinPrompt: "أدخل رمز الإدارة للمتابعة", adminPinPlaceholder: "الرمز السري",
-    adminPinWrong: "رمز خاطئ", adminLogin: "دخول", adminNoPending: "لا توجد طلبات بانتظار المراجعة",
-    pendingLabel: "قيد المراجعة", approveBtn: "قبول ونشر", rejectBtn: "رفض", all: "الكل",
-    rateThis: "قيّم هذا الحرفي", thanksRating: "شكراً لتقييمك وتعليقك!", shareBtn: "مشاركة", shareCopied: "تم نسخ الرابط",
-    completeRegistrationBanner: "أنت مسجل مسبقاً بدون بريد إلكتروني. انقر هنا لإكمال تسجيلك وتأكيد بريدك!",
-    completeRegTitle: "إكمال التسجيل وتأكيد البريد",
-    reviewsTitle: "آراء والتقييمات", addReviewBtn: "إضافة تقييم وتعليق", reviewerName: "اسمك الكريم", reviewComment: "اكتب رأيك أو تجربتك مع الحرفي...", sendReview: "إرسال التقييم",
+    adminLogin: "دخول", adminNoPending: "لا توجد طلبات بانتظار المراجعة", approveBtn: "قبول ونشر", rejectBtn: "رفض", all: "الكل",
   },
   en: {
     title: "Hirafi", subtitle: "Craftsmen & Tradespeople Directory — Dahmouni",
     searchPlaceholder: "Search a trade, name, or service...", chooseCategory: "Choose a category",
-    registerCta: "Register as a craftsman", editProfileCta: "Edit my profile", topRated: "Top Rated", viewAll: "View all →",
+    registerCta: "Register as a craftsman", topRated: "Top Rated", viewAll: "View all →",
     noCraftsmenYet: "No craftsmen yet — be the first to register", allCrafts: "All trades",
     noResults: "No matching results", tryOther: "Try another category or neighborhood", loading: "Loading...",
     navHome: "Home", navSearch: "Search", navRegister: "I'm a craftsman", yearsExp: "years experience",
     newLabel: "New", reviewsLabel: "reviews", call: "Call", whatsapp: "WhatsApp",
-    registerTitle: "New Craftsman Registration", editTitle: "Edit Craftsman Profile", fullName: "Full name", email: "Email address",
+    registerTitle: "New Craftsman Registration", fullName: "Full name", email: "Email address",
     craft: "Trade / Specialty", otherCraft: "Type your trade", neighborhood: "Neighborhood", experience: "Years of experience",
     phone: "Phone number", bio: "Brief description of services", submitBtn: "Send verification code",
-    updateBtn: "Save changes", deleteAccountBtn: "Delete my profile permanently", deleteConfirmMsg: "Are you sure you want to permanently delete your profile? This action cannot be undone.",
-    verifyTitle: "Email Verification", verifySubtitle: "Verification code (4-digit OTP) sent to your email. Enter it below:",
-    verifyCodePlaceholder: "Enter 4-digit code", confirmVerifyBtn: "Confirm code & continue",
     submitting: "Submitting...", uploadingImages: "Uploading images...", chooseImages: "Portfolio images (Optional)",
-    galleryNote: "You can select multiple images", galleryTitle: "Portfolio",
-    reviewNote: "Your request will be reviewed by an admin before publishing, usually within 24 hours",
-    requiredError: "Please fill in name, email, phone and description", otherCraftError: "Please type your trade name",
-    phoneError: "Invalid phone number (e.g. 0550123456)", emailError: "Please enter a valid email",
-    toastSubmitted: "Your request was submitted for review",
-    toastUpdated: "Your profile has been updated successfully!",
-    toastDeleted: "Your profile has been permanently deleted",
-    toastFailSubmit: "Failed to submit, try again", toastFailConnect: "Could not connect to server",
+    galleryTitle: "Portfolio", reviewNote: "Your request will be reviewed by an admin before publishing, usually within 24 hours",
     adminTitle: "Review Panel", adminPinPrompt: "Enter admin code to continue", adminPinPlaceholder: "Secret code",
-    adminPinWrong: "Wrong code", adminLogin: "Enter", adminNoPending: "No pending requests",
-    pendingLabel: "Pending review", approveBtn: "Approve & publish", rejectBtn: "Reject", all: "All",
-    rateThis: "Rate this craftsman", thanksRating: "Thanks for your rating & review!", shareBtn: "Share", shareCopied: "Link copied",
-    completeRegistrationBanner: "You registered previously without an email. Click here to complete your registration!",
-    completeRegTitle: "Complete Registration & Verify Email",
-    reviewsTitle: "Reviews & Comments", addReviewBtn: "Add rating & comment", reviewerName: "Your name", reviewComment: "Write your review about this craftsman...", sendReview: "Submit Review",
-  },
+    adminLogin: "Enter", adminNoPending: "No pending requests", approveBtn: "Approve & publish", rejectBtn: "Reject", all: "All",
+  }
 };
 
 const catInfo = (id) => CATEGORIES.find((c) => c.id === id) || CATEGORIES[0];
@@ -186,45 +153,9 @@ function App() {
   const [selected, setSelected] = useState(null);
   const [view, setView] = useState("home");
   const [toast, setToast] = useState(null);
-  const [saving, setSaving] = useState(false);
-  const [uploadingText, setUploadingText] = useState("");
   const [adminUnlocked, setAdminUnlocked] = useState(false);
   const [pinInput, setPinInput] = useState("");
   const [pinError, setPinError] = useState(false);
-
-  const [editingCraftsman, setEditingCraftsman] = useState(null);
-  const [completingCraftsman, setCompletingCraftsman] = useState(null);
-
-  const [newRatingVal, setNewRatingVal] = useState(5);
-  const [newReviewerName, setNewReviewerName] = useState("");
-  const [newCommentText, setNewCommentText] = useState("");
-  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
-
-  const changeView = (newView) => {
-    if (newView !== view) {
-      window.history.pushState({ view: newView }, "");
-      setView(newView);
-      window.scrollTo(0, 0);
-    }
-  };
-
-  useEffect(() => {
-    if (!window.history.state) {
-      window.history.replaceState({ view: "home" }, "");
-    }
-    const handlePopState = (event) => {
-      if (event.state && event.state.view) {
-        setView(event.state.view);
-      } else {
-        setView("home");
-      }
-    };
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
-
-  useEffect(() => { setActiveHood(t.all); }, [lang]);
-  useEffect(() => { document.documentElement.setAttribute("dir", dir); document.documentElement.setAttribute("lang", lang); }, [dir, lang]);
 
   const fetchList = async () => {
     try {
@@ -233,7 +164,6 @@ function App() {
       setList(Array.isArray(data) ? data.map(fromDb) : []);
     } catch (e) {
       setList([]);
-      setToast(t.toastFailConnect);
     }
   };
 
@@ -249,12 +179,12 @@ function App() {
       const matchQuery = query ? c.name.includes(query) || craftName(c, lang).includes(query) || c.bio.includes(query) : true;
       return matchCat && matchHood && matchQuery;
     }).sort((a, b) => (b.rating || 0) - (a.rating || 0));
-  }, [approved, query, activeCat, activeHood, lang]);
+  }, [approved, query, activeCat, activeHood, lang, t.all]);
 
   return (
-    <div style={{ minHeight: "100vh" }} dir={dir}>
-      <header className="sticky top-0 z-20 px-4 pt-5 pb-4" style={{ background: "#123B3B" }}>
-        <div className="flex items-center justify-between mb-4">
+    <div style={{ minHeight: "100vh", paddingBottom: "80px" }} dir={dir}>
+      <header className="sticky top-0 z-20 px-4 pt-5 pb-4 shadow-md" style={{ background: "#123B3B" }}>
+        <div className="flex items-center justify-between mb-3">
           <div>
             <h1 className="text-white font-black text-xl leading-tight">{t.title}</h1>
             <p className="text-[11px]" style={{ color: "#8FBFBF" }}>{t.subtitle}</p>
@@ -264,26 +194,116 @@ function App() {
               className="px-2.5 h-9 rounded-full flex items-center justify-center gap-1 text-white text-xs font-bold" style={{ background: "#1B4B4B" }}>
               🌐 {lang === "ar" ? "EN" : "AR"}
             </button>
-            <div onClick={() => changeView("admin")} className="w-11 h-11 rounded-full flex items-center justify-center text-white text-lg" style={{ background: "#D9A441", cursor: "pointer" }}>⚙️</div>
+            <div onClick={() => setView("admin")} className="w-11 h-11 rounded-full flex items-center justify-center text-white text-lg shadow" style={{ background: "#D9A441", cursor: "pointer" }}>⚙️</div>
           </div>
         </div>
       </header>
 
-      {list === null ? (
-        <div className="flex flex-col items-center justify-center py-24 text-stone-400 gap-2">
-          <div className="spinner"></div>
-          <span className="text-xs font-bold">{t.loading}</span>
-        </div>
-      ) : (
-        <div className="p-6 text-center max-w-md mx-auto">
-          <div className="text-4xl mb-3">🚀</div>
-          <h2 className="text-lg font-black text-[#123B3B] mb-2">منصة حرفي جاهزة كـ PWA!</h2>
-          <p className="text-sm text-stone-600 mb-6">تم تحديث الملفات برمجياً بنجاح. يمكنك الآن تثبيت التطبيق على هاتفك واستخدامه بسلاسة تامة.</p>
-          <button onClick={() => changeView("home")} className="w-full py-3 rounded-xl text-white font-bold text-sm shadow-md" style={{ background: "#123B3B" }}>
-            الذهاب إلى الرئيسية
-          </button>
+      {view === "home" && (
+        <div className="p-4 max-w-lg mx-auto">
+          <div className="relative mb-4">
+            <input type="text" value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t.searchPlaceholder}
+              className="w-full h-12 pr-11 pl-4 rounded-xl text-sm border border-stone-200 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-[#123B3B]" />
+            <span className="absolute right-3.5 top-3.5 text-stone-400 text-lg">🔍</span>
+          </div>
+
+          <div className="grid grid-cols-3 gap-2.5 mb-6">
+            {CATEGORIES.map((cat) => (
+              <div key={cat.id} onClick={() => setActiveCat(activeCat === cat.id ? null : cat.id)}
+                className={`p-3 rounded-2xl flex flex-col items-center text-center cursor-pointer transition border ${activeCat === cat.id ? 'border-[#123B3B] shadow-sm' : 'border-stone-200 bg-white'}`}
+                style={{ background: activeCat === cat.id ? '#E8F0EF' : '#fff' }}>
+                <span className="text-2xl mb-1">{cat.icon}</span>
+                <span className="text-xs font-bold text-stone-800">{cat.name[lang]}</span>
+              </div>
+            ))}
+          </div>
+
+          <h3 className="font-bold text-stone-800 mb-3 text-sm">الحرفيون المتاحون</h3>
+          {list === null ? (
+            <div className="flex justify-center py-12"><div className="spinner"></div></div>
+          ) : filtered.length === 0 ? (
+            <div className="text-center py-12 text-stone-500 text-sm">{t.noResults}</div>
+          ) : (
+            <div className="space-y-3">
+              {filtered.map((c) => (
+                <div key={c.id} onClick={() => setSelected(c)} className="p-4 bg-white rounded-2xl border border-stone-200 shadow-sm cursor-pointer flex justify-between items-center">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-bold text-stone-900">{c.name}</span>
+                      <span className="text-xs px-2 py-0.5 rounded-full text-white" style={{ background: catInfo(c.cat).color }}>{craftName(c, lang)}</span>
+                    </div>
+                    <p className="text-xs text-stone-500 mb-2">📍 {hoodName(c.hood, lang)} • {c.exp} {t.yearsExp}</p>
+                    <Stars value={c.rating} />
+                  </div>
+                  <span className="text-stone-400 text-lg">←</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
+
+      {view === "admin" && (
+        <div className="p-4 max-w-lg mx-auto">
+          <h2 className="text-lg font-black text-[#123B3B] mb-4">{t.adminTitle}</h2>
+          {!adminUnlocked ? (
+            <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
+              <p className="text-sm text-stone-600 mb-3">{t.adminPinPrompt}</p>
+              <input type="password" value={pinInput} onChange={(e) => setPinInput(e.target.value)} placeholder={t.adminPinPlaceholder}
+                className="w-full h-12 px-4 rounded-xl border border-stone-200 mb-3 text-sm focus:outline-none" />
+              <button onClick={() => { if(pinInput === ADMIN_PIN) setAdminUnlocked(true); else setPinError(true); }}
+                className="w-full h-11 bg-[#123B3B] text-white rounded-xl font-bold text-sm">دخول</button>
+              {pinError && <p className="text-red-500 text-xs mt-2">رمز غير صحيح</p>}
+            </div>
+          ) : (
+            <div>
+              <p className="text-sm text-stone-600 mb-4">طلبات بانتظار المراجعة: {pending.length}</p>
+              {pending.map((p) => (
+                <div key={p.id} className="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm mb-3">
+                  <h3 className="font-bold text-stone-900">{p.name} - {craftName(p, lang)}</h3>
+                  <p className="text-xs text-stone-500 mb-3">📍 {p.hood} • 📞 {p.phone}</p>
+                  <div className="flex gap-2">
+                    <button onClick={async () => {
+                      await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${p.id}`, { method: 'PATCH', headers: SB_HEADERS, body: JSON.stringify({ status: 'approved' }) });
+                      fetchList();
+                    }} className="flex-1 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold">{t.approveBtn}</button>
+                    <button onClick={async () => {
+                      await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${p.id}`, { method: 'DELETE', headers: SB_HEADERS });
+                      fetchList();
+                    }} className="flex-1 py-2 bg-rose-600 text-white rounded-xl text-xs font-bold">{t.rejectBtn}</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {selected && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <h2 className="text-xl font-black text-stone-900">{selected.name}</h2>
+                <p className="text-xs text-stone-500">📍 {hoodName(selected.hood, lang)} • {selected.exp} {t.yearsExp}</p>
+              </div>
+              <button onClick={() => setSelected(null)} className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 font-bold">✕</button>
+            </div>
+            <p className="text-sm text-stone-700 bg-stone-50 p-3 rounded-xl mb-6 leading-relaxed">{selected.bio}</p>
+            <div className="flex gap-3">
+              <a href={`tel:${selected.phone}`} className="flex-1 py-3 rounded-xl bg-emerald-600 text-white font-bold text-sm text-center flex items-center justify-center gap-2">📞 {t.call}</a>
+              <a href={`https://wa.me/213${selected.phone.replace(/^0/, '')}`} target="_blank" rel="noreferrer" className="flex-1 py-3 rounded-xl bg-emerald-500 text-white font-bold text-sm text-center flex items-center justify-center gap-2">💬 {t.whatsapp}</a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <nav className="fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-stone-200 flex items-center justify-around z-10 px-6">
+        <button onClick={() => setView("home")} className={`flex flex-col items-center gap-1 ${view === 'home' ? 'text-[#123B3B] font-bold' : 'text-stone-400'}`}>
+          <span className="text-lg">🏠</span>
+          <span className="text-[10px]">{t.navHome}</span>
+        </button>
+      </nav>
     </div>
   );
 }
