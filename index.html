@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html lang="ar">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#0E3D37">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>حِرَفِي - دليل الحرفيين والمهنيين لمدينة الدحموني</title>
 <script defer src="/_vercel/insights/script.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
@@ -32,13 +30,6 @@
   .ipt:focus { border-color: #123B3B; }
 </style>
 </head>
-  <script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js');
-  });
-}
-</script>
 <body>
 <div id="root"></div>
 <script type="text/babel">
@@ -103,6 +94,8 @@ const STRINGS = {
     completeRegistrationBanner: "أنت مسجل مسبقاً بدون بريد إلكتروني. انقر هنا لإكمال تسجيلك وتأكيد بريدك!",
     completeRegTitle: "إكمال التسجيل وتأكيد البريد",
     reviewsTitle: "الآراء والتقييمات", addReviewBtn: "إضافة تقييم وتعليق", reviewerName: "اسمك الكريم", reviewComment: "اكتب رأيك أو تجربتك مع الحرفي...", sendReview: "إرسال التقييم",
+    verifyEmailBadge: "تأكيد البريد المطلوب",
+    emailNoticeText: "ملاحظة للحرفي: يرجى إضافة وتأكيد بريدك الإلكتروني لتتمكن من تعديل معلوماتك أو حمايتها مستقبلاً.",
   },
   en: {
     title: "Hirafi", subtitle: "Craftsmen & Tradespeople Directory — Dahmouni",
@@ -134,6 +127,8 @@ const STRINGS = {
     completeRegistrationBanner: "You registered previously without an email. Click here to complete your registration!",
     completeRegTitle: "Complete Registration & Verify Email",
     reviewsTitle: "Reviews & Comments", addReviewBtn: "Add rating & comment", reviewerName: "Your name", reviewComment: "Write your review about this craftsman...", sendReview: "Submit Review",
+    verifyEmailBadge: "Email Verify Required",
+    emailNoticeText: "Note for craftsman: Please add and verify your email to manage or edit your profile in the future.",
   },
 };
 
@@ -532,14 +527,11 @@ function App() {
                       cat={catInfo(c.cat)} 
                       lang={lang} 
                       t={t} 
-                      onClick={() => {
-                        if (!c.email) {
-                          setCompletingCraftsman(c);
-                          changeView("complete_reg");
-                        } else {
-                          setSelected(c);
-                        }
-                      }} 
+                      onClick={() => setSelected(c)} 
+                      onPromptEmail={() => {
+                        setCompletingCraftsman(c);
+                        changeView("complete_reg");
+                      }}
                     />
                   ))
                 )}
@@ -585,14 +577,11 @@ function App() {
                       cat={catInfo(c.cat)} 
                       lang={lang} 
                       t={t} 
-                      onClick={() => {
-                        if (!c.email) {
-                          setCompletingCraftsman(c);
-                          changeView("complete_reg");
-                        } else {
-                          setSelected(c);
-                        }
-                      }} 
+                      onClick={() => setSelected(c)} 
+                      onPromptEmail={() => {
+                        setCompletingCraftsman(c);
+                        changeView("complete_reg");
+                      }}
                     />
                   ))}
                 </div>
@@ -729,6 +718,25 @@ function App() {
               </div>
               <button onClick={() => shareCraftsman(selected)} className="text-lg" title={t.shareBtn}>🔗</button>
             </div>
+
+            {!selected.email && (
+              <div className="mb-4 p-3 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between gap-2">
+                <div className="text-[11px] text-amber-900 font-bold">
+                  {t.emailNoticeText}
+                </div>
+                <button
+                  onClick={() => {
+                    const target = selected;
+                    setSelected(null);
+                    setCompletingCraftsman(target);
+                    changeView("complete_reg");
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-amber-600 text-white font-black text-[10px] shrink-0">
+                  تأكيد الآن
+                </button>
+              </div>
+            )}
+
             <div className="flex items-center gap-1.5 text-xs text-stone-500 mb-3"><span>📍</span><span>{hoodName(selected.hood, lang)}</span></div>
             <p className="text-sm text-stone-700 leading-relaxed mb-4" style={{ background: "#F5F2EA", padding: "10px 12px", borderRadius: 12 }}>{selected.bio}</p>
 
@@ -1166,19 +1174,26 @@ function Field({ label, children }) {
   return (<div><label className="text-xs font-bold text-[#123B3B] mb-1.5 block">{label}</label>{children}</div>);
 }
 
-function CraftCard({ c, cat, lang, t, onClick }) {
+function CraftCard({ c, cat, lang, t, onClick, onPromptEmail }) {
   const isMissingEmail = !c.email;
 
   return (
-    <button onClick={onClick} className="w-full bg-white rounded-2xl p-3.5 flex items-center gap-3 text-start shadow-sm border relative overflow-hidden" style={{ borderColor: isMissingEmail ? "#D9A441" : "#E6E0D2" }}>
-      <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: cat.color + "1A" }}>
+    <div className="w-full bg-white rounded-2xl p-3.5 flex items-center gap-3 shadow-sm border relative overflow-hidden" style={{ borderColor: isMissingEmail ? "#D9A441" : "#E6E0D2" }}>
+      <div onClick={onClick} className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 cursor-pointer" style={{ background: cat.color + "1A" }}>
         <span style={{ fontSize: 20 }}>{cat.icon}</span>
       </div>
-      <div className="flex-1 min-w-0">
+      <div onClick={onClick} className="flex-1 min-w-0 cursor-pointer">
         <div className="flex items-center gap-2">
           <span className="font-black text-[#123B3B] text-sm truncate block">{c.name}</span>
           {isMissingEmail && (
-            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full text-white bg-amber-600 animate-pulse">تثبيت البريد</span>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onPromptEmail();
+              }}
+              className="text-[9px] font-bold px-1.5 py-0.5 rounded-full text-white bg-amber-600 animate-pulse shrink-0">
+              {t.verifyEmailBadge}
+            </button>
           )}
         </div>
         <p className="text-[11px] text-stone-500 truncate">{craftName(c, lang)} · {hoodName(c.hood, lang)}</p>
@@ -1190,8 +1205,8 @@ function CraftCard({ c, cat, lang, t, onClick }) {
           )}
         </div>
       </div>
-      <span className="text-stone-300 font-bold text-lg">{lang === "ar" ? "‹" : "›"}</span>
-    </button>
+      <span onClick={onClick} className="text-stone-300 font-bold text-lg cursor-pointer">{lang === "ar" ? "‹" : "›"}</span>
+    </div>
   );
 }
 
@@ -1201,21 +1216,5 @@ if (rootElement) {
   root.render(<App />);
 }
 </script>
- const rootElement = document.getElementById("root");
-if (rootElement) {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(<App />);
-}
-</script>
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(() => console.log('SW registered'))
-      .catch(err => console.log('SW error', err));
-  });
-}
-</script>
-    
 </body>
-  </html> 
+</html>
