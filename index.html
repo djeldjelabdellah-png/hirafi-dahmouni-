@@ -1200,5 +1200,21 @@ if (rootElement) {
   root.render(<App />);
 }
 </script>
+ const rootElement = document.getElementById("root");
+if (rootElement) {
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(<App />);
+}
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => console.log('SW registered'))
+      .catch(err => console.log('SW error', err));
+  });
+}
+</script>
+    
 </body>
-</html>
+  </html> 
