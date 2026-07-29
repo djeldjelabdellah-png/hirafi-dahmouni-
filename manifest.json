@@ -4,8 +4,8 @@
   "description": "منصة محلية تربط بين الحرفيين والمهنيين والزبائن في مدينة الدحموني",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#4f46e5",
-  "theme_color": "#4f46e5",
+  "background_color": "#0E3D37",
+  "theme_color": "#0E3D37",
   "icons": [
     {
       "src": "https://epslzxcwurnueboeujbt.supabase.co/storage/v1/object/public/craftsmen-gallery/file_00000000ccc8824394ec55bb3e33f0db.png",
@@ -13,7 +13,7 @@
       "type": "image/png"
     },
     {
-      "src": "https://epslzxcwurnueboeujbt.supabase.co/storage/v1/object/public/craftsmen-gallery/file_00000000a75881f4b3c31f8894b218e7.png",
+      "src": "https://epslzxcwurnueboeujbt.supabase.co/storage/v1/object/public/craftsmen-gallery/file_00000000ccc8824394ec55bb3e33f0db.png",
       "sizes": "512x512",
       "type": "image/png"
     }
