@@ -10,7 +10,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-<script defer src="/_vercel/insights/script.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -18,7 +17,9 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script type="text/javascript">
    (function(){
-      emailjs.init({ publicKey: "1YVvuqYAcvu8EWWaS" });
+      if (typeof emailjs !== 'undefined') {
+        emailjs.init({ publicKey: "1YVvuqYAcvu8EWWaS" });
+      }
    })();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -160,13 +161,12 @@ function Stars({ value }) {
   );
 }
 
-// كرت الحرفي المصمم للهاتف
 function CraftCard({ c, cat, lang, t, onClick }) {
   const formattedPhone = c.phone ? c.phone.replace(/\s+/g, '') : '';
   const waPhone = formattedPhone.startsWith('0') ? '213' + formattedPhone.slice(1) : formattedPhone;
 
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-sm border border-[#E8E3D5] flex flex-col justify-between transition-transform active:scale-[0.99]" onClick={onClick}>
+    <div className="bg-white rounded-2xl p-4 shadow-sm border border-[#E8E3D5] flex flex-col justify-between transition-transform active:scale-[0.99] cursor-pointer" onClick={onClick}>
       <div>
         <div className="flex items-start justify-between mb-2">
           <div className="flex items-center gap-3">
@@ -203,6 +203,61 @@ function CraftCard({ c, cat, lang, t, onClick }) {
   );
 }
 
+function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
+  const [form, setForm] = useState({ name: "", cat: CATEGORIES[0].id, otherCat: "", hood: NEIGHBORHOODS[0].ar, exp: 1, phone: "", bio: "", files: [] });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!form.name || !form.phone || !form.bio) return alert(t.requiredError);
+    onSubmit(form);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-3 py-2">
+      <h2 className="font-black text-[#123B3B] text-base mb-2">{t.registerTitle}</h2>
+      
+      <div>
+        <label className="text-xs font-bold text-stone-600">{t.fullName}</label>
+        <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full bg-white border border-stone-200 rounded-xl p-2.5 text-xs outline-none mt-1" required />
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <label className="text-xs font-bold text-stone-600">{t.craft}</label>
+          <select value={form.cat} onChange={(e) => setForm({ ...form, cat: e.target.value })} className="w-full bg-white border border-stone-200 rounded-xl p-2.5 text-xs outline-none mt-1">
+            {CATEGORIES.map((c) => <option key={c.id} value={c.id}>{c.name[lang]}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="text-xs font-bold text-stone-600">{t.neighborhood}</label>
+          <select value={form.hood} onChange={(e) => setForm({ ...form, hood: e.target.value })} className="w-full bg-white border border-stone-200 rounded-xl p-2.5 text-xs outline-none mt-1">
+            {NEIGHBORHOODS.map((n) => <option key={n.ar} value={n.ar}>{n[lang]}</option>)}
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label className="text-xs font-bold text-stone-600">{t.phone}</label>
+        <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="0550123456" className="w-full bg-white border border-stone-200 rounded-xl p-2.5 text-xs outline-none mt-1" required />
+      </div>
+
+      <div>
+        <label className="text-xs font-bold text-stone-600">{t.bio}</label>
+        <textarea value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} rows="3" className="w-full bg-white border border-stone-200 rounded-xl p-2.5 text-xs outline-none mt-1" required />
+      </div>
+
+      <div>
+        <label className="text-xs font-bold text-stone-600">{t.chooseImages}</label>
+        <input type="file" multiple accept="image/*" onChange={(e) => setForm({ ...form, files: Array.from(e.target.files) })} className="w-full bg-white border border-stone-200 rounded-xl p-2 text-xs mt-1" />
+      </div>
+
+      <button type="submit" disabled={saving} className="w-full py-3 bg-[#D9A441] text-white rounded-xl text-xs font-bold shadow-md active:opacity-90 mt-2">
+        {saving ? (uploadingText || t.submitting) : t.submitBtn}
+      </button>
+    </form>
+  );
+}
+
 function App() {
   const [lang, setLang] = useState("ar");
   const t = STRINGS[lang];
@@ -220,13 +275,13 @@ function App() {
   const [adminUnlocked, setAdminUnlocked] = useState(false);
   const [pinInput, setPinInput] = useState("");
   const [pinError, setPinError] = useState(false);
-  const [editingCraftsman, setEditingCraftsman] = useState(null);
 
   useEffect(() => { setActiveHood(t.all); }, [lang]);
 
   const fetchList = async () => {
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?select=*&order=created_at.desc`, { headers: SB_HEADERS });
+      if (!res.ok) throw new Error("Fetch failed");
       const data = await res.json();
       setList(Array.isArray(data) ? data.map(fromDb) : []);
     } catch (e) {
@@ -263,7 +318,7 @@ function App() {
         headers: { ...SB_HEADERS, Prefer: "return=representation" },
         body: JSON.stringify(toDb({ ...data, galleryUrls: uploadedUrls, status: "pending", rating: 0, reviews: 0, reviewList: [] })),
       });
-      if (!res.ok) throw new Error("insert failed");
+      if (!res.ok) throw new Error("Insert failed");
 
       await fetchList();
       setView("home");
@@ -307,7 +362,7 @@ function App() {
   return (
     <div className="max-w-md mx-auto min-h-screen bg-[#F5F2EA] flex flex-col relative shadow-2xl overflow-hidden" dir={dir}>
       
-      <!-- الهيدر العلوي الذكي للتطبيق -->
+      {/* Header */}
       <header className="sticky top-0 z-30 px-4 pt-4 pb-3 shadow-md" style={{ background: "#123B3B" }}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
@@ -336,14 +391,14 @@ function App() {
         )}
       </header>
 
-      <!-- التوست الإشعاري السريع -->
+      {/* Toast Notification */}
       {toast && (
         <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-[#123B3B] text-white text-xs px-4 py-2.5 rounded-full shadow-lg border border-[#D9A441] animate-bounce">
           {toast}
         </div>
       )}
 
-      <!-- المحتوى الرئيسي للمشاهد المختلفة -->
+      {/* Main Content Area */}
       <main className="flex-1 px-4 safe-pb pt-3">
         {list === null ? (
           <div className="flex flex-col items-center justify-center py-20 text-stone-400 gap-2">
@@ -354,7 +409,7 @@ function App() {
           <>
             {view === "home" && (
               <div>
-                <!-- شريط الأحياء السريع -->
+                {/* Neighborhood Bar */}
                 <div className="flex gap-1.5 overflow-x-auto py-2 hide-scrollbar">
                   {[t.all, ...NEIGHBORHOODS.map((h) => h[lang])].map((h, idx) => {
                     const hoodValue = idx === 0 ? t.all : NEIGHBORHOODS[idx - 1].ar;
@@ -368,7 +423,7 @@ function App() {
                   })}
                 </div>
 
-                <!-- شبكة التصنيفات -->
+                {/* Categories Grid */}
                 <h2 className="font-black text-[#123B3B] text-xs mb-3 mt-3 uppercase tracking-wider">{t.chooseCategory}</h2>
                 <div className="grid grid-cols-4 gap-2.5 mb-5">
                   {CATEGORIES.map((c) => {
@@ -385,7 +440,7 @@ function App() {
                   })}
                 </div>
 
-                <!-- كروت الأعلى تقييماً -->
+                {/* Top Rated Craftsmen */}
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="font-black text-[#123B3B] text-sm">{t.topRated}</h2>
                   <button onClick={() => setView("list")} className="text-xs font-bold text-[#D9A441]">{t.viewAll}</button>
@@ -473,7 +528,7 @@ function App() {
         )}
       </main>
 
-      <!-- شريط التنقل السفلي المخصص للموبايل Tab Bar -->
+      {/* Bottom Navigation Bar */}
       <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white border-t border-stone-200 flex items-center justify-around py-2 z-40 shadow-lg">
         <button onClick={() => setView("home")} className={`flex flex-col items-center gap-0.5 ${view === "home" ? "text-[#123B3B]" : "text-stone-400"}`}>
           <span className="text-xl">🏠</span>
@@ -493,7 +548,7 @@ function App() {
         </button>
       </nav>
 
-      <!-- نافذة تفاصيل الحرفي المكتملة Modal -->
+      {/* Detail Modal */}
       {selected && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={() => setSelected(null)}>
           <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
@@ -512,10 +567,10 @@ function App() {
 
             {selected.galleryUrls && selected.galleryUrls.length > 0 && (
               <div className="mb-4">
-                <h4 className="text-xs font-bold text-stone-700 mb-2">{t.galleryTitle}</h4>
+                <h4 className="text-xs font-bold text-[#123B3B] mb-2">{t.galleryTitle}</h4>
                 <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
                   {selected.galleryUrls.map((url, i) => (
-                    <img key={i} src={url} className="w-24 h-24 object-cover rounded-xl border border-stone-200" />
+                    <img key={i} src={url} alt="" className="w-24 h-24 object-cover rounded-xl border border-stone-200" />
                   ))}
                 </div>
               </div>
@@ -530,62 +585,6 @@ function App() {
       )}
 
     </div>
-  );
-}
-
-// نموذج التسجيل المحسّن
-function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
-  const [form, setForm] = useState({ name: "", cat: CATEGORIES[0].id, otherCat: "", hood: NEIGHBORHOODS[0].ar, exp: 1, phone: "", bio: "", files: [] });
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!form.name || !form.phone || !form.bio) return alert(t.requiredError);
-    onSubmit(form);
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-3 py-2">
-      <h2 className="font-black text-[#123B3B] text-base mb-2">{t.registerTitle}</h2>
-      
-      <div>
-        <label className="text-xs font-bold text-stone-600">{t.fullName}</label>
-        <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full bg-white border border-stone-200 rounded-xl p-2.5 text-xs outline-none" required />
-      </div>
-
-      <div className="grid grid-cols-2 gap-2">
-        <div>
-          <label className="text-xs font-bold text-stone-600">{t.craft}</label>
-          <select value={form.cat} onChange={(e) => setForm({ ...form, cat: e.target.value })} className="w-full bg-white border border-stone-200 rounded-xl p-2.5 text-xs outline-none">
-            {CATEGORIES.map((c) => <option key={c.id} value={c.id}>{c.name[lang]}</option>)}
-          </select>
-        </div>
-        <div>
-          <label className="text-xs font-bold text-stone-600">{t.neighborhood}</label>
-          <select value={form.hood} onChange={(e) => setForm({ ...form, hood: e.target.value })} className="w-full bg-white border border-stone-200 rounded-xl p-2.5 text-xs outline-none">
-            {NEIGHBORHOODS.map((n) => <option key={n.ar} value={n.ar}>{n[lang]}</option>)}
-          </select>
-        </div>
-      </div>
-
-      <div>
-        <label className="text-xs font-bold text-stone-600">{t.phone}</label>
-        <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="0550123456" className="w-full bg-white border border-stone-200 rounded-xl p-2.5 text-xs outline-none" required />
-      </div>
-
-      <div>
-        <label className="text-xs font-bold text-stone-600">{t.bio}</label>
-        <textarea value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} rows="3" className="w-full bg-white border border-stone-200 rounded-xl p-2.5 text-xs outline-none" required />
-      </div>
-
-      <div>
-        <label className="text-xs font-bold text-stone-600">{t.chooseImages}</label>
-        <input type="file" multiple accept="image/*" onChange={(e) => setForm({ ...form, files: Array.from(e.target.files) })} className="w-full bg-white border border-stone-200 rounded-xl p-2 text-xs" />
-      </div>
-
-      <button type="submit" disabled={saving} className="w-full py-3 bg-[#D9A441] text-white rounded-xl text-xs font-bold shadow-md active:opacity-90">
-        {saving ? (uploadingText || t.submitting) : t.submitBtn}
-      </button>
-    </form>
   );
 }
 
