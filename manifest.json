@@ -1,21 +1,12 @@
-{
-  "name": "حِرَفِي - دليل الحرفيين والمهنيين",
-  "short_name": "حِرَفِي",
-  "description": "منصة محلية تربط بين الحرفيين والمهنيين والزبائن في مدينة الدحموني",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#0E3D37",
-  "theme_color": "#0E3D37",
-  "icons": [
-    {
-      "src": "https://epslzxcwurnueboeujbt.supabase.co/storage/v1/object/public/craftsmen-gallery/file_00000000ccc8824394ec55bb3e33f0db.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "https://epslzxcwurnueboeujbt.supabase.co/storage/v1/object/public/craftsmen-gallery/file_00000000ccc8824394ec55bb3e33f0db.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
-}
+"icons": [
+  {
+    "src": "/icons/icon-512.png",
+    "sizes": "512x512",
+    "type": "image/png"
+  },
+  {
+    "src": "/icons/icon-512.png",
+    "sizes": "192x192",
+    "type": "image/png"
+  }
+]
