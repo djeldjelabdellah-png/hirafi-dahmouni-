@@ -4,6 +4,10 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>حِرَفِي - دليل الحرفيين والمهنيين لمدينة الدحموني</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0E3D37">
+<link rel="apple-touch-icon" href="https://epslzxcwurnueboeujbt.supabase.co/storage/v1/object/public/craftsmen-gallery/file_00000000ccc8824394ec55bb3e33f0db.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
    <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#123B3B">
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
@@ -1230,6 +1234,13 @@ if (rootElement) {
       navigator.serviceWorker.register('/sw.js')
         .then(() => console.log('Service Worker مسجّل بنجاح'))
         .catch((err) => console.error('فشل تسجيل Service Worker:', err));
+    });
+  }
+</script>
+   <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js');
     });
   }
 </script>
