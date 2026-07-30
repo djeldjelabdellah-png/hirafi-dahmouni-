@@ -8,10 +8,6 @@
 <meta name="theme-color" content="#0E3D37">
 <link rel="apple-touch-icon" href="https://epslzxcwurnueboeujbt.supabase.co/storage/v1/object/public/craftsmen-gallery/file_00000000ccc8824394ec55bb3e33f0db.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-   <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#123B3B">
-<link rel="apple-touch-icon" href="/icons/icon-192.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
 <script defer src="/_vercel/insights/script.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -30,12 +26,12 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
   body { font-family: 'Tajawal', sans-serif; background:#F5F2EA; margin:0; }
-  .spinner { border: 3px solid #DCD5C4; border-top-color: #123B3B; border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite; }
+  .spinner { border: 3px solid #DCD5C4; border-top-color: #0E3D37; border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .hide-scrollbar::-webkit-scrollbar { display: none; }
   .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   .ipt { width: 100%; border: 1.5px solid #DCD5C4; border-radius: 14px; padding: 11px 14px; font-size: 14px; outline: none; background: white; font-family: inherit; }
-  .ipt:focus { border-color: #123B3B; }
+  .ipt:focus { border-color: #0E3D37; }
 </style>
 </head>
 <body>
@@ -66,19 +62,21 @@ const CATEGORIES = [
 ];
 
 const NEIGHBORHOODS = [
-  { ar: "حي مزيان", en: "Mezyan" },
+  { ar: "حي مزيان", en: "Meziane" },
   { ar: "حي المحطة", en: "Al Mahata" },
   { ar: "حي 100 مسكن", en: "100 Logements" },
   { ar: "حي المقبرة", en: "Al Maqbra" },
   { ar: "حي البناء الذاتي", en: "Al-Binaa Al-Dhati" },
   { ar: "حي العقيد لطفي", en: "Colonel Lotfi" },
-  { ar: "حي 300 سكن", en: "300 Logements" }
+  { ar: "حي 300 سكن", en: "300 Logements" },
   { ar: "حي 50 سكن", en: "50 Logements" },
-   { ar: "حي البلدي", en: "communale" },
-   { ar: "حي كاسطور", en: "kastoer" },
-   { ar: " حي 30 سكن ولاية", en: "30Logements wilaya" },
+  { ar: "حي البلدي", en: "La Communale" },
+  { ar: "حي كاسطور", en: "Castors" },
+  { ar: "حي 30 سكن ولاية", en: "30 Logements Al-Wilaya" },
 ];
+
 const STRINGS = {
+  ar: {
     title: "حِرَفِي", subtitle: "دليل الحرفيين والمهنيين لمدينة الدحموني",
     searchPlaceholder: "ابحث عن حرفة، اسم، أو خدمة...", chooseCategory: "اختر التصنيف",
     registerCta: "سجّل كحرفي في المنصة", editProfileCta: "تعديل بياناتي", topRated: "الأعلى تقييماً", viewAll: "عرض الكل ←",
@@ -450,7 +448,7 @@ function App() {
 
   return (
     <div style={{ minHeight: "100vh" }} dir={dir}>
-      <header className="sticky top-0 z-20 px-4 pt-5 pb-4" style={{ background: "#123B3B" }}>
+      <header className="sticky top-0 z-20 px-4 pt-5 pb-4" style={{ background: "#0E3D37" }}>
         <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-white font-black text-xl leading-tight">{t.title}</h1>
@@ -491,14 +489,14 @@ function App() {
                   const hoodValue = idx === 0 ? t.all : NEIGHBORHOODS[idx - 1].ar;
                   return (
                     <button key={h} onClick={() => setActiveHood(hoodValue)} className="whitespace-nowrap text-xs font-bold px-3.5 py-2 rounded-full border transition"
-                      style={activeHood === hoodValue ? { background: "#123B3B", color: "white", borderColor: "#123B3B" } : { background: "white", color: "#123B3B", borderColor: "#DCD5C4" }}>
+                      style={activeHood === hoodValue ? { background: "#0E3D37", color: "white", borderColor: "#0E3D37" } : { background: "white", color: "#0E3D37", borderColor: "#DCD5C4" }}>
                       {h}
                     </button>
                   );
                 })}
               </div>
 
-              <h2 className="font-black text-[#123B3B] text-sm mb-3 mt-2">{t.chooseCategory}</h2>
+              <h2 className="font-black text-[#0E3D37] text-sm mb-3 mt-2">{t.chooseCategory}</h2>
               <div className="grid grid-cols-4 gap-3 mb-4">
                 {CATEGORIES.map((c) => {
                   const count = approved.filter((x) => x.cat === c.id).length;
@@ -518,13 +516,13 @@ function App() {
                 <button onClick={() => changeView("register")} className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-white text-xs" style={{ background: "#D9A441" }}>
                   <span>+</span> {t.registerCta}
                 </button>
-                <button onClick={() => changeView("edit_auth")} className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-white text-xs border" style={{ background: "#123B3B", borderColor: "#123B3B" }}>
+                <button onClick={() => changeView("edit_auth")} className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-white text-xs border" style={{ background: "#0E3D37", borderColor: "#0E3D37" }}>
                   <span>✏️</span> {t.editProfileCta}
                 </button>
               </div>
 
               <div className="flex items-center justify-between mb-3">
-                <h2 className="font-black text-[#123B3B] text-sm">{t.topRated}</h2>
+                <h2 className="font-black text-[#0E3D37] text-sm">{t.topRated}</h2>
                 <button onClick={() => changeView("list")} className="text-[11px] font-bold" style={{ color: "#D9A441" }}>{t.viewAll}</button>
               </div>
               <div className="space-y-3">
@@ -553,8 +551,8 @@ function App() {
           {view === "list" && (
             <main className="px-4 pb-24 pt-4">
               <div className="flex items-center gap-2 mb-4">
-                <button onClick={() => { changeView("home"); setActiveCat(null); setQuery(""); }} className="text-[#123B3B] font-bold text-lg">{dir === "rtl" ? "➔" : "⬅"}</button>
-                <h2 className="font-black text-[#123B3B] text-base flex-1">
+                <button onClick={() => { changeView("home"); setActiveCat(null); setQuery(""); }} className="text-[#0E3D37] font-bold text-lg">{dir === "rtl" ? "➔" : "⬅"}</button>
+                <h2 className="font-black text-[#0E3D37] text-base flex-1">
                   {activeCat ? catInfo(activeCat).name[lang] : t.navSearch}
                   <span className="text-xs font-normal text-stone-500"> ({filtered.length})</span>
                 </h2>
@@ -562,12 +560,12 @@ function App() {
 
               <div className="flex gap-2 overflow-x-auto pb-3 hide-scrollbar">
                 <button onClick={() => setActiveCat(null)} className="whitespace-nowrap text-[11px] font-bold px-3 py-1.5 rounded-full border"
-                  style={!activeCat ? { background: "#123B3B", color: "white", borderColor: "#123B3B" } : { background: "white", color: "#123B3B", borderColor: "#DCD5C4" }}>
+                  style={!activeCat ? { background: "#0E3D37", color: "white", borderColor: "#0E3D37" } : { background: "white", color: "#0E3D37", borderColor: "#DCD5C4" }}>
                   {t.allCrafts}
                 </button>
                 {CATEGORIES.map((c) => (
                   <button key={c.id} onClick={() => setActiveCat(c.id)} className="whitespace-nowrap text-[11px] font-bold px-3 py-1.5 rounded-full border"
-                    style={activeCat === c.id ? { background: c.color, color: "white", borderColor: c.color } : { background: "white", color: "#123B3B", borderColor: "#DCD5C4" }}>
+                    style={activeCat === c.id ? { background: c.color, color: "white", borderColor: c.color } : { background: "white", color: "#0E3D37", borderColor: "#DCD5C4" }}>
                     {c.name[lang]}
                   </button>
                 ))}
@@ -643,7 +641,7 @@ function App() {
 
           {view === "admin" && (
             <main className="px-4 pb-24 pt-4">
-              <h2 className="font-black text-[#123B3B] text-base mb-4">{t.adminTitle}</h2>
+              <h2 className="font-black text-[#0E3D37] text-base mb-4">{t.adminTitle}</h2>
               {!adminUnlocked ? (
                 <div className="bg-white rounded-2xl p-5 border" style={{ borderColor: "#E6E0D2" }}>
                   <p className="text-xs text-stone-500 font-bold mb-3">{t.adminPinPrompt}</p>
@@ -652,7 +650,7 @@ function App() {
                     style={{ borderColor: pinError ? "#C0392B" : "#DCD5C4" }} placeholder={t.adminPinPlaceholder} />
                   {pinError && <p className="text-[11px] text-red-600 font-bold mb-2">{t.adminPinWrong}</p>}
                   <button onClick={() => pinInput === ADMIN_PIN ? setAdminUnlocked(true) : setPinError(true)}
-                    className="w-full py-2.5 rounded-xl font-bold text-white text-sm" style={{ background: "#123B3B" }}>{t.adminLogin}</button>
+                    className="w-full py-2.5 rounded-xl font-bold text-white text-sm" style={{ background: "#0E3D37" }}>{t.adminLogin}</button>
                 </div>
               ) : pending.length === 0 ? (
                 <p className="text-center text-xs text-stone-400 py-10">{t.adminNoPending}</p>
@@ -661,7 +659,7 @@ function App() {
                   {pending.map((c) => (
                     <div key={c.id} className="bg-white rounded-2xl p-4 border" style={{ borderColor: "#E6E0D2" }}>
                       <div className="flex items-center justify-between mb-2">
-                        <span className="font-black text-[#123B3B] text-sm">{c.name}</span>
+                        <span className="font-black text-[#0E3D37] text-sm">{c.name}</span>
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "#D9A44122", color: "#B8842E" }}>🕐 {t.pendingLabel}</span>
                       </div>
                       <p className="text-[11px] text-stone-500 mb-1">{craftName(c, lang)} · {hoodName(c.hood, lang)} · {c.exp} {t.yearsExp}</p>
@@ -695,24 +693,24 @@ function App() {
       <nav className="fixed bottom-0 inset-x-0 bg-white border-t flex justify-around py-2.5" style={{ borderColor: "#E6E0D2" }}>
         <button onClick={() => changeView("home")} className="flex flex-col items-center gap-0.5">
           <span style={{ fontSize: 18, opacity: view === "home" ? 1 : 0.4 }}>🏠</span>
-          <span className="text-[10px] font-bold" style={{ color: view === "home" ? "#123B3B" : "#B0A996" }}>{t.navHome}</span>
+          <span className="text-[10px] font-bold" style={{ color: view === "home" ? "#0E3D37" : "#B0A996" }}>{t.navHome}</span>
         </button>
         <button onClick={() => changeView("list")} className="flex flex-col items-center gap-0.5">
           <span style={{ fontSize: 18, opacity: view === "list" ? 1 : 0.4 }}>🔍</span>
-          <span className="text-[10px] font-bold" style={{ color: view === "list" ? "#123B3B" : "#B0A996" }}>{t.navSearch}</span>
+          <span className="text-[10px] font-bold" style={{ color: view === "list" ? "#0E3D37" : "#B0A996" }}>{t.navSearch}</span>
         </button>
         <button onClick={() => changeView("register")} className="flex flex-col items-center gap-0.5">
           <span style={{ fontSize: 18, opacity: view === "register" ? 1 : 0.4 }}>➕</span>
-          <span className="text-[10px] font-bold" style={{ color: view === "register" ? "#123B3B" : "#B0A996" }}>{t.navRegister}</span>
+          <span className="text-[10px] font-bold" style={{ color: view === "register" ? "#0E3D37" : "#B0A996" }}>{t.navRegister}</span>
         </button>
       </nav>
 
       {toast && (
-        <div className="fixed bottom-20 inset-x-4 z-40 bg-[#123B3B] text-white text-xs font-bold rounded-xl px-4 py-3 text-center shadow-lg">{toast}</div>
+        <div className="fixed bottom-20 inset-x-4 z-40 bg-[#0E3D37] text-white text-xs font-bold rounded-xl px-4 py-3 text-center shadow-lg">{toast}</div>
       )}
 
       {selected && (
-        <div className="fixed inset-0 z-30 flex items-end justify-center" style={{ background: "rgba(18,30,30,0.5)" }} onClick={() => setSelected(null)}>
+        <div className="fixed inset-0 z-30 flex items-end justify-center" style={{ background: "rgba(14,61,55,0.5)" }} onClick={() => setSelected(null)}>
           <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-t-3xl w-full max-w-md p-5 relative max-h-[90vh] overflow-y-auto hide-scrollbar">
             <button onClick={() => setSelected(null)} className="absolute left-4 top-4 text-stone-400 text-lg">✕</button>
             <div className="flex items-start gap-3 mb-4">
@@ -720,7 +718,7 @@ function App() {
                 <span style={{ fontSize: 28 }}>{catInfo(selected.cat).icon}</span>
               </div>
               <div className="flex-1">
-                <h3 className="font-black text-[#123B3B] text-base">{selected.name}</h3>
+                <h3 className="font-black text-[#0E3D37] text-base">{selected.name}</h3>
                 <p className="text-xs text-stone-500 font-bold">{craftName(selected, lang)} · {selected.exp} {t.yearsExp}</p>
                 <div className="flex items-center gap-1.5 mt-1">
                   <Stars value={selected.rating} />
@@ -765,7 +763,7 @@ function App() {
             )}
 
             <div className="mb-5 border-t pt-4" style={{ borderColor: "#E6E0D2" }}>
-              <h4 className="text-xs font-black text-[#123B3B] mb-3">{t.reviewsTitle} ({selected.reviewList ? selected.reviewList.length : 0})</h4>
+              <h4 className="text-xs font-black text-[#0E3D37] mb-3">{t.reviewsTitle} ({selected.reviewList ? selected.reviewList.length : 0})</h4>
               
               <div className="space-y-2 mb-4 max-h-48 overflow-y-auto hide-scrollbar">
                 {(!selected.reviewList || selected.reviewList.length === 0) ? (
@@ -774,7 +772,7 @@ function App() {
                   selected.reviewList.map((rev, idx) => (
                     <div key={idx} className="p-3 rounded-xl bg-[#F5F2EA] border border-stone-200 text-xs">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="font-bold text-[#123B3B]">{rev.name}</span>
+                        <span className="font-bold text-[#0E3D37]">{rev.name}</span>
                         <div className="flex items-center gap-1">
                           <Stars value={rev.rating} />
                           <span className="text-[10px] text-stone-400">{rev.date}</span>
@@ -787,7 +785,7 @@ function App() {
               </div>
 
               <form onSubmit={submitReviewAndComment} className="p-3 rounded-2xl bg-white border" style={{ borderColor: "#DCD5C4" }}>
-                <p className="text-xs font-bold text-[#123B3B] mb-2">{t.addReviewBtn}</p>
+                <p className="text-xs font-bold text-[#0E3D37] mb-2">{t.addReviewBtn}</p>
                 <div className="flex items-center justify-center gap-1 mb-2">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
@@ -822,14 +820,14 @@ function App() {
                   type="submit"
                   disabled={isSubmittingReview}
                   className="w-full py-2.5 rounded-xl font-bold text-white text-xs"
-                  style={{ background: "#123B3B", opacity: isSubmittingReview ? 0.7 : 1 }}>
+                  style={{ background: "#0E3D37", opacity: isSubmittingReview ? 0.7 : 1 }}>
                   {isSubmittingReview ? t.submitting : t.sendReview}
                 </button>
               </form>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <a href={`tel:${selected.phone}`} className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-white text-sm" style={{ background: "#123B3B" }}>📞 {t.call}</a>
+              <a href={`tel:${selected.phone}`} className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-white text-sm" style={{ background: "#0E3D37" }}>📞 {t.call}</a>
               <a href={`https://wa.me/213${selected.phone.slice(1)}`} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-white" style={{ background: "#3DAA5C" }}>💬 {t.whatsapp}</a>
             </div>
           </div>
@@ -884,8 +882,8 @@ function CompleteRegistrationView({ craftsman, onBack, onComplete, saving, t, la
   return (
     <main className="px-4 pb-24 pt-4">
       <div className="flex items-center gap-2 mb-5">
-        <button type="button" onClick={onBack} className="text-[#123B3B] font-bold text-lg">{lang === "ar" ? "➔" : "⬅"}</button>
-        <h2 className="font-black text-[#123B3B] text-base">{t.completeRegTitle}</h2>
+        <button type="button" onClick={onBack} className="text-[#0E3D37] font-bold text-lg">{lang === "ar" ? "➔" : "⬅"}</button>
+        <h2 className="font-black text-[#0E3D37] text-base">{t.completeRegTitle}</h2>
       </div>
 
       <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-4">
@@ -973,8 +971,8 @@ function EditAuthView({ onBack, allCraftsmen, t, lang, onVerified }) {
   return (
     <main className="px-4 pb-24 pt-4">
       <div className="flex items-center gap-2 mb-5">
-        <button type="button" onClick={onBack} className="text-[#123B3B] font-bold text-lg">{lang === "ar" ? "➔" : "⬅"}</button>
-        <h2 className="font-black text-[#123B3B] text-base">{t.editTitle}</h2>
+        <button type="button" onClick={onBack} className="text-[#0E3D37] font-bold text-lg">{lang === "ar" ? "➔" : "⬅"}</button>
+        <h2 className="font-black text-[#0E3D37] text-base">{t.editTitle}</h2>
       </div>
 
       {step === 1 ? (
@@ -984,7 +982,7 @@ function EditAuthView({ onBack, allCraftsmen, t, lang, onVerified }) {
             <input type="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} className="ipt" placeholder="name@example.com" dir="ltr" />
           </Field>
           {error && <p className="text-xs text-red-600 font-bold">{error}</p>}
-          <button type="submit" disabled={loading} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2" style={{ background: "#123B3B" }}>
+          <button type="submit" disabled={loading} className="w-full py-3.5 rounded-2xl font-black text-white text-sm flex items-center justify-center gap-2" style={{ background: "#0E3D37" }}>
             {loading ? t.submitting : t.submitBtn}
           </button>
         </form>
@@ -1033,8 +1031,8 @@ function EditForm({ craftsman, onBack, onSubmit, onDelete, saving, uploadingText
   return (
     <main className="px-4 pb-24 pt-4">
       <div className="flex items-center gap-2 mb-5">
-        <button type="button" onClick={onBack} className="text-[#123B3B] font-bold text-lg">{lang === "ar" ? "➔" : "⬅"}</button>
-        <h2 className="font-black text-[#123B3B] text-base">{t.editTitle}</h2>
+        <button type="button" onClick={onBack} className="text-[#0E3D37] font-bold text-lg">{lang === "ar" ? "➔" : "⬅"}</button>
+        <h2 className="font-black text-[#0E3D37] text-base">{t.editTitle}</h2>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -1127,8 +1125,8 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
   return (
     <main className="px-4 pb-24 pt-4">
       <div className="flex items-center gap-2 mb-5">
-        <button type="button" onClick={onBack} className="text-[#123B3B] font-bold text-lg">{lang === "ar" ? "➔" : "⬅"}</button>
-        <h2 className="font-black text-[#123B3B] text-base">{step === 1 ? t.registerTitle : t.verifyTitle}</h2>
+        <button type="button" onClick={onBack} className="text-[#0E3D37] font-bold text-lg">{lang === "ar" ? "➔" : "⬅"}</button>
+        <h2 className="font-black text-[#0E3D37] text-base">{step === 1 ? t.registerTitle : t.verifyTitle}</h2>
       </div>
 
       {step === 1 ? (
@@ -1182,7 +1180,7 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
 }
 
 function Field({ label, children }) {
-  return (<div><label className="text-xs font-bold text-[#123B3B] mb-1.5 block">{label}</label>{children}</div>);
+  return (<div><label className="text-xs font-bold text-[#0E3D37] mb-1.5 block">{label}</label>{children}</div>);
 }
 
 function CraftCard({ c, cat, lang, t, onClick, onPromptEmail }) {
@@ -1195,7 +1193,7 @@ function CraftCard({ c, cat, lang, t, onClick, onPromptEmail }) {
       </div>
       <div onClick={onClick} className="flex-1 min-w-0 cursor-pointer">
         <div className="flex items-center gap-2">
-          <span className="font-black text-[#123B3B] text-sm truncate block">{c.name}</span>
+          <span className="font-black text-[#0E3D37] text-sm truncate block">{c.name}</span>
           {isMissingEmail && (
             <button
               onClick={(e) => {
@@ -1227,19 +1225,12 @@ if (rootElement) {
   root.render(<App />);
 }
 </script>
-   <script>
+<script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js')
         .then(() => console.log('Service Worker مسجّل بنجاح'))
         .catch((err) => console.error('فشل تسجيل Service Worker:', err));
-    });
-  }
-</script>
-   <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js');
     });
   }
 </script>
