@@ -266,6 +266,9 @@ function App() {
       });
       if (!res.ok) throw new Error("insert failed");
 
+      // التعديل المضاف هنا لتحديث القائمة فوراً
+      await fetchList();
+
       try {
         const selectedCat = CATEGORIES.find(c => c.id === data.cat);
         const craftTitle = data.cat === "other" ? data.otherCat : (selectedCat ? selectedCat.name.ar : data.cat);
@@ -285,7 +288,6 @@ function App() {
         });
       } catch (tgError) { console.error("Telegram notification failed:", tgError); }
 
-      await fetchList();
       changeView("home");
       setToast(t.toastSubmitted);
       setTimeout(() => setToast(null), 3500);
@@ -663,7 +665,14 @@ function App() {
 
           {view === "admin" && (
             <main className="px-4 pb-24 pt-4">
-              <h2 className="font-black text-[#0E3D37] text-base mb-4">{t.adminTitle}</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-black text-[#0E3D37] text-base">{t.adminTitle}</h2>
+                {adminUnlocked && (
+                  <button onClick={() => fetchList()} className="text-xs font-bold px-3 py-1.5 rounded-xl bg-[#0E3D37] text-white">
+                    🔄 تحديث القائمة
+                  </button>
+                )}
+              </div>
               {!adminUnlocked ? (
                 <div className="bg-white rounded-2xl p-5 border" style={{ borderColor: "#E6E0D2" }}>
                   <p className="text-xs text-stone-500 font-bold mb-3">{t.adminPinPrompt}</p>
