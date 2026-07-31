@@ -266,7 +266,6 @@ function App() {
       });
       if (!res.ok) throw new Error("insert failed");
 
-      // التعديل المضاف هنا لتحديث القائمة فوراً
       await fetchList();
 
       try {
@@ -668,7 +667,7 @@ function App() {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="font-black text-[#0E3D37] text-base">{t.adminTitle}</h2>
                 {adminUnlocked && (
-                  <button onClick={() => fetchList()} className="text-xs font-bold px-3 py-1.5 rounded-xl bg-[#0E3D37] text-white">
+                  <button onClick={fetchList} className="text-xs font-bold px-3 py-1.5 rounded-xl bg-[#0E3D37] text-white">
                     🔄 تحديث القائمة
                   </button>
                 )}
