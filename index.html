@@ -108,6 +108,7 @@ const STRINGS = {
     reviewsTitle: "الآراء والتقييمات", addReviewBtn: "إضافة تقييم وتعليق", reviewerName: "اسمك الكريم", reviewComment: "اكتب رأيك أو تجربتك مع الحرفي...", sendReview: "إرسال التقييم",
     verifyEmailBadge: "تأكيد البريد المطلوب",
     emailNoticeText: "ملاحظة للحرفي: يرجى إضافة وتأكيد بريدك الإلكتروني لتتمكن من تعديل معلوماتك أو حمايتها مستقبلاً.",
+    toastListRefreshed: "تم تحديث القائمة بنجاح!"
   },
   en: {
     title: "Hirafi", subtitle: "Craftsmen & Tradespeople Directory — Dahmouni",
@@ -141,6 +142,7 @@ const STRINGS = {
     reviewsTitle: "Reviews & Comments", addReviewBtn: "Add rating & comment", reviewerName: "Your name", reviewComment: "Write your review about this craftsman...", sendReview: "Submit Review",
     verifyEmailBadge: "Email Verify Required",
     emailNoticeText: "Note for craftsman: Please add and verify your email to manage or edit your profile in the future.",
+    toastListRefreshed: "List refreshed successfully!"
   },
 };
 
@@ -230,9 +232,12 @@ function App() {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?select=*&order=created_at.desc`, { headers: SB_HEADERS });
       const data = await res.json();
       setList(Array.isArray(data) ? data.map(fromDb) : []);
+      setToast(t.toastListRefreshed);
+      setTimeout(() => setToast(null), 2000);
     } catch (e) {
       setList([]);
       setToast(t.toastFailConnect);
+      setTimeout(() => setToast(null), 2000);
     }
   };
 
