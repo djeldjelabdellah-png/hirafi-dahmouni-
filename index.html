@@ -155,13 +155,13 @@ const hoodName = (hoodAr, lang) => {
 
 const toDb = (c) => ({
   name: c.name, email: c.email || null, cat: c.cat, other_cat: c.otherCat || null, hood: c.hood,
-  exp: c.exp, phone: c.phone, bio: c.bio, status: c.status || "pending",
+  exp: c.exp, phone: c.phone, bio: c.bio, status: "pending", // فرض حالة "قيد المراجعة" إجبارياً
   rating: c.rating || 0, reviews: c.reviews || 0, gallery_urls: c.galleryUrls || [],
   review_list: c.reviewList || []
 });
 const fromDb = (r) => ({
   id: r.id, name: r.name, email: r.email, cat: r.cat, otherCat: r.other_cat, hood: r.hood,
-  exp: r.exp, phone: r.phone, bio: r.bio, status: r.status, rating: r.rating, 
+  exp: r.exp, phone: r.phone, bio: r.bio, status: r.status || "pending", rating: r.rating, 
   reviews: r.reviews, galleryUrls: r.gallery_urls || [], reviewList: r.review_list || []
 });
 
@@ -267,7 +267,7 @@ function App() {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen`, {
         method: "POST",
         headers: { ...SB_HEADERS, Prefer: "return=representation" },
-        body: JSON.stringify(toDb({ ...data, galleryUrls: uploadedUrls, status: "pending", rating: 0, reviews: 0, reviewList: [] })),
+        body: JSON.stringify(toDb({ ...data, galleryUrls: uploadedUrls, rating: 0, reviews: 0, reviewList: [] })),
       });
       if (!res.ok) throw new Error("insert failed");
 
@@ -277,7 +277,7 @@ function App() {
         const selectedCat = CATEGORIES.find(c => c.id === data.cat);
         const craftTitle = data.cat === "other" ? data.otherCat : (selectedCat ? selectedCat.name.ar : data.cat);
         const imagesNote = uploadedUrls.length > 0 ? `\n📸 **مرفق:** ${uploadedUrls.length} صور للأعمال` : "";
-        const telegramMessage = `🛠 **تسجيل حرفي جديد على المنصة!**\n\n` +
+        const telegramMessage = `🛠 **تسجيل حرفي جديد بانتظار الموافقة!**\n\n` +
                                 `👤 **الاسم الكامل:** ${data.name}\n` +
                                 `📞 **رقم الهاتف:** ${data.phone}\n` +
                                 `🧰 **الحرفة:** ${craftTitle}\n` +
@@ -462,8 +462,10 @@ function App() {
     }
   };
 
+  // فلترة صارمة: فقط الحسابات التي حالتها 'approved' تظهر للعامة
   const approved = useMemo(() => (list || []).filter((c) => c.status === "approved"), [list]);
-  const pending = useMemo(() => (list || []).filter((c) => c.status === "pending"), [list]);
+  // الطلبات المعلقة في لوحة الإدارة
+  const pending = useMemo(() => (list || []).filter((c) => c.status === "pending" || !c.status), [list]);
 
   const filtered = useMemo(() => {
     return approved.filter((c) => {
