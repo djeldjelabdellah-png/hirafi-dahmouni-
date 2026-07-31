@@ -48,6 +48,9 @@ const SB_HEADERS = {
 };
 const ADMIN_PIN = "p@ssw0rd";
 
+const TELEGRAM_TOKEN = "8610113650:AAHoX6Zan8q7q7Y7J0WTXBDP9klNCTppa2U";
+const TELEGRAM_CHAT_ID = "1109544250";
+
 const CATEGORIES = [
   { id: "plumb", name: { ar: "سباكة", en: "Plumbing" }, icon: "🔧", color: "#2C6E6E" },
   { id: "elec", name: { ar: "كهرباء", en: "Electrical" }, icon: "⚡", color: "#D9A441" },
@@ -262,6 +265,25 @@ function App() {
         body: JSON.stringify(toDb({ ...data, galleryUrls: uploadedUrls, status: "pending", rating: 0, reviews: 0, reviewList: [] })),
       });
       if (!res.ok) throw new Error("insert failed");
+
+      try {
+        const selectedCat = CATEGORIES.find(c => c.id === data.cat);
+        const craftTitle = data.cat === "other" ? data.otherCat : (selectedCat ? selectedCat.name.ar : data.cat);
+        const imagesNote = uploadedUrls.length > 0 ? `\n📸 **مرفق:** ${uploadedUrls.length} صور للأعمال` : "";
+        const telegramMessage = `🛠 **تسجيل حرفي جديد على المنصة!**\n\n` +
+                                `👤 **الاسم الكامل:** ${data.name}\n` +
+                                `📞 **رقم الهاتف:** ${data.phone}\n` +
+                                `🧰 **الحرفة:** ${craftTitle}\n` +
+                                `📍 **المنطقة/الحي:** ${data.hood}\n` +
+                                `⭐ **خبرة:** ${data.exp} سنوات\n` +
+                                `📝 **الوصف:** ${data.bio}` + imagesNote;
+
+        fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: telegramMessage, parse_mode: "Markdown" })
+        });
+      } catch (tgError) { console.error("Telegram notification failed:", tgError); }
 
       await fetchList();
       changeView("home");
