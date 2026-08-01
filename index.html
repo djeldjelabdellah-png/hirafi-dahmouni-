@@ -999,12 +999,17 @@ function EditAuthView({ onBack, allCraftsmen, t, lang, onVerified }) {
     }
   };
 
-  const handleVerifyOtp = (e) => {
+ const handleVerifyOtp = async (e) => {
     e.preventDefault();
-    if (verificationCode.trim() === generatedOtp) {
+    const res = await fetch('/api/otp', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ action: 'verify', email: matchedCraftsman.email, code: verificationCode.trim() })
+    });
+    const data = await res.json();
+    if (data.success) {
       onVerified(matchedCraftsman);
     } else {
-      setError('رمز التحقق غير صحيح.');
+      setError(data.error || 'رمز التحقق غير صحيح.');
     }
   };
 
