@@ -273,22 +273,13 @@ function App() {
 
       await fetchList();
 
-      try {
+     try {
         const selectedCat = CATEGORIES.find(c => c.id === data.cat);
         const craftTitle = data.cat === "other" ? data.otherCat : (selectedCat ? selectedCat.name.ar : data.cat);
-        const imagesNote = uploadedUrls.length > 0 ? `\n📸 **مرفق:** ${uploadedUrls.length} صور للأعمال` : "";
-        const telegramMessage = `🛠 **تسجيل حرفي جديد بانتظار الموافقة!**\n\n` +
-                                `👤 **الاسم الكامل:** ${data.name}\n` +
-                                `📞 **رقم الهاتف:** ${data.phone}\n` +
-                                `🧰 **الحرفة:** ${craftTitle}\n` +
-                                `📍 **المنطقة/الحي:** ${data.hood}\n` +
-                                `⭐ **خبرة:** ${data.exp} سنوات\n` +
-                                `📝 **الوصف:** ${data.bio}` + imagesNote;
-
-        fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+        fetch('/api/notify-telegram', {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: telegramMessage, parse_mode: "Markdown" })
+          body: JSON.stringify({ name: data.name, phone: data.phone, craft: craftTitle, hood: data.hood, exp: data.exp, bio: data.bio, imagesCount: uploadedUrls.length })
         });
       } catch (tgError) { console.error("Telegram notification failed:", tgError); }
 
@@ -386,8 +377,9 @@ function App() {
 
   const approveCraftsman = async (id) => {
     try {
-      await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${id}`, {
-        method: "PATCH", headers: SB_HEADERS, body: JSON.stringify({ status: "approved" }),
+      await fetch('/api/admin-action', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ token: sessionStorage.getItem('adminToken'), craftsmanId: id, action: 'approve' })
       });
       await fetchList();
     } catch (e) { setToast(t.toastFailConnect); }
@@ -395,7 +387,10 @@ function App() {
 
   const rejectCraftsman = async (id) => {
     try {
-      await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${id}`, { method: "DELETE", headers: SB_HEADERS });
+      await fetch('/api/admin-action', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ token: sessionStorage.getItem('adminToken'), craftsmanId: id, action: 'reject' })
+      });
       await fetchList();
     } catch (e) { setToast(t.toastFailConnect); }
   };
@@ -686,7 +681,17 @@ function App() {
                     className="w-full border rounded-xl px-3 py-2.5 text-sm mb-2 outline-none"
                     style={{ borderColor: pinError ? "#C0392B" : "#DCD5C4" }} placeholder={t.adminPinPlaceholder} />
                   {pinError && <p className="text-[11px] text-red-600 font-bold mb-2">{t.adminPinWrong}</p>}
-                  <button onClick={() => pinInput === ADMIN_PIN ? setAdminUnlocked(true) : setPinError(true)}
+                <button onClick={async () => {
+                      const res = await fetch('/api/admin-login', {
+                        method: 'POST', headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ pin: pinInput })
+                      });
+                      const data = await res.json();
+                      if (data.success) {
+                        sessionStorage.setItem('adminToken', data.token);
+                        setAdminUnlocked(true);
+                      } else { setPinError(true); }
+                    }}
                     className="w-full py-2.5 rounded-xl font-bold text-white text-sm" style={{ background: "#0E3D37" }}>{t.adminLogin}</button>
                 </div>
               ) : pending.length === 0 ? (
@@ -888,17 +893,14 @@ function CompleteRegistrationView({ craftsman, onBack, onComplete, saving, t, la
       setError(t.emailError);
       return;
     }
-    setError("");
-    const otp = Math.floor(1000 + Math.random() * 9000).toString();
-    setGeneratedOtp(otp);
-
+  setError("");
     setLoading(true);
     try {
-      await emailjs.send('service_in25o7y', 'template_o73g9ys', {
-          to_email: emailInput.trim(),
-          otp_code: otp,
-          to_name: craftsman.name
+      const res = await fetch('/api/otp', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ action: 'send', email: emailInput.trim(), name: craftsman.name })
       });
+      if (!res.ok) throw new Error();
       setLoading(false);
       setStep(2);
     } catch (err) {
@@ -907,12 +909,17 @@ function CompleteRegistrationView({ craftsman, onBack, onComplete, saving, t, la
     }
   };
 
-  const handleVerifyOtp = (e) => {
+  const handleVerifyOtp = async (e) => {
     e.preventDefault();
-    if (verificationCode.trim() === generatedOtp) {
+    const res = await fetch('/api/otp', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ action: 'verify', email: emailInput.trim(), code: verificationCode.trim() })
+    });
+    const data = await res.json();
+    if (data.success) {
       onComplete(craftsman.id, emailInput.trim());
     } else {
-      setError('رمز التحقق غير صحيح.');
+      setError(data.error || 'رمز التحقق غير صحيح.');
     }
   };
 
@@ -977,17 +984,13 @@ function EditAuthView({ onBack, allCraftsmen, t, lang, onVerified }) {
     }
     setMatchedCraftsman(found);
     setError("");
-
-    const otp = Math.floor(1000 + Math.random() * 9000).toString();
-    setGeneratedOtp(otp);
-
     setLoading(true);
     try {
-      await emailjs.send('service_in25o7y', 'template_o73g9ys', {
-          to_email: found.email,
-          otp_code: otp,
-          to_name: found.name
+      const res = await fetch('/api/otp', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ action: 'send', email: found.email, name: found.name })
       });
+      if (!res.ok) throw new Error();
       setLoading(false);
       setStep(2);
     } catch (err) {
@@ -1129,16 +1132,13 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
     if (!/^0[5-7][0-9]{8}$/.test(form.phone.trim())) { setError(t.phoneError); return; }
     
     setError("");
-    const otp = Math.floor(1000 + Math.random() * 9000).toString();
-    setGeneratedOtp(otp);
-
     setIsSendingOtp(true);
     try {
-      await emailjs.send('service_in25o7y', 'template_o73g9ys', {
-          to_email: form.email.trim(),
-          otp_code: otp,
-          to_name: form.name.trim()
+      const res = await fetch('/api/otp', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ action: 'send', email: form.email.trim(), name: form.name.trim() })
       });
+      if (!res.ok) throw new Error();
       setIsSendingOtp(false);
       setStep(2);
     } catch (err) {
@@ -1147,15 +1147,21 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
     }
   };
 
-  const handleVerifyAndComplete = (e) => {
+  const handleVerifyAndComplete = async (e) => {
     e.preventDefault();
     if (!verificationCode.trim()) { setError('الرجاء إدخال رمز التحقق'); return; }
     setError("");
 
-    if (verificationCode.trim() === generatedOtp) {
+    const res = await fetch('/api/otp', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ action: 'verify', email: form.email.trim(), code: verificationCode.trim() })
+    });
+    const data = await res.json();
+
+    if (data.success) {
       onSubmit({ ...form, otherCat: form.otherCat.trim(), email: form.email.trim(), phone: form.phone.trim(), exp: Number(form.exp) || 0, files });
     } else {
-      setError('رمز التحقق غير صحيح، يرجى إعادة المحاولة.');
+      setError(data.error || 'رمز التحقق غير صحيح، يرجى إعادة المحاولة.');
     }
   };
 
