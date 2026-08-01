@@ -25,9 +25,8 @@ export default async function handler(req, res) {
       method: 'POST', headers: SB_HEADERS,
       body: JSON.stringify({ email, code, expires_at: expiresAt }),
     });
-
-    try {
-      await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+try {
+      const emailRes = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -38,6 +37,11 @@ export default async function handler(req, res) {
           template_params: { to_email: email, otp_code: code, to_name: name || '' },
         }),
       });
+      const emailText = await emailRes.text();
+      console.log('EmailJS status:', emailRes.status, 'response:', emailText);
+      if (!emailRes.ok) {
+        return res.status(500).json({ error: 'فشل إرسال البريد: ' + emailText });
+      }
     } catch (e) {
       console.error('EmailJS send failed:', e);
       return res.status(500).json({ error: 'فشل إرسال البريد' });
