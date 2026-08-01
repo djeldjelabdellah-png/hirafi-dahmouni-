@@ -273,13 +273,22 @@ function App() {
 
       await fetchList();
 
-     try {
+      try {
         const selectedCat = CATEGORIES.find(c => c.id === data.cat);
         const craftTitle = data.cat === "other" ? data.otherCat : (selectedCat ? selectedCat.name.ar : data.cat);
-        fetch('/api/notify-telegram', {
+        const imagesNote = uploadedUrls.length > 0 ? `\n📸 **مرفق:** ${uploadedUrls.length} صور للأعمال` : "";
+        const telegramMessage = `🛠 **تسجيل حرفي جديد بانتظار الموافقة!**\n\n` +
+                                `👤 **الاسم الكامل:** ${data.name}\n` +
+                                `📞 **رقم الهاتف:** ${data.phone}\n` +
+                                `🧰 **الحرفة:** ${craftTitle}\n` +
+                                `📍 **المنطقة/الحي:** ${data.hood}\n` +
+                                `⭐ **خبرة:** ${data.exp} سنوات\n` +
+                                `📝 **الوصف:** ${data.bio}` + imagesNote;
+
+        fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: data.name, phone: data.phone, craft: craftTitle, hood: data.hood, exp: data.exp, bio: data.bio, imagesCount: uploadedUrls.length })
+          body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: telegramMessage, parse_mode: "Markdown" })
         });
       } catch (tgError) { console.error("Telegram notification failed:", tgError); }
 
@@ -377,9 +386,8 @@ function App() {
 
   const approveCraftsman = async (id) => {
     try {
-      await fetch('/api/admin-action', {
-        method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ token: sessionStorage.getItem('adminToken'), craftsmanId: id, action: 'approve' })
+      await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${id}`, {
+        method: "PATCH", headers: SB_HEADERS, body: JSON.stringify({ status: "approved" }),
       });
       await fetchList();
     } catch (e) { setToast(t.toastFailConnect); }
@@ -387,10 +395,7 @@ function App() {
 
   const rejectCraftsman = async (id) => {
     try {
-      await fetch('/api/admin-action', {
-        method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ token: sessionStorage.getItem('adminToken'), craftsmanId: id, action: 'reject' })
-      });
+      await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${id}`, { method: "DELETE", headers: SB_HEADERS });
       await fetchList();
     } catch (e) { setToast(t.toastFailConnect); }
   };
@@ -681,17 +686,7 @@ function App() {
                     className="w-full border rounded-xl px-3 py-2.5 text-sm mb-2 outline-none"
                     style={{ borderColor: pinError ? "#C0392B" : "#DCD5C4" }} placeholder={t.adminPinPlaceholder} />
                   {pinError && <p className="text-[11px] text-red-600 font-bold mb-2">{t.adminPinWrong}</p>}
-                <button onClick={async () => {
-                      const res = await fetch('/api/admin-login', {
-                        method: 'POST', headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ pin: pinInput })
-                      });
-                      const data = await res.json();
-                      if (data.success) {
-                        sessionStorage.setItem('adminToken', data.token);
-                        setAdminUnlocked(true);
-                      } else { setPinError(true); }
-                    }}
+                  <button onClick={() => pinInput === ADMIN_PIN ? setAdminUnlocked(true) : setPinError(true)}
                     className="w-full py-2.5 rounded-xl font-bold text-white text-sm" style={{ background: "#0E3D37" }}>{t.adminLogin}</button>
                 </div>
               ) : pending.length === 0 ? (
@@ -893,14 +888,17 @@ function CompleteRegistrationView({ craftsman, onBack, onComplete, saving, t, la
       setError(t.emailError);
       return;
     }
-  setError("");
+    setError("");
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    setGeneratedOtp(otp);
+
     setLoading(true);
     try {
-      const res = await fetch('/api/otp', {
-        method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ action: 'send', email: emailInput.trim(), name: craftsman.name })
+      await emailjs.send('service_in25o7y', 'template_o73g9ys', {
+          to_email: emailInput.trim(),
+          otp_code: otp,
+          to_name: craftsman.name
       });
-      if (!res.ok) throw new Error();
       setLoading(false);
       setStep(2);
     } catch (err) {
@@ -909,17 +907,12 @@ function CompleteRegistrationView({ craftsman, onBack, onComplete, saving, t, la
     }
   };
 
-  const handleVerifyOtp = async (e) => {
+  const handleVerifyOtp = (e) => {
     e.preventDefault();
-    const res = await fetch('/api/otp', {
-      method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ action: 'verify', email: emailInput.trim(), code: verificationCode.trim() })
-    });
-    const data = await res.json();
-    if (data.success) {
+    if (verificationCode.trim() === generatedOtp) {
       onComplete(craftsman.id, emailInput.trim());
     } else {
-      setError(data.error || 'رمز التحقق غير صحيح.');
+      setError('رمز التحقق غير صحيح.');
     }
   };
 
@@ -984,13 +977,17 @@ function EditAuthView({ onBack, allCraftsmen, t, lang, onVerified }) {
     }
     setMatchedCraftsman(found);
     setError("");
+
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    setGeneratedOtp(otp);
+
     setLoading(true);
     try {
-      const res = await fetch('/api/otp', {
-        method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ action: 'send', email: found.email, name: found.name })
+      await emailjs.send('service_in25o7y', 'template_o73g9ys', {
+          to_email: found.email,
+          otp_code: otp,
+          to_name: found.name
       });
-      if (!res.ok) throw new Error();
       setLoading(false);
       setStep(2);
     } catch (err) {
@@ -999,17 +996,12 @@ function EditAuthView({ onBack, allCraftsmen, t, lang, onVerified }) {
     }
   };
 
- const handleVerifyOtp = async (e) => {
+  const handleVerifyOtp = (e) => {
     e.preventDefault();
-    const res = await fetch('/api/otp', {
-      method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ action: 'verify', email: matchedCraftsman.email, code: verificationCode.trim() })
-    });
-    const data = await res.json();
-    if (data.success) {
+    if (verificationCode.trim() === generatedOtp) {
       onVerified(matchedCraftsman);
     } else {
-      setError(data.error || 'رمز التحقق غير صحيح.');
+      setError('رمز التحقق غير صحيح.');
     }
   };
 
@@ -1137,13 +1129,16 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
     if (!/^0[5-7][0-9]{8}$/.test(form.phone.trim())) { setError(t.phoneError); return; }
     
     setError("");
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    setGeneratedOtp(otp);
+
     setIsSendingOtp(true);
     try {
-      const res = await fetch('/api/otp', {
-        method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ action: 'send', email: form.email.trim(), name: form.name.trim() })
+      await emailjs.send('service_in25o7y', 'template_o73g9ys', {
+          to_email: form.email.trim(),
+          otp_code: otp,
+          to_name: form.name.trim()
       });
-      if (!res.ok) throw new Error();
       setIsSendingOtp(false);
       setStep(2);
     } catch (err) {
@@ -1152,21 +1147,15 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
     }
   };
 
-  const handleVerifyAndComplete = async (e) => {
+  const handleVerifyAndComplete = (e) => {
     e.preventDefault();
     if (!verificationCode.trim()) { setError('الرجاء إدخال رمز التحقق'); return; }
     setError("");
 
-    const res = await fetch('/api/otp', {
-      method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ action: 'verify', email: form.email.trim(), code: verificationCode.trim() })
-    });
-    const data = await res.json();
-
-    if (data.success) {
+    if (verificationCode.trim() === generatedOtp) {
       onSubmit({ ...form, otherCat: form.otherCat.trim(), email: form.email.trim(), phone: form.phone.trim(), exp: Number(form.exp) || 0, files });
     } else {
-      setError(data.error || 'رمز التحقق غير صحيح، يرجى إعادة المحاولة.');
+      setError('رمز التحقق غير صحيح، يرجى إعادة المحاولة.');
     }
   };
 
