@@ -26,6 +26,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({ email, code, expires_at: expiresAt }),
     });
 try {
+  console.log('DEBUG - has private key:', !!process.env.EMAILJS_PRIVATE_KEY, 'length:', process.env.EMAILJS_PRIVATE_KEY ? process.env.EMAILJS_PRIVATE_KEY.length : 0);
       const emailRes = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
