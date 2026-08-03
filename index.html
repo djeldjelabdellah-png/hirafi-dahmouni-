@@ -284,26 +284,7 @@ if (blocked) {
 
 // إنشاء الحرفي الجديد
 
-const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen`, {
-  method: "POST",
-  headers: { ...SB_HEADERS, Prefer: "return=representation" },
-  body: JSON.stringify(
-    toDb({
-      ...data,
-      galleryUrls: uploadedUrls,
-      rating: 0,
-      reviews: 0,
-      reviewList: []
-    })
-  ),
-});
 
-if (!res.ok) throw new Error("insert failed");
-
-const insertedData = await res.json();
-const newCraftsman = insertedData[0];
-
-await fetchList();
       const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen`, {
         method: "POST",
         headers: { ...SB_HEADERS, Prefer: "return=representation" },
