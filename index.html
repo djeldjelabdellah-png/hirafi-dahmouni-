@@ -263,55 +263,43 @@ function App() {
         }
         setUploadingText("");
       }
-// التحقق من عدم وجود بريد مسجل أو طلب قيد المراجعة
+      // التحقق من عدم وجود بريد مسجل أو طلب قيد المراجعة
+      const checkRes = await fetch(
+        `${SUPABASE_URL}/rest/v1/craftsmen?email=eq.${encodeURIComponent(data.email)}&select=id,status`,
+        { headers: SB_HEADERS }
+      );
 
-const checkRes = await fetch(
-  `${SUPABASE_URL}/rest/v1/craftsmen?email=eq.${encodeURIComponent(data.email)}&select=id,status`,
-  { headers: SB_HEADERS }
-);
+      const existing = await checkRes.json();
 
-const existing = await checkRes.json();
+      const blocked = existing.find(
+        c => c.status === "pending" || c.status === "approved"
+      );
 
-const blocked = existing.find(
-  c => c.status === "pending" || c.status === "approved"
-);
+      if (blocked) {
+        setToast("هذا البريد الإلكتروني مسجل مسبقاً أو لديه طلب قيد المراجعة");
+        setSaving(false);
+        return;
+      }
 
-if (blocked) {
-  setToast("هذا البريد الإلكتروني مسجل مسبقاً أو لديه طلب قيد المراجعة");
-  setSaving(false);
-  return;
-}
-
-// إنشاء الحرفي الجديد
-
-const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen`, {
-  method: "POST",
-  headers: { ...SB_HEADERS, Prefer: "return=representation" },
-  body: JSON.stringify(
-    toDb({
-      ...data,
-      galleryUrls: uploadedUrls,
-      rating: 0,
-      reviews: 0,
-      reviewList: []
-    })
-  ),
-});
-
-if (!res.ok) throw new Error("insert failed");
-
-const insertedData = await res.json();
-const newCraftsman = insertedData[0];
-
-await fetchList();
+      // إنشاء الحرفي الجديد
       const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen`, {
         method: "POST",
         headers: { ...SB_HEADERS, Prefer: "return=representation" },
-        body: JSON.stringify(toDb({ ...data, galleryUrls: uploadedUrls, rating: 0, reviews: 0, reviewList: [] })),
+        body: JSON.stringify(
+          toDb({
+            ...data,
+            galleryUrls: uploadedUrls,
+            rating: 0,
+            reviews: 0,
+            reviewList: []
+          })
+        ),
       });
+
       if (!res.ok) throw new Error("insert failed");
+
       const insertedData = await res.json();
-const newCraftsman = insertedData[0];
+      const newCraftsman = insertedData[0];
 
       await fetchList();
 
@@ -328,26 +316,26 @@ const newCraftsman = insertedData[0];
                                 `📝 **الوصف:** ${data.bio}` + imagesNote;
 
         fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    chat_id: TELEGRAM_CHAT_ID,
-    text: telegramMessage,
-    parse_mode: "Markdown",
-    reply_markup: {
-      inline_keyboard: [[
-        {
-          text: "✅ قبول",
-          callback_data: `approve_${newCraftsman.id}`
-        },
-        {
-          text: "❌ رفض",
-          callback_data: `reject_${newCraftsman.id}`
-        }
-      ]]
-    }
-  })
-})
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: TELEGRAM_CHAT_ID,
+            text: telegramMessage,
+            parse_mode: "Markdown",
+            reply_markup: {
+              inline_keyboard: [[
+                {
+                  text: "✅ قبول",
+                  callback_data: `approve_${newCraftsman.id}`
+                },
+                {
+                  text: "❌ رفض",
+                  callback_data: `reject_${newCraftsman.id}`
+                }
+              ]]
+            }
+          })
+        })
       } catch (tgError) { console.error("Telegram notification failed:", tgError); }
 
       changeView("home");
