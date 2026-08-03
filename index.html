@@ -13,6 +13,7 @@
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <!-- مكتبة EmailJS -->
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script type="text/javascript">
@@ -52,16 +53,16 @@ const TELEGRAM_TOKEN = "8610113650:AAHoX6Zan8q7q7Y7J0WTXBDP9klNCTppa2U";
 const TELEGRAM_CHAT_ID = "1109544250";
 
 const CATEGORIES = [
-  { id: "plumb", name: { ar: "سباكة", en: "Plumbing" }, icon: "🔧", color: "#2C6E6E" },
-  { id: "elec", name: { ar: "كهرباء", en: "Electrical" }, icon: "⚡", color: "#D9A441" },
-  { id: "carp", name: { ar: "نجارة", en: "Carpentry" }, icon: "🔨", color: "#8B5E3C" },
-  { id: "paint", name: { ar: "دهان", en: "Painting" }, icon: "🎨", color: "#5C7A8A" },
-  { id: "build", name: { ar: "بناء", en: "Construction" }, icon: "🏗️", color: "#7A5C4B" },
-  { id: "tailor", name: { ar: "خياطة", en: "Tailoring" }, icon: "✂️", color: "#B5566B" },
-  { id: "mech", name: { ar: "ميكانيك", en: "Mechanic" }, icon: "🚗", color: "#3D5A6C" },
-  { id: "clean", name: { ar: "تنظيف", en: "Cleaning" }, icon: "✨", color: "#4A8B6F" },
-  { id: "taxi", name: { ar: "سيارة أجرة", en: "Taxi" }, icon: "🚕", color: "#F2C94C" },
-  { id: "other", name: { ar: "أخرى", en: "Other" }, icon: "➕", color: "#7D7568" },
+  { id: "plumb",  name: { ar: "سباكة", en: "Plumbing" },     icon: "fa-solid fa-faucet-drip", color: "#2C6E6E" },
+  { id: "elec",   name: { ar: "كهرباء", en: "Electrical" }, icon: "fa-solid fa-bolt", color: "#D9A441" },
+  { id: "carp",   name: { ar: "نجارة", en: "Carpentry" },   icon: "fa-solid fa-hammer", color: "#8B5E3C" },
+  { id: "paint",  name: { ar: "دهان", en: "Painting" },     icon: "fa-solid fa-paint-roller", color: "#5C7A8A" },
+  { id: "build",  name: { ar: "بناء", en: "Construction" }, icon: "fa-solid fa-building", color: "#7A5C4B" },
+  { id: "tailor", name: { ar: "خياطة", en: "Tailoring" },   icon: "fa-solid fa-scissors", color: "#B5566B" },
+  { id: "mech",   name: { ar: "ميكانيك", en: "Mechanic" },  icon: "fa-solid fa-gears", color: "#3D5A6C" },
+  { id: "clean",  name: { ar: "تنظيف", en: "Cleaning" },    icon: "fa-solid fa-broom", color: "#4A8B6F" },
+  { id: "taxi",   name: { ar: "سيارة أجرة", en: "Taxi" },   icon: "fa-solid fa-taxi", color: "#F2C94C" },
+  { id: "other",  name: { ar: "أخرى", en: "Other" },        icon: "fa-solid fa-ellipsis", color: "#7D7568" },
 ];
 
 const NEIGHBORHOODS = [
@@ -575,20 +576,58 @@ function App() {
               </div>
 
               <h2 className="font-black text-[#0E3D37] text-sm mb-3 mt-2">{t.chooseCategory}</h2>
-              <div className="grid grid-cols-4 gap-3 mb-4">
-                {CATEGORIES.map((c) => {
-                  const count = approved.filter((x) => x.cat === c.id).length;
-                  return (
-                    <button key={c.id} onClick={() => { setActiveCat(c.id); changeView("list"); }} className="flex flex-col items-center gap-1.5">
-                      <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm relative" style={{ background: c.color + "1A", border: `1.5px solid ${c.color}33` }}>
-                        <span style={{ fontSize: 22 }}>{c.icon}</span>
-                        {count > 0 && <span className="absolute -top-1.5 -left-1.5 text-[9px] font-black text-white rounded-full w-4 h-4 flex items-center justify-center" style={{ background: c.color }}>{count}</span>}
-                      </div>
-                      <span className="text-[11px] font-bold text-[#3A3A3A]">{c.name[lang]}</span>
-                    </button>
-                  );
-                })}
-              </div>
+              <div className="grid grid-cols-4 gap-4 mb-5">
+  {CATEGORIES.map((c) => {
+    const count = approved.filter((x) => x.cat === c.id).length;
+
+    return (
+      <button
+        key={c.id}
+        onClick={() => {
+          setActiveCat(c.id);
+          changeView("list");
+        }}
+        className="flex flex-col items-center gap-2"
+      >
+        <div
+          className="w-20 h-20 rounded-[24px] flex items-center justify-center relative shadow-lg"
+          style={{
+            background: c.color + "18",
+            border: `2px solid ${c.color}40`,
+            boxShadow: "0 8px 20px rgba(0,0,0,.08)"
+          }}
+        >
+          <i
+  className={c.icon}
+  style={{
+    fontSize: 36,
+    color: c.color
+  }}
+></i>
+
+          {count > 0 && (
+            <span
+              className="absolute -top-2 -left-2 text-[11px] font-black text-white rounded-full w-6 h-6 flex items-center justify-center"
+              style={{ background: c.color }}
+            >
+              {count}
+            </span>
+          )}
+        </div>
+
+        <span
+          className="font-black text-center text-[#3A3A3A]"
+          style={{
+            fontSize: "14px",
+            lineHeight: "18px"
+          }}
+        >
+          {c.name[lang]}
+        </span>
+      </button>
+    );
+  })}
+</div>
 
               <div className="grid grid-cols-2 gap-2 mb-6">
                 <button onClick={() => changeView("register")} className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-white text-xs" style={{ background: "#D9A441" }}>
