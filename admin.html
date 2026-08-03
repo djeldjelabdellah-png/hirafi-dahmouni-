@@ -57,19 +57,19 @@
         const tableEl = document.getElementById('craftsmenTable');
         const tbodyEl = document.getElementById('tableBody');
 
-        // جلب الحرفيين الذين لم يتم اعتمادهم بعد (is_approved = false)
-        const { data, error } = await supabase
-            .from('craftsmen')
-            .select('*')
-            .eq('is_approved', false)
-            .order('created_at', { ascending: false });
+        // جلب الحرفيين الذين لم يتم اعتمادهم بعد
+const { data, error } = await supabase
+    .from('craftsmen')
+    .select('*')
+    .eq('status', 'pending')
+    .order('created_at', { ascending: false });
 
-        loadingEl.style.display = 'none';
+loadingEl.style.display = 'none';
 
-        if (error) {
-            alert('حدث خطأ أثناء جلب البيانات: ' + error.message);
-            return;
-        }
+if (error) {
+    alert('حدث خطأ أثناء جلب البيانات: ' + error.message);
+    return;
+}
 
         if (data.length === 0) {
             loadingEl.style.display = 'block';
