@@ -263,7 +263,7 @@ function App() {
         }
         setUploadingText("");
       }
-      // التحقق من عدم وجود بريد مسجل أو طلب قيد المراجعة
+      // التحقق من عدم وجود بريد مسجل أو طلب قيد المراجعة (طبقة حماية احتياطية إضافية)
       const checkRes = await fetch(
         `${SUPABASE_URL}/rest/v1/craftsmen?email=eq.${encodeURIComponent(data.email)}&select=id,status`,
         { headers: SB_HEADERS }
@@ -1175,12 +1175,32 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
     if (form.cat === "other" && !form.otherCat.trim()) { setError(t.otherCraftError); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) { setError(t.emailError); return; }
     if (!/^0[5-7][0-9]{8}$/.test(form.phone.trim())) { setError(t.phoneError); return; }
-    
+
     setError("");
+    setIsSendingOtp(true);
+
+    // التحقق من عدم وجود بريد مسجل أو طلب قيد المراجعة (قبل إرسال رمز التحقق)
+    try {
+      const checkRes = await fetch(
+        `${SUPABASE_URL}/rest/v1/craftsmen?email=eq.${encodeURIComponent(form.email.trim())}&select=id,status`,
+        { headers: SB_HEADERS }
+      );
+      const existing = await checkRes.json();
+      const blocked = existing.find(c => c.status === "pending" || c.status === "approved");
+      if (blocked) {
+        setError("هذا البريد الإلكتروني مسجل مسبقاً أو لديه طلب قيد المراجعة");
+        setIsSendingOtp(false);
+        return;
+      }
+    } catch (checkErr) {
+      setError(t.toastFailConnect);
+      setIsSendingOtp(false);
+      return;
+    }
+
     const otp = Math.floor(1000 + Math.random() * 9000).toString();
     setGeneratedOtp(otp);
 
-    setIsSendingOtp(true);
     try {
       await emailjs.send('service_in25o7y', 'template_o73g9ys', {
           to_email: form.email.trim(),
