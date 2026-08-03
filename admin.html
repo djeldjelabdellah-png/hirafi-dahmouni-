@@ -98,21 +98,21 @@ if (error) {
     }
 
     // دالة الموافقة على الحرفي
-    async function approveCraftsman(id) {
-        if (!confirm('هل أنتแน่ من موافقتك على نشر هذا الحرفي في المنصة؟')) return;
+async function approveCraftsman(id) {
+    if (!confirm('هل أنت متأكد من موافقتك على نشر هذا الحرفي في المنصة؟')) return;
 
-        const { error } = await supabase
-            .from('craftsmen')
-            .update({ is_approved: true }) // تحويل حالة الاعتماد إلى صحيح
-            .eq('id', id);
+    const { error } = await supabase
+        .from('craftsmen')
+        .update({ status: 'approved' })
+        .eq('id', id);
 
-        if (error) {
-            alert('فشل تحديث الحالة: ' + error.message);
-        } else {
-            alert('تمت الموافقة بنجاح وأصبح الحرفي ظاهراً للعامة!');
-            fetchPendingCraftsmen(); // إعادة تحميل القائمة
-        }
+    if (error) {
+        alert('فشل تحديث الحالة: ' + error.message);
+    } else {
+        alert('تمت الموافقة بنجاح وأصبح الحرفي ظاهراً للعامة!');
+        fetchPendingCraftsmen();
     }
+}
 
     // دالة رفض وحذف الطلب غير المرغوب فيه
     async function deleteCraftsman(id) {
