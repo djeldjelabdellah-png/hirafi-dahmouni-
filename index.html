@@ -938,7 +938,7 @@ function App() {
            <div className="grid grid-cols-3 gap-3">
               <a href={`tel:${selected.phone}`} className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-white text-sm" style={{ background: "#0E3D37" }}>📞 {t.call}</a>
               <a href={`https://wa.me/213${selected.phone.slice(1)}`} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-white" style={{ background: "#3DAA5C" }}>💬 {t.whatsapp}</a>
-              <button onClick={() => shareCraftsman(selected)} title={t.shareBtn} className="flex items-center justify-center py-3 rounded-xl font-bold text-white text-lg border" style={{ background: "white", borderColor: "#DCD5C4", color: "#0E3D37" }}>🔗</button>
+<button onClick={() => shareCraftsman(selected)} className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-white" style={{ background: "#8A8375" }}>🔗 {t.shareBtn}</button>
             </div>
           </div>
         </div>
