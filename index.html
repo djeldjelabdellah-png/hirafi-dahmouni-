@@ -839,7 +839,7 @@ function App() {
             <button onClick={() => setSelected(null)} className="absolute left-4 top-4 text-stone-400 text-lg">✕</button>
             <div className="flex items-start gap-3 mb-4">
               <div className="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0" style={{ background: catInfo(selected.cat).color + "1A" }}>
-                <span style={{ fontSize: 28 }}>{catInfo(selected.cat).icon}</span>
+                <i className={catInfo(selected.cat).icon} style={{ fontSize: 28, color: catInfo(selected.cat).color }}></i>
               </div>
               <div className="flex-1">
                 <h3 className="font-black text-[#0E3D37] text-base">{selected.name}</h3>
@@ -1332,9 +1332,19 @@ function CraftCard({ c, cat, lang, t, onClick, onPromptEmail }) {
 
   return (
     <div className="w-full bg-white rounded-2xl p-3.5 flex items-center gap-3 shadow-sm border relative overflow-hidden" style={{ borderColor: isMissingEmail ? "#D9A441" : "#E6E0D2" }}>
-      <div onClick={onClick} className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 cursor-pointer" style={{ background: cat.color + "1A" }}>
-        <span style={{ fontSize: 20 }}>{cat.icon}</span>
-      </div>
+      <div
+  onClick={onClick}
+  className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 cursor-pointer"
+  style={{ background: cat.color + "1A" }}
+>
+  <i
+    className={cat.icon}
+    style={{
+      fontSize: 22,
+      color: cat.color
+    }}
+  ></i>
+</div>
       <div onClick={onClick} className="flex-1 min-w-0 cursor-pointer">
         <div className="flex items-center gap-2">
           <span className="font-black text-[#0E3D37] text-sm truncate block">{c.name}</span>
