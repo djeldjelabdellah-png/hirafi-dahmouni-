@@ -61,7 +61,7 @@ const CATEGORIES = [
   { id: "tailor", name: { ar: "خياطة", en: "Tailoring" },   icon: "fa-solid fa-scissors", color: "#B5566B" },
   { id: "mech",   name: { ar: "ميكانيك", en: "Mechanic" },  icon: "fa-solid fa-gears", color: "#3D5A6C" },
   { id: "clean",  name: { ar: "تنظيف", en: "Cleaning" },    icon: "fa-solid fa-broom", color: "#4A8B6F" },
-  { id: "taxi",   name: { ar: "سيارة أجرة", en: "Taxi" },   icon: "fa-solid fa-taxi", color: "#F2C94C" },
+ { id: "taxi",   name: { ar: "سيارة أجرة", en: "Taxi" },   icon: "fa-solid fa-taxi", color: "#F2C94C" },
   { id: "nurse",  name: { ar: "تمريض", en: "Nursing" }, icon: "fa-solid fa-heart-pulse", color: "#4A90E2" },
   { id: "hijama", name: { ar: "حجامة", en: "Hijama" }, icon: "fa-solid fa-droplet", color: "#A52A2A" },
   { id: "other",  name: { ar: "أخرى", en: "Other" },        icon: "fa-solid fa-ellipsis", color: "#7D7568" },
@@ -546,12 +546,24 @@ function App() {
         {(view === "home" || view === "list") && (
           <div className="flex items-center gap-2 rounded-2xl px-3 py-2.5" style={{ background: "#1B4B4B" }}>
             <span style={{ opacity: 0.6 }}>🔍</span>
-            <input
-              value={query}
-              onChange={(e) => { setQuery(e.target.value); changeView("list"); }}
-              placeholder={t.searchPlaceholder}
-              className="bg-transparent outline-none text-sm text-white placeholder-[#8FBFBF] flex-1"
-            />
+            <div className="relative">
+  <input
+    value={query}
+    onChange={(e) => setQuery(e.target.value)}
+    placeholder={t.searchPlaceholder}
+    className="ipt pr-10"
+  />
+
+  {query && (
+    <button
+      type="button"
+      onClick={() => setQuery("")}
+      className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 font-bold text-lg"
+    >
+      ✕
+    </button>
+  )}
+</div>
           </div>
         )}
       </header>
