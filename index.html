@@ -211,18 +211,31 @@ function App() {
       window.scrollTo(0, 0);
     }
   };
+  const openCraftsman = (c) => {
+  window.history.pushState(
+    { view: view, craftsmanId: c.id },
+    ""
+  );
+
+  setSelected(c);
+};
 
   useEffect(() => {
     if (!window.history.state) {
       window.history.replaceState({ view: "home" }, "");
     }
     const handlePopState = (event) => {
-      if (event.state && event.state.view) {
-        setView(event.state.view);
-      } else {
-        setView("home");
-      }
-    };
+  if (selected) {
+    setSelected(null);
+    return;
+  }
+
+  if (event.state && event.state.view) {
+    setView(event.state.view);
+  } else {
+    setView("home");
+  }
+};
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
@@ -649,18 +662,18 @@ function App() {
                   <p className="text-center text-xs text-stone-400 py-6">{t.noCraftsmenYet}</p>
                 ) : (
                   [...approved].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 3).map((c) => (
-                    <CraftCard 
-                      key={c.id} 
-                      c={c} 
-                      cat={catInfo(c.cat)} 
-                      lang={lang} 
-                      t={t} 
-                      onClick={() => setSelected(c)} 
-                      onPromptEmail={() => {
-                        setCompletingCraftsman(c);
-                        changeView("complete_reg");
-                      }}
-                    />
+                    <CraftCard
+  key={c.id}
+  c={c}
+  cat={catInfo(c.cat)}
+  lang={lang}
+  t={t}
+  onClick={() => openCraftsman(c)}
+  onPromptEmail={() => {
+    setCompletingCraftsman(c);
+    changeView("complete_reg");
+  }}
+/>
                   ))
                 )}
               </div>
