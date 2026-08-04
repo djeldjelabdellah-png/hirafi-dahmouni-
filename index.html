@@ -47,8 +47,6 @@ const SB_HEADERS = {
   Authorization: `Bearer ${SUPABASE_KEY}`,
   "Content-Type": "application/json",
 };
-const ADMIN_PIN = "p@ssw0rd";
-
 const TELEGRAM_TOKEN = "8610113650:AAHoX6Zan8q7q7Y7J0WTXBDP9klNCTppa2U";
 const TELEGRAM_CHAT_ID = "1109544250";
 
@@ -102,16 +100,14 @@ const STRINGS = {
     requiredError: "الرجاء تعبئة الاسم، البريد، رقم الهاتف والوصف", otherCraftError: "الرجاء كتابة اسم الحرفة",
     phoneError: "رقم الهاتف غير صحيح (مثال: 0550123456)", emailError: "الرجاء إدخال بريد إلكتروني صحيح",
     toastSubmitted: "تم إرسال طلبك، سيُنشر بعد المراجعة", toastUpdated: "تم تحديث بياناتك بنجاح!", toastDeleted: "تم حذف ملفك نهائياً من المنصة", toastFailSubmit: "تعذّر إرسال الطلب، حاول مجدداً", toastFailConnect: "تعذّر الاتصال بالخادم",
-    adminTitle: "لوحة المراجعة", adminPinPrompt: "أدخل رمز الإدارة للمتابعة", adminPinPlaceholder: "الرمز السري",
-    adminPinWrong: "رمز خاطئ", adminLogin: "دخول", adminNoPending: "لا توجد طلبات بانتظار المراجعة",
+    adminTitle: "لوحة المراجعة", adminNoPending: "لا توجد طلبات بانتظار المراجعة",
     pendingLabel: "قيد المراجعة", approveBtn: "قبول ونشر", rejectBtn: "رفض", all: "الكل",
     rateThis: "قيّم هذا الحرفي", thanksRating: "شكراً لتقييمك وتعليقك!", shareBtn: "مشاركة", shareCopied: "تم نسخ الرابط",
     completeRegistrationBanner: "أنت مسجل مسبقاً بدون بريد إلكتروني. انقر هنا لإكمال تسجيلك وتأكيد بريدك!",
     completeRegTitle: "إكمال التسجيل وتأكيد البريد",
     reviewsTitle: "الآراء والتقييمات", addReviewBtn: "إضافة تقييم وتعليق", reviewerName: "اسمك الكريم", reviewComment: "اكتب رأيك أو تجربتك مع الحرفي...", sendReview: "إرسال التقييم",
     verifyEmailBadge: "تأكيد البريد المطلوب",
-    emailNoticeText: "ملاحظة للحرفي: يرجى إضافة وتأكيد بريدك الإلكتروني لتتمكن من تعديل معلوماتك أو حمايتها مستقبلاً.",
-    toastListRefreshed: "تم تحديث القائمة بنجاح!"
+    emailNoticeText: "ملاحظة للحرفي: يرجى إضافة وتأكيد بريدك الإلكتروني لتتمكن من تعديل معلوماتك أو حمايتها مستقبلاً."
   },
   en: {
     title: "Hirafi", subtitle: "Craftsmen & Tradespeople Directory — Dahmouni",
@@ -136,16 +132,14 @@ const STRINGS = {
     toastUpdated: "Your profile has been updated successfully!",
     toastDeleted: "Your profile has been permanently deleted",
     toastFailSubmit: "Failed to submit, try again", toastFailConnect: "Could not connect to server",
-    adminTitle: "Review Panel", adminPinPrompt: "Enter admin code to continue", adminPinPlaceholder: "Secret code",
-    adminPinWrong: "Wrong code", adminLogin: "Enter", adminNoPending: "No pending requests",
+   adminTitle: "Review Panel", adminNoPending: "No pending requests",
     pendingLabel: "Pending review", approveBtn: "Approve & publish", rejectBtn: "Reject", all: "All",
     rateThis: "Rate this craftsman", thanksRating: "Thanks for your rating & review!", shareBtn: "Share", shareCopied: "Link copied",
     completeRegistrationBanner: "You registered previously without an email. Click here to complete your registration!",
     completeRegTitle: "Complete Registration & Verify Email",
     reviewsTitle: "Reviews & Comments", addReviewBtn: "Add rating & comment", reviewerName: "Your name", reviewComment: "Write your review about this craftsman...", sendReview: "Submit Review",
     verifyEmailBadge: "Email Verify Required",
-    emailNoticeText: "Note for craftsman: Please add and verify your email to manage or edit your profile in the future.",
-    toastListRefreshed: "List refreshed successfully!"
+  emailNoticeText: "Note for craftsman: Please add and verify your email to manage or edit your profile in the future."
   },
 };
 
@@ -192,11 +186,7 @@ function App() {
   const [toast, setToast] = useState(null);
   const [saving, setSaving] = useState(false);
   const [uploadingText, setUploadingText] = useState("");
-  const [adminUnlocked, setAdminUnlocked] = useState(false);
-  const [pinInput, setPinInput] = useState("");
-  const [pinError, setPinError] = useState(false);
-
-  const [editingCraftsman, setEditingCraftsman] = useState(null);
+ const [editingCraftsman, setEditingCraftsman] = useState(null);
   const [completingCraftsman, setCompletingCraftsman] = useState(null);
 
   const [newRatingVal, setNewRatingVal] = useState(5);
@@ -234,9 +224,7 @@ function App() {
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?select=*&order=created_at.desc`, { headers: SB_HEADERS });
       const data = await res.json();
-      setList(Array.isArray(data) ? data.map(fromDb) : []);
-      setToast(t.toastListRefreshed);
-      setTimeout(() => setToast(null), 2000);
+     setList(Array.isArray(data) ? data.map(fromDb) : []);
     } catch (e) {
       setList([]);
       setToast(t.toastFailConnect);
@@ -762,23 +750,8 @@ function App() {
             <main className="px-4 pb-24 pt-4">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="font-black text-[#0E3D37] text-base">{t.adminTitle}</h2>
-                {adminUnlocked && (
-                  <button onClick={fetchList} className="text-xs font-bold px-3 py-1.5 rounded-xl bg-[#0E3D37] text-white">
-                    🔄 تحديث القائمة
-                  </button>
-                )}
               </div>
-              {!adminUnlocked ? (
-                <div className="bg-white rounded-2xl p-5 border" style={{ borderColor: "#E6E0D2" }}>
-                  <p className="text-xs text-stone-500 font-bold mb-3">{t.adminPinPrompt}</p>
-                  <input value={pinInput} onChange={(e) => { setPinInput(e.target.value); setPinError(false); }} type="password"
-                    className="w-full border rounded-xl px-3 py-2.5 text-sm mb-2 outline-none"
-                    style={{ borderColor: pinError ? "#C0392B" : "#DCD5C4" }} placeholder={t.adminPinPlaceholder} />
-                  {pinError && <p className="text-[11px] text-red-600 font-bold mb-2">{t.adminPinWrong}</p>}
-                  <button onClick={() => pinInput === ADMIN_PIN ? setAdminUnlocked(true) : setPinError(true)}
-                    className="w-full py-2.5 rounded-xl font-bold text-white text-sm" style={{ background: "#0E3D37" }}>{t.adminLogin}</button>
-                </div>
-              ) : pending.length === 0 ? (
+              {pending.length === 0 ? (
                 <p className="text-center text-xs text-stone-400 py-10">{t.adminNoPending}</p>
               ) : (
                 <div className="space-y-3">
