@@ -110,7 +110,8 @@ const STRINGS = {
     completeRegTitle: "إكمال التسجيل وتأكيد البريد",
     reviewsTitle: "الآراء والتقييمات", addReviewBtn: "إضافة تقييم وتعليق", reviewerName: "اسمك الكريم", reviewComment: "اكتب رأيك أو تجربتك مع الحرفي...", sendReview: "إرسال التقييم",
     verifyEmailBadge: "تأكيد البريد المطلوب",
-    emailNoticeText: "ملاحظة للحرفي: يرجى إضافة وتأكيد بريدك الإلكتروني لتتمكن من تعديل معلوماتك أو حمايتها مستقبلاً."
+    emailNoticeText: "ملاحظة للحرفي: يرجى إضافة وتأكيد بريدك الإلكتروني لتتمكن من تعديل معلوماتك أو حمايتها مستقبلاً.",
+    toastListRefreshed: "تم تحديث القائمة بنجاح!"
   },
   en: {
     title: "Hirafi", subtitle: "Craftsmen & Tradespeople Directory — Dahmouni",
@@ -141,9 +142,10 @@ const STRINGS = {
     rateThis: "Rate this craftsman", thanksRating: "Thanks for your rating & review!", shareBtn: "Share", shareCopied: "Link copied",
     completeRegistrationBanner: "You registered previously without an email. Click here to complete your registration!",
     completeRegTitle: "Complete Registration & Verify Email",
-    reviewsTitle: "Reviews & Comments", addReviewBtn: "Add rating & comment", reviewerName: "Your name", reviewComment: "Write your review about this craftsman...", sendReview: "Submit Review"
+    reviewsTitle: "Reviews & Comments", addReviewBtn: "Add rating & comment", reviewerName: "Your name", reviewComment: "Write your review about this craftsman...", sendReview: "Submit Review",
     verifyEmailBadge: "Email Verify Required",
     emailNoticeText: "Note for craftsman: Please add and verify your email to manage or edit your profile in the future.",
+    toastListRefreshed: "List refreshed successfully!"
   },
 };
 
@@ -544,24 +546,12 @@ function App() {
         {(view === "home" || view === "list") && (
           <div className="flex items-center gap-2 rounded-2xl px-3 py-2.5" style={{ background: "#1B4B4B" }}>
             <span style={{ opacity: 0.6 }}>🔍</span>
-            <div className="relative">
-  <input
-    value={query}
-    onChange={(e) => setQuery(e.target.value)}
-    placeholder={t.searchPlaceholder}
-    className="ipt pr-10"
-  />
-
-  {query && (
-    <button
-      type="button"
-      onClick={() => setQuery("")}
-      className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 font-bold text-lg"
-    >
-      ✕
-    </button>
-  )}
-</div>
+            <input
+              value={query}
+              onChange={(e) => { setQuery(e.target.value); changeView("list"); }}
+              placeholder={t.searchPlaceholder}
+              className="bg-transparent outline-none text-sm text-white placeholder-[#8FBFBF] flex-1"
+            />
           </div>
         )}
       </header>
