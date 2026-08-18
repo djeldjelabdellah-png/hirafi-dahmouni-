@@ -162,6 +162,19 @@ const fromDb = (r) => ({
   reviews: r.reviews, galleryUrls: r.gallery_urls || [], reviewList: r.review_list || []
 });
 
+const notifyContact = (c, type) => {
+  try {
+    const label = type === "call" ? "📞 مكالمة هاتفية" : "💬 رسالة واتساب";
+    const message = `${label} جديدة!\n\n👤 **الحرفي:** ${c.name}\n🧰 **الحرفة:** ${craftName(c, "ar")}\n📞 **الرقم:** ${c.phone}`;
+    fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      keepalive: true,
+      body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message, parse_mode: "Markdown" }),
+    });
+  } catch (e) { console.error("Telegram notify failed:", e); }
+};
+
 function Stars({ value }) {
   return (
     <span style={{ letterSpacing: "1px" }}>
@@ -935,10 +948,10 @@ function App() {
               </form>
             </div>
 
-           <div className="grid grid-cols-3 gap-3">
-              <a href={`tel:${selected.phone}`} className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-white text-sm" style={{ background: "#0E3D37" }}>📞 {t.call}</a>
-              <a href={`https://wa.me/213${selected.phone.slice(1)}`} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-white" style={{ background: "#3DAA5C" }}>💬 {t.whatsapp}</a>
-<button onClick={() => shareCraftsman(selected)} className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-white" style={{ background: "#8A8375" }}>🔗 {t.shareBtn}</button>
+                      <div className="grid grid-cols-3 gap-3">
+              <a href={`tel:${selected.phone}`} onClick={() => notifyContact(selected, "call")} className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-white text-sm" style={{ background: "#0E3D37" }}>📞 {t.call}</a>
+              <a href={`https://wa.me/213${selected.phone.slice(1)}`} onClick={() => notifyContact(selected, "whatsapp")} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-white" style={{ background: "#3DAA5C" }}>💬 {t.whatsapp}</a>
+              <button onClick={() => shareCraftsman(selected)} className="flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-white" style={{ background: "#8A8375" }}>🔗 {t.shareBtn}</button>
             </div>
           </div>
         </div>
