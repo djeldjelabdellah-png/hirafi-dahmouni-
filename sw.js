@@ -1,8 +1,7 @@
-// sw.js — يدعم الآن تخزين مكتبات CDN الخارجية (React, Tailwind, Babel) للعمل بدون إنترنت
-const CACHE_NAME = 'herafi-cache-v4';
+// sw.js
+const CACHE_NAME = 'herafi-cache-v5';
 const DATA_CACHE_NAME = 'herafi-data-cache-v1';
 
-// نضيف روابط المكتبات الخارجية هنا ليتم تحميلها وحفظها من أول تشغيل
 const CORE_ASSETS = [
   '/',
   '/index.html',
@@ -17,16 +16,20 @@ const CORE_ASSETS = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      // نستخدم {mode: 'no-cors'} حتى لا يفشل التحميل بسبب قيود CORS للروابط الخارجية
       return Promise.all(
         CORE_ASSETS.map((url) =>
           fetch(url, { mode: 'no-cors' })
-            .then((response) => cache.put(url, response))
-            .catch(() => null) // لو فشل رابط واحد، لا نوقف البقية
+            .then((response) => {
+              if (response) {
+                return cache.put(url, response);
+              }
+            })
+            .catch(() => null)
         )
       );
     })
   );
+
   self.skipWaiting();
 });
 
@@ -35,53 +38,71 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((keys) =>
       Promise.all(
         keys
-          .filter((key) => key !== CACHE_NAME && key !== DATA_CACHE_NAME)
+          .filter(
+            (key) =>
+              key !== CACHE_NAME &&
+              key !== DATA_CACHE_NAME
+          )
           .map((key) => caches.delete(key))
       )
     )
   );
+
   self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
+  const request = event.request;
+  const url = new URL(request.url);
 
-  // بيانات Supabase: شبكة أولاً، مع حفظ نسخة للعمل بدون إنترنت
-  if (url.hostname.includes('supabase.co')) {
-    if (event.request.method === 'GET') {
-      event.respondWith(
-        fetch(event.request)
-          .then((response) => {
-            const responseClone = response.clone();
-            caches.open(DATA_CACHE_NAME).then((cache) => {
-              cache.put(event.request, responseClone);
-            });
-            return response;
-          })
-          .catch(() => caches.match(event.request))
-      );
-    }
+  // لا نخزن POST / PUT / DELETE
+  if (request.method !== 'GET') {
     return;
   }
 
-  // كل شيء آخر (ملفات الموقع + مكتبات CDN الخارجية): شبكة أولاً، ثم كاش عند الفشل
+  // Supabase GET requests
+  if (url.hostname.includes('supabase.co')) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          const clone = response.clone();
+
+          caches.open(DATA_CACHE_NAME).then((cache) => {
+            cache.put(request, clone);
+          });
+
+          return response;
+        })
+        .catch(() => caches.match(request))
+    );
+
+    return;
+  }
+
+  // باقي الملفات
   event.respondWith(
-    fetch(event.request)
+    fetch(request)
       .then((response) => {
-        // نحفظ أي استجابة ناجحة، حتى النوع "opaque" الخاص بالروابط الخارجية
-        const responseClone = response.clone();
+        if (!response) return response;
+
+        const clone = response.clone();
+
         caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseClone);
+          cache.put(request, clone);
         });
+
         return response;
       })
-      .catch(() => {
-        return caches.match(event.request).then((cached) => {
-          if (cached) return cached;
-          if (event.request.mode === 'navigate') {
-            return caches.match('/index.html');
-          }
-        });
+      .catch(async () => {
+        const cached = await caches.match(request);
+
+        if (cached) {
+          return cached;
+        }
+
+        if (request.mode === 'navigate') {
+          return caches.match('/index.html');
+        }
       })
   );
 });
