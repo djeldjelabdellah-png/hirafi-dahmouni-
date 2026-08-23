@@ -435,13 +435,37 @@ function App() {
   };
 
   const approveCraftsman = async (id) => {
-    try {
-      await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${id}`, {
-        method: "PATCH", headers: SB_HEADERS, body: JSON.stringify({ status: "approved" }),
-      });
-      await fetchList();
-    } catch (e) { setToast(t.toastFailConnect); }
-  };
+  try {
+    console.log("Approving:", id);
+
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${id}`,
+      {
+        method: "PATCH",
+        headers: SB_HEADERS,
+        body: JSON.stringify({
+          status: "approved"
+        })
+      }
+    );
+
+    console.log("Status:", res.status);
+
+    const txt = await res.text();
+    console.log("Response:", txt);
+
+    if (!res.ok) {
+      throw new Error(txt);
+    }
+
+    await fetchList();
+    alert("تمت الموافقة بنجاح");
+  } catch (e) {
+    console.error(e);
+    alert("خطأ: " + e.message);
+    setToast(t.toastFailConnect);
+  }
+};
 
   const rejectCraftsman = async (id) => {
     try {
