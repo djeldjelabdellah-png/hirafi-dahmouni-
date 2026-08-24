@@ -3,6 +3,42 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // طلب من تليغرام (ضغطة زر) — شكل مختلف عن طلبات التطبيق
+  if (req.body.callback_query) {
+    const cq = req.body.callback_query;
+    const sep = cq.data.indexOf('_');
+    const tgAction = cq.data.slice(0, sep);
+    const tgCraftsmanId = cq.data.slice(sep + 1);
+
+    const SUPABASE_URL = process.env.SUPABASE_URL;
+    const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const SB_HEADERS = {
+      apikey: SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation'
+    };
+
+    try {
+      if (tgAction === 'approve') {
+        await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${tgCraftsmanId}`, {
+          method: 'PATCH',
+          headers: SB_HEADERS,
+          body: JSON.stringify({ status: 'approved' })
+        });
+      } else if (tgAction === 'reject') {
+        await fetch(`${SUPABASE_URL}/rest/v1/craftsmen?id=eq.${tgCraftsmanId}`, {
+          method: 'DELETE',
+          headers: SB_HEADERS
+        });
+      }
+    } catch (e) {
+      console.error('TELEGRAM CALLBACK ERROR:', e);
+    }
+
+    return res.status(200).json({ ok: true });
+  }
+
   const { token, craftsmanId, action } = req.body;
 
   if (!token || !craftsmanId || !['approve', 'reject'].includes(action)) {
