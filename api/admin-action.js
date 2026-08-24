@@ -12,6 +12,7 @@ export default async function handler(req, res) {
 
     const SUPABASE_URL = process.env.SUPABASE_URL;
     const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
     const SB_HEADERS = {
       apikey: SERVICE_ROLE_KEY,
       Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
@@ -32,9 +33,28 @@ export default async function handler(req, res) {
           headers: SB_HEADERS
         });
       }
+
+      await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/answerCallbackQuery`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          callback_query_id: cq.id,
+          text: tgAction === 'approve' ? '✅ تم القبول' : '❌ تم الرفض'
+        })
+      });
+
+      await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/editMessageReplyMarkup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: cq.message.chat.id,
+          message_id: cq.message.message_id,
+          reply_markup: { inline_keyboard: [] }
+        })
+      });
     } catch (e) {
       console.error('TELEGRAM CALLBACK ERROR:', e);
-    }
+}
 
     return res.status(200).json({ ok: true });
   }
