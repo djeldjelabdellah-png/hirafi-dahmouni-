@@ -1004,7 +1004,7 @@ function CompleteRegistrationView({ craftsman, onBack, onComplete, saving, t, la
 
     setLoading(true);
     try {
-      await emailjs.send('service_in25o7y', 'template_o73g9ys', {
+      await emailjs.send('service_2kewus8', 'template_o73g9ys', {
           to_email: emailInput.trim(),
           otp_code: otp,
           to_name: craftsman.name
@@ -1093,7 +1093,7 @@ function EditAuthView({ onBack, allCraftsmen, t, lang, onVerified }) {
 
     setLoading(true);
     try {
-      await emailjs.send('service_in25o7y', 'template_o73g9ys', {
+      await emailjs.send('service_2kewus8', 'template_o73g9ys', {
           to_email: found.email,
           otp_code: otp,
           to_name: found.name
@@ -1264,7 +1264,7 @@ function RegisterForm({ onBack, onSubmit, saving, uploadingText, t, lang }) {
     setGeneratedOtp(otp);
 
     try {
-      await emailjs.send('service_in25o7y', 'template_o73g9ys', {
+      await emailjs.send('service_2kewus8', 'template_o73g9ys', {
           to_email: form.email.trim(),
           otp_code: otp,
           to_name: form.name.trim()
