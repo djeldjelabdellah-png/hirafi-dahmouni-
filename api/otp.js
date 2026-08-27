@@ -31,7 +31,7 @@ try {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          service_id: 'service_in25o7y',
+          service_id: 'service_2kewus8',
           template_id: 'template_o73g9ys',
          user_id: process.env.EMAILJS_PUBLIC_KEY,
           accessToken: process.env.EMAILJS_PRIVATE_KEY,
